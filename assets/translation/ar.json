@@ -1,0 +1,16 @@
+{
+    "language": "اللغة",
+    "suggested": "مقترح",
+    "arabic": "العربية",
+    "english": "الإنجليزية",
+    "signupBotton":"ليس لديك حساب؟ سجل",
+    "signInLoadingTitle":"تسجيل الدخول...",
+    "signInTitle":"تسجيل الدخول",
+    "WelcomeBack": "مرحبًا بعودتك",
+    "signInToAccessYourDashboard": "قم بتسجيل الدخول للوصول إلى لوحة صحة قلبك",
+    "Email": "البريد الإلكتروني",
+    "Password": "كلمة المرور",
+    "emailRequired": "البريد الإلكتروني مطلوب",
+    "passwordRequired": "كلمة المرور مطلوبة"
+
+}

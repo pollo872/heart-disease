@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/core/network/dio_helper.dart';
@@ -11,25 +12,41 @@ import 'package:heart_disease/features/auth/domain/use_cases/signup_usecase.dart
 import 'package:heart_disease/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:heart_disease/features/auth/presentation/pages/welcome_screen.dart';
 
-void main() {
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   DioHelper.init();
   final remoteDataSource = AuthRemoteDataSource(DioHelper.dio);
   final localDataSource = AuthLocalDataSource();
-
   final authRepository = AuthRepositoryImpl(remoteDataSource, localDataSource);
-    final loginUseCase = LoginUseCase(authRepository);
+  final loginUseCase = LoginUseCase(authRepository);
   final checkLoginUseCase = CheckLoginUseCase(authRepository);
   final logoutUseCase = LogoutUseCase(authRepository);
   final signUpUseCase = SignUpUseCase(authRepository);
+  
+  await EasyLocalization.ensureInitialized();
   runApp(
-    BlocProvider<AuthCubit>(
-      create: (_) => AuthCubit(
-        loginUseCase,
-        checkLoginUseCase,
-        logoutUseCase,
-        signUpUseCase,
-      )..checkLogin(),
-      child: const MyApp(),
+    EasyLocalization(
+      supportedLocales: const [
+        Locale('en'),
+        Locale('ar'),
+      ],
+      path: 'assets/translation',
+      fallbackLocale: const Locale('en'),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<AuthCubit>(
+            create: (_) => AuthCubit(
+              loginUseCase,
+              checkLoginUseCase,
+              logoutUseCase,
+              signUpUseCase,
+            )..checkLogin(),
+          ),
+          
+        ],
+        child: const MyApp(),
+      ),
     ),
   );
 }
@@ -42,6 +59,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      locale: context.locale,
+      supportedLocales: context.supportedLocales,
+      localizationsDelegates: context.localizationDelegates,
       home: const SplashScreen(),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 // --- PasswordFormFeild ---
@@ -32,7 +33,7 @@ class _PasswordFormFeildState extends State<PasswordFormFeild> {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              widget.formTitle,
+              tr(widget.formTitle),
               style: TextStyle(
                 color: Color(0xff626262),
                 fontSize: 14,
@@ -123,7 +124,7 @@ class _AnyFormFeildState extends State<AnyFormFeild> {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              widget.formTitle,
+             tr(widget.formTitle),
               style: TextStyle(
                 color: Color(0xff626262),
                 fontSize: 14,

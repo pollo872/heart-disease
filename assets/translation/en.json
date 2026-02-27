@@ -1,0 +1,16 @@
+{
+    "language": "Language",
+    "suggested": "Suggested",
+    "arabic": "Arabic",
+    "english": "English",
+    "signupBotton":"Don't have an account? Sign up",
+    "signInLoadingTitle":"Signing In...",
+    "signInTitle":"Sign In",
+    "WelcomeBack": "Welcome Back",
+    "signInToAccessYourDashboard": "Sign in to access your heart health dashboard",
+    "Email": "Email",
+    "Password": "Password",
+    "emailRequired": "Email is required",
+    "passwordRequired": "Password is required"
+
+}

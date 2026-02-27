@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/features/auth/presentation/cubit/auth_cubit.dart';
@@ -81,13 +82,13 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Welcome Back",
+          Text(
+            tr("WelcomeBack"),
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 6),
-          const Text(
-            "Sign in to access your heart health dashboard",
+           Text(
+            tr("signInToAccessYourDashboard"),
             style: TextStyle(color: Colors.grey, fontSize: 13),
           ),
           const SizedBox(height: 20),
@@ -99,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
             controller: emailController,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return "Email is required";
+                return tr("emailRequired");
               }
               return null;
             },
@@ -113,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
             controller: passwordController,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return "Password is required";
+                return tr("passwordRequired");
               }
               return null;
             },
@@ -132,7 +133,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   BaseButton _signInBtn(AuthState state, BuildContext context) {
     return BaseButton(
-      buttonTitle: state is AuthLoading ? "Signing In..." : "Sign In",
+      buttonTitle:
+          state is AuthLoading ? tr("signInLoadingTitle") : tr("signInTitle"),
       titleColor: AppColors.textWhite,
       borderRadius: 10,
       borderColor: Colors.transparent,
@@ -162,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         },
         child: Text(
-          "Don't have an account? Sign up",
+          tr("signupBotton"),
           style: TextStyle(color: AppColors.primary),
         ),
       ),

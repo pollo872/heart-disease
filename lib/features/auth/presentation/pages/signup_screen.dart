@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:heart_disease/core/shared/form_field.dart';
 import 'package:heart_disease/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:heart_disease/features/auth/presentation/cubit/auth_state.dart';
 import 'package:heart_disease/features/auth/presentation/pages/login_screen.dart';
 import 'package:heart_disease/features/auth/presentation/widgets/logo.dart';
 import 'package:heart_disease/res/app_colors.dart';
 import 'package:heart_disease/shared/widgets/base_button.dart';
+import 'package:heart_disease/shared/widgets/form_fields.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});

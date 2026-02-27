@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:heart_disease/features/home_screen/presentation/screens/home_screen.dart';
 import 'package:heart_disease/features/main_pages/bottom_nav_bar_item.dart';
 import 'package:heart_disease/features/main_pages/init_navbar_screens/init_navbar_screens.dart';
 import 'package:heart_disease/features/main_pages/manager/main_bloc.dart';
