@@ -68,9 +68,10 @@ class LanguageView extends StatelessWidget {
     return RadioListTile<Locale>(
       value: locale,
       groupValue: context.locale,
-      onChanged: (value) {
+      onChanged: (value) async {
         if (value != null) {
-          context.setLocale(value);
+          await context.setLocale(value);
+          Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
         }
       },
       title: Text(tr(title)),

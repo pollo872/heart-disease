@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/features/auth/presentation/cubit/auth_cubit.dart';
@@ -85,31 +86,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          "Create Account",
+                         Text(
+                          "createAccount".tr(),
                           style: TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 6),
-                        const Text(
-                          "Sign up to begin monitoring your heart health",
+                         Text(
+                          "signUpForYourHeartHealth".tr(),
                           style: TextStyle(color: Colors.grey, fontSize: 13),
                         ),
                         const SizedBox(height: 20),
                         AnyFormFeild(
-                          formTitle: "First Name",
+                          formTitle: "FirstName",
                           keyboardType: TextInputType.name,
                           controller: firstNameController,
                           validator: (value) =>
-                              value!.isEmpty ? "Name required" : null,
+                              value!.isEmpty ? "nameRequired".tr() : null,
                         ),
                         const SizedBox(height: 16),
                         AnyFormFeild(
-                          formTitle: "Last Name",
+                          formTitle: "LastName",
                           keyboardType: TextInputType.name,
                           controller: lastNameController,
                           validator: (value) =>
-                              value!.isEmpty ? "Name required" : null,
+                              value!.isEmpty ? "nameRequired".tr() : null,
                         ),
                         const SizedBox(height: 16),
                         AnyFormFeild(
@@ -117,22 +118,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           keyboardType: TextInputType.emailAddress,
                           controller: emailController,
                           validator: (value) =>
-                              value!.isEmpty ? "Email required" : null,
+                              value!.isEmpty ? "emailRequired".tr() : null,
                         ),
                         const SizedBox(height: 16),
                         PasswordFormFeild(
                           formTitle: "Password",
                           controller: passwordController,
                           validator: (value) =>
-                              value!.length < 6 ? "Min 6 characters" : null,
+                              value!.length < 6 ? "minimumLength".tr() : null,
                         ),
                         const SizedBox(height: 16),
                         PasswordFormFeild(
-                          formTitle: "Confirm Password",
+                          formTitle: "confirmPassword",
                           controller: confirmPasswordController,
                           validator: (value) {
                             if (value != passwordController.text) {
-                              return "Passwords do not match";
+                              return "passwordsDoNotMatch".tr();
                             }
                             return null;
                           },
@@ -157,9 +158,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             setState(() => agree = v!);
           },
         ),
-        const Expanded(
+         Expanded(
           child: Text(
-            "I agree to the Terms of Service and Privacy Policy",
+            "agreeTerms".tr(),
             style: TextStyle(fontSize: 12),
           ),
         )
@@ -170,7 +171,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   BaseButton _createAccountBtn(AuthState state, BuildContext context) {
     return BaseButton(
       buttonTitle:
-          state is AuthLoading ? "Creating Account..." : "Create Account",
+          state is AuthLoading ? "signUpLoadingTitle".tr() : "signUpTitle".tr(),
       backgroundColor: state is AuthLoading ? Colors.grey : AppColors.primary,
       titleColor: AppColors.baseBtnColorWhite,
       borderRadius: 10,
@@ -197,7 +198,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           Navigator.pop(context);
         },
         child: Text(
-          "Already have an account? Sign in",
+          "signInBotton".tr(),
           style: TextStyle(color: AppColors.primary),
         ),
       ),

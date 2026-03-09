@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:heart_disease/profile.dart';
 
@@ -15,6 +16,7 @@ class WelcomeHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
+      height: 150,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -39,8 +41,8 @@ class WelcomeHeader extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Welcome back,",
+                 Text(
+                  "welcomeBack".tr(),
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 14,

@@ -12,6 +12,7 @@ class AuthResponseModel extends AuthEntity {
     if (patient == null) {
       throw Exception('Patient data missing');
     }
+    
 
     return AuthResponseModel(
       token: json['token'],

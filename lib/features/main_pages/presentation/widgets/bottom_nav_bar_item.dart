@@ -1,9 +1,8 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:heart_disease/res/app_colors.dart';
-
-
 
 class AppBottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -14,20 +13,15 @@ class AppBottomNavBar extends StatelessWidget {
     required this.currentIndex,
     this.onTap,
   });
-  
+
   @override
   Widget build(BuildContext context) {
-    final iconList = <IconData>[
-      // Assets.svgHome,
-      // Assets.svgtasks,
-      // Assets.svgStatus,
-      // Assets.svgGroups,
-      // Assets.svgProfile
-      Icons.home_rounded,
-      Icons.assessment_outlined,
-      Icons.bar_chart_rounded,
-      Icons.notifications_outlined,
-      Icons.person,
+    final iconList = <String>[
+      "assets/icons/home.png",
+      "assets/icons/history.png",
+      "assets/icons/doctors.png",
+      "assets/icons/articles.png",
+      "assets/icons/chat.png",
     ];
 
     final iconTitles = [
@@ -36,11 +30,11 @@ class AppBottomNavBar extends StatelessWidget {
       // AppStrings.status,
       // AppStrings.groups,
       // AppStrings.profile,
-      'Home',
-      'History',
-      'Doctors',
-      'Articles',
-      'Chat',
+      'Home'.tr(),
+      'History'.tr(),
+      'Doctors'.tr(),
+      'Articles'.tr(),
+      'Chat'.tr(),
     ];
 
     return Container(
@@ -48,7 +42,6 @@ class AppBottomNavBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
         color: AppColors.backGround,
-        
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.12),
@@ -66,7 +59,7 @@ class AppBottomNavBar extends StatelessWidget {
     );
   }
 
-  Widget _buildNavItem(String title, IconData icon, int index) {
+  Widget _buildNavItem(String title, String iconPath, int index) {
     final bool isSelected = currentIndex == index;
 
     return GestureDetector(
@@ -76,24 +69,23 @@ class AppBottomNavBar extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(10),
-        
         child: Row(
           children: [
-            Icon(
-              icon,
-              size: 22,
-              color: isSelected
-                  ? AppColors.primary
-                  : AppColors.mainGreyIcons,
-            ),
+            Image.asset(
+            iconPath,
+            width: 22,
+            height: 22,
+            color: isSelected
+                ? AppColors.primary
+                : AppColors.mainGreyIcons,
+          ),
             const SizedBox(width: 6),
             AnimatedCrossFade(
               firstChild: Text(
                 title,
                 style: TextStyle(
-                  color: isSelected
-                      ? AppColors.primary
-                      : AppColors.mainGreyIcons,
+                  color:
+                      isSelected ? AppColors.primary : AppColors.mainGreyIcons,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),

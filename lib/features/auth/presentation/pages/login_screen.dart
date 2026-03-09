@@ -5,7 +5,11 @@ import 'package:heart_disease/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:heart_disease/features/auth/presentation/cubit/auth_state.dart';
 import 'package:heart_disease/features/auth/presentation/pages/signup_screen.dart';
 import 'package:heart_disease/features/auth/presentation/widgets/logo.dart';
-import 'package:heart_disease/features/main_pages/main_screen.dart';
+import 'package:heart_disease/features/main_pages/data/data_source/get_profile_remote_data_source.dart';
+import 'package:heart_disease/features/main_pages/data/repository/main_repo.dart';
+import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
+import 'package:heart_disease/features/main_pages/presentation/manager/main_event.dart';
+import 'package:heart_disease/features/main_pages/presentation/screens/main_screen.dart';
 import 'package:heart_disease/res/app_colors.dart';
 import 'package:heart_disease/shared/widgets/base_button.dart';
 import 'package:heart_disease/shared/widgets/form_fields.dart';
@@ -39,7 +43,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const MainScreen(),
+                        builder: (_) => BlocProvider(
+                          create: (_) => MainBloc(
+                            MainRepo(
+                              MainRemoteDataSource(),
+                            ),
+                          )..add(GetProfileEvent()),
+                          child: const MainScreen(),
+                        ),
                       ),
                     );
                   }
@@ -87,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 6),
-           Text(
+          Text(
             tr("signInToAccessYourDashboard"),
             style: TextStyle(color: Colors.grey, fontSize: 13),
           ),

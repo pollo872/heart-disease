@@ -1,11 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:heart_disease/core/network/api_endpoints.dart';
+
 import '../models/auth_response_model.dart';
 
 class AuthRemoteDataSource {
   final Dio dio;
 
   AuthRemoteDataSource(this.dio);
+ 
 
   Future<AuthResponseModel> login({
     required String email,
@@ -18,23 +20,19 @@ class AuthRemoteDataSource {
         'password': password,
       },
     );
-    
+
     if (response.statusCode == 200 && response.data != null) {
       return AuthResponseModel.fromJson(response.data);
     } else {
       throw Exception('Login failed');
     }
-  
-    
   }
-
 
   Future<AuthResponseModel> register({
     required String email,
     required String firstName,
     required String lastName,
     required String password,
-    // required String confirmPassword,
   }) async {
     final response = await dio.post(
       ApiEndpoints.signUp,
@@ -43,7 +41,6 @@ class AuthRemoteDataSource {
         'firstName': firstName,
         'lastName': lastName,
         'password': password,
-        // 'confirmPassword': confirmPassword,
       },
     );
 
