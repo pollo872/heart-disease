@@ -39,5 +39,8 @@
     "History": "History",
     "Doctors": "Doctors",
     "Articles": "Articles",
-    "Chat": "Chat"
+    "Chat": "Chat",
+    "Status": "Status",
+    "RiskLevel": "Risk Level",
+    "Probability": "Probability"
 }

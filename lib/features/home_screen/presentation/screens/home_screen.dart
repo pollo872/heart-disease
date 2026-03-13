@@ -17,7 +17,14 @@ class HomeScreen extends StatelessWidget {
         }
 
         if (state is ProfileSuccessState) {
-          return _content("${state.patient.firstName} ${state.patient.lastName}");
+          String prob = "${(state.assessment.probability * 100).toStringAsFixed(2)}%";
+          return _content(
+            "${state.patient.firstName} ${state.patient.lastName}",
+            state.assessment.predictionResult,
+            state.assessment.riskLevel,
+            prob,
+            state.assessment.createdAt,
+          );
         }
 
         if (state is ProfileErrorState) {
@@ -27,10 +34,15 @@ class HomeScreen extends StatelessWidget {
         return const SizedBox();
       },
     );
-  
-    
   }
-  Widget _content(String userName) {
+
+  Widget _content(
+    String userName,
+    String predictionResult,
+    String riskLevel,
+    String probability,
+    String createdAt,
+  ) {
     return Scaffold(
       backgroundColor: const Color(0xffF4F6FA),
       body: SingleChildScrollView(
@@ -50,7 +62,12 @@ class HomeScreen extends StatelessWidget {
                   top: 100,
                   left: 16,
                   right: 16,
-                  child: _LatestAssessmentCard(),
+                  child: _LatestAssessmentCard(
+                    predictionResult,
+                    riskLevel,
+                    probability,
+                    createdAt,
+                  ),
                 ),
               ],
             ),
@@ -116,7 +133,7 @@ class HomeScreen extends StatelessWidget {
 
                   const SizedBox(height: 12),
 
-                  _HistoryCard(),
+                  _HistoryCard(predictionResult, riskLevel, probability, createdAt),
 
                   const SizedBox(height: 40),
                 ],
@@ -126,13 +143,21 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
-  
   }
 }
 
 class _LatestAssessmentCard extends StatelessWidget {
+  final String predictionResult;
+  final String riskLevel;
+  final String probability;
+  final String createdAt;
+  const _LatestAssessmentCard(
+      this.predictionResult, this.riskLevel, this.probability, this.createdAt);
   @override
   Widget build(BuildContext context) {
+    // final String prob = NumberFormat.percentPattern().format(double.tryParse(probability.toString())??0.0);
+    // String prob = "${(probability * 100).toStringAsFixed(2)}%";
+    
     return Container(
       padding: const EdgeInsets.all(16),
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -157,8 +182,8 @@ class _LatestAssessmentCard extends StatelessWidget {
 
           const SizedBox(height: 6),
 
-          const Text(
-            "August 5, 2024",
+          Text(
+            DateFormat('MMMM d, y').format(DateTime.parse(createdAt)),
             style: TextStyle(
                 fontSize: 16, fontWeight: FontWeight.w600, color: Colors.teal),
           ),
@@ -167,10 +192,10 @@ class _LatestAssessmentCard extends StatelessWidget {
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              _MetricItem(title: "Risk Score", value: "38%"),
-              _MetricItem(title: "Blood Pressure", value: "132/84"),
-              _MetricItem(title: "Cholesterol", value: "220"),
+            children: [
+              _MetricItem(title: "Status", value: predictionResult),
+              _MetricItem(title: "RiskLevel", value: riskLevel),
+              _MetricItem(title: "Probability", value: probability),
             ],
           )
         ],
@@ -231,6 +256,13 @@ class _QuickActionTile extends StatelessWidget {
 }
 
 class _HistoryCard extends StatelessWidget {
+  final String predictionResult;
+  final String riskLevel;
+  final String probability;
+  final String createdAt;
+
+  const _HistoryCard( this.predictionResult, this.riskLevel, this.probability, this.createdAt);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -243,8 +275,8 @@ class _HistoryCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                "August 5, 2024",
+               Text(
+                DateFormat('MMMM d, y').format(DateTime.parse(createdAt)),
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               Container(
@@ -277,12 +309,12 @@ class _HistoryCard extends StatelessWidget {
               color: const Color(0xffE9EEF8),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Row(
+            child:  Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _MetricItem(title: "Risk Score", value: "38%"),
-                _MetricItem(title: "BP", value: "132/84"),
-                _MetricItem(title: "Cholesterol", value: "220"),
+                _MetricItem(title: "Status", value: predictionResult),
+                _MetricItem(title: "RiskLevel", value: riskLevel),
+                _MetricItem(title: "Probability", value: probability),
               ],
             ),
           ),
@@ -319,7 +351,7 @@ class _MetricItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(title, style: const TextStyle(color: Colors.grey, fontSize: 11)),
+        Text(title.tr(), style: const TextStyle(color: Colors.grey, fontSize: 11)),
         const SizedBox(height: 4),
         Text(value, style: const TextStyle(fontWeight: FontWeight.w600)),
       ],

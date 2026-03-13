@@ -39,6 +39,9 @@
     "History": "التاريخ",
     "Doctors": "الأطباء",
     "Articles": "المقالات",
-    "Chat": "الدردشة"
+    "Chat": "الدردشة",
+    "Status": "الحالة",
+    "RiskLevel": "مستوى الخطر",
+    "Probability": "الاحتمالية"
 
 }
