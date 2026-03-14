@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:heart_disease/features/main_pages/data/models/assessment_model.dart';
 import 'package:heart_disease/features/main_pages/data/models/patient_model.dart';
 
@@ -17,9 +18,23 @@ class ProfileLoadingState extends MainState {}
 
 class ProfileSuccessState extends MainState {
   final PatientModel patient;
-  final AssessmentModel assessment;
+  final AssessmentModel? assessment;
 
-  ProfileSuccessState(this.patient, this.assessment);
+  final String riskTitle;
+  final String riskHint;
+  final String riskMessage;
+  final Color riskColor;
+  final Color riskBadgeColor;
+
+  ProfileSuccessState({
+    required this.patient,
+    required this.assessment,
+    required this.riskTitle,
+    required this.riskHint,
+    required this.riskMessage,
+    required this.riskColor,
+    required this.riskBadgeColor,
+  });
 }
 
 class ProfileErrorState extends MainState {
@@ -27,3 +42,6 @@ class ProfileErrorState extends MainState {
 
   ProfileErrorState(this.error);
 }
+
+
+

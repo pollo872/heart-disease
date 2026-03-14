@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/features/main_pages/data/models/assessment_model.dart';
 import 'package:heart_disease/features/main_pages/data/repository/main_repo.dart';
@@ -21,11 +23,10 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     Emitter<MainState> emit,
   ) {
     currentIndex = event.index;
-    if(currentIndex == 0){
+    if (currentIndex == 0) {
       add(GetProfileEvent());
     }
     emit(MainIndexChangedState(currentIndex));
-    
   }
 
   Future<void> _getProfile(
@@ -35,10 +36,55 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     emit(ProfileLoadingState());
 
     try {
-      final PatientModel patient = await mainRepo.getProfile();
-      final AssessmentModel assessment = await mainRepo.getLatestHealthData();
+      final patient = await mainRepo.getProfile();
+      final assessment = await mainRepo.getLatestHealthData();
 
-      emit(ProfileSuccessState(patient, assessment));
+      String riskTitle = "";
+      String riskHint = "";
+      String riskMessage = "";
+      Color riskColor = Colors.grey;
+      Color riskBadgeColor = Colors.grey.withOpacity(.15);
+
+      if (assessment != null) {
+        switch (assessment.riskLevel.toLowerCase()) {
+          case "low":
+            riskTitle = "LowRiskTitle".tr();
+            riskHint = "LowRiskHint".tr();
+            riskMessage =
+                "LowRiskMessage".tr();
+            riskColor = Colors.green;
+            riskBadgeColor = Colors.green.withOpacity(.15);
+            break;
+
+          case "medium":
+            riskTitle = "MediumRiskTitle".tr();
+            riskHint = "MediumRiskHint".tr();
+            riskMessage =
+                "MediumRiskMessage".tr();
+            riskColor = Colors.orange;
+            riskBadgeColor = Colors.orange.withOpacity(.15);
+            break;
+
+          case "high":
+            riskTitle = "HighRiskTitle".tr();
+            riskHint = "HighRiskHint".tr();
+            riskMessage =
+                "HighRiskMessage".tr();
+            riskColor = Colors.red;
+            riskBadgeColor = Colors.red.withOpacity(.15);
+            break;
+        }
+      }
+
+      emit(ProfileSuccessState(
+        patient: patient,
+        assessment: assessment,
+        riskTitle: riskTitle,
+        riskHint: riskHint,
+        riskMessage: riskMessage,
+        riskColor: riskColor,
+        riskBadgeColor: riskBadgeColor,
+      ));
     } catch (e) {
       emit(ProfileErrorState(e.toString()));
     }

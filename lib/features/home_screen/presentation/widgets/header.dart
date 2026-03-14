@@ -5,18 +5,20 @@ import 'package:heart_disease/profile.dart';
 class WelcomeHeader extends StatelessWidget {
   final String userName;
   final String profileImageUrl;
+  final bool hasAssessment;
 
   const WelcomeHeader({
     super.key,
     required this.userName,
     required this.profileImageUrl,
+    required this.hasAssessment,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 150,
+      height:hasAssessment ? 150 : 100,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -41,7 +43,7 @@ class WelcomeHeader extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                 Text(
+                Text(
                   "welcomeBack".tr(),
                   style: TextStyle(
                     color: Colors.white70,
@@ -89,11 +91,11 @@ class WelcomeHeader extends StatelessWidget {
             GestureDetector(
               onTap: () {
                 Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const ProfileScreen(),
-            ),
-          );
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ProfileScreen(),
+                  ),
+                );
               },
               child: CircleAvatar(
                 radius: 18,

@@ -13,132 +13,70 @@ class HomeScreen extends StatelessWidget {
     return BlocBuilder<MainBloc, MainState>(
       builder: (context, state) {
         if (state is ProfileLoadingState) {
-          return Center(child: const CircularProgressIndicator());
-        }
-
-        if (state is ProfileSuccessState) {
-          String prob = "${(state.assessment.probability * 100).toStringAsFixed(2)}%";
-          return _content(
-            "${state.patient.firstName} ${state.patient.lastName}",
-            state.assessment.predictionResult,
-            state.assessment.riskLevel,
-            prob,
-            state.assessment.createdAt,
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (state is ProfileErrorState) {
-          return Text(state.error);
+          return Center(child: Text(state.error));
+        }
+
+        if (state is ProfileSuccessState) {
+          return _HomeContent(state: state);
         }
 
         return const SizedBox();
       },
     );
   }
+}
 
-  Widget _content(
-    String userName,
-    String predictionResult,
-    String riskLevel,
-    String probability,
-    String createdAt,
-  ) {
+///------------------------------------------------------------
+/// MAIN CONTENT
+///------------------------------------------------------------
+
+class _HomeContent extends StatelessWidget {
+  final ProfileSuccessState state;
+
+  const _HomeContent({required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    final patient = state.patient;
+    final assessment = state.assessment;
+
+    final userName = "${patient.firstName} ${patient.lastName}";
+    final hasAssessment = assessment != null;
+
+    final probability = hasAssessment
+        ? "${(assessment.probability * 100).toStringAsFixed(2)}%"
+        : "";
+
+    final predictionResult = assessment?.predictionResult ?? "";
+    final riskLevel = assessment?.riskLevel ?? "";
+    final createdAt = assessment?.createdAt ?? "";
+
     return Scaffold(
       backgroundColor: const Color(0xffF4F6FA),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                /// 🔵 HEADER
-                WelcomeHeader(
-                  userName: userName,
-                  profileImageUrl: "assets/images/defualt_profile.png",
-                ),
-
-                /// 🟦 FLOATING LATEST ASSESSMENT CARD
-                Positioned(
-                  top: 100,
-                  left: 16,
-                  right: 16,
-                  child: _LatestAssessmentCard(
-                    predictionResult,
-                    riskLevel,
-                    probability,
-                    createdAt,
-                  ),
-                ),
-              ],
+            _HeaderSection(
+              userName: userName,
+              hasAssessment: hasAssessment,
+              predictionResult: predictionResult,
+              riskLevel: riskLevel,
+              probability: probability,
+              createdAt: createdAt,
             ),
-            SizedBox(height: 100),
-            SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 24),
 
-                  /// Quick Actions
-                  Text(
-                    "quickActions".tr(),
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  _QuickActionTile(
-                    icon: Icons.favorite_border,
-                    color: Colors.blue,
-                    title: "NewAssessment".tr(),
-                    subtitle: "takeAssessment".tr(),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  _QuickActionTile(
-                    icon: Icons.calendar_today,
-                    color: Colors.teal,
-                    title: "ViewHistory".tr(),
-                    subtitle: "SeePastAssessments".tr(),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  _QuickActionTile(
-                    icon: Icons.location_on_outlined,
-                    color: Colors.purple,
-                    title: "FindDoctors".tr(),
-                    subtitle: "ConnectWithCardiologists".tr(),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  /// Assessment History
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "AssessmentHistory".tr(),
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600, fontSize: 14),
-                      ),
-                      TextButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(Icons.download, size: 16),
-                        label: Text("Export".tr()),
-                      )
-                    ],
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  _HistoryCard(predictionResult, riskLevel, probability, createdAt),
-
-                  const SizedBox(height: 40),
-                ],
-              ),
-            ),
+            _BodySection(
+              state: state,
+              hasAssessment: hasAssessment,
+              predictionResult: predictionResult,
+              riskLevel: riskLevel,
+              probability: probability,
+              createdAt: createdAt,
+            )
           ],
         ),
       ),
@@ -146,18 +84,179 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
+///------------------------------------------------------------
+/// HEADER + LATEST CARD
+///------------------------------------------------------------
+
+class _HeaderSection extends StatelessWidget {
+  final String userName;
+  final bool hasAssessment;
+  final String predictionResult;
+  final String riskLevel;
+  final String probability;
+  final String createdAt;
+
+  const _HeaderSection({
+    required this.userName,
+    required this.hasAssessment,
+    required this.predictionResult,
+    required this.riskLevel,
+    required this.probability,
+    required this.createdAt,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        WelcomeHeader(
+          userName: userName,
+          profileImageUrl: "assets/images/defualt_profile.png",
+          hasAssessment: hasAssessment,
+        ),
+
+        if (hasAssessment)
+          Positioned(
+            top: 100,
+            left: 16,
+            right: 16,
+            child: _LatestAssessmentCard(
+              predictionResult,
+              riskLevel,
+              probability,
+              createdAt,
+            ),
+          )
+      ],
+    );
+  }
+}
+
+///------------------------------------------------------------
+/// BODY
+///------------------------------------------------------------
+
+class _BodySection extends StatelessWidget {
+  final ProfileSuccessState state;
+  final bool hasAssessment;
+  final String predictionResult;
+  final String riskLevel;
+  final String probability;
+  final String createdAt;
+
+  const _BodySection({
+    required this.state,
+    required this.hasAssessment,
+    required this.predictionResult,
+    required this.riskLevel,
+    required this.probability,
+    required this.createdAt,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: hasAssessment ? 120 : 40),
+
+          const SizedBox(height: 24),
+
+          Text(
+            "quickActions".tr(),
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+          ),
+
+          const SizedBox(height: 12),
+
+          const _QuickActionTile(
+            icon: Icons.favorite_border,
+            color: Colors.blue,
+            title: "NewAssessment",
+            subtitle: "takeAssessment",
+          ),
+
+          const SizedBox(height: 12),
+
+          const _QuickActionTile(
+            icon: Icons.calendar_today,
+            color: Colors.teal,
+            title: "ViewHistory",
+            subtitle: "SeePastAssessments",
+          ),
+
+          const SizedBox(height: 12),
+
+          const _QuickActionTile(
+            icon: Icons.location_on_outlined,
+            color: Colors.purple,
+            title: "FindDoctors",
+            subtitle: "ConnectWithCardiologists",
+          ),
+
+          const SizedBox(height: 24),
+
+          if (hasAssessment) ...[
+            _HistoryHeader(),
+            const SizedBox(height: 12),
+            _HistoryCard(
+              predictionResult: predictionResult,
+              riskLevel: riskLevel,
+              probability: probability,
+              createdAt: createdAt,
+              state: state,
+            ),
+          ],
+
+          const SizedBox(height: 80)
+        ],
+      ),
+    );
+  }
+}
+
+///------------------------------------------------------------
+/// HISTORY HEADER
+///------------------------------------------------------------
+
+class _HistoryHeader extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          "AssessmentHistory".tr(),
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+        ),
+        TextButton.icon(
+          onPressed: () {},
+          icon: const Icon(Icons.download, size: 16),
+          label: Text("Export".tr()),
+        )
+      ],
+    );
+  }
+}
+
+///------------------------------------------------------------
+/// LATEST CARD
+///------------------------------------------------------------
+
 class _LatestAssessmentCard extends StatelessWidget {
   final String predictionResult;
   final String riskLevel;
   final String probability;
   final String createdAt;
+
   const _LatestAssessmentCard(
       this.predictionResult, this.riskLevel, this.probability, this.createdAt);
+
   @override
   Widget build(BuildContext context) {
-    // final String prob = NumberFormat.percentPattern().format(double.tryParse(probability.toString())??0.0);
-    // String prob = "${(probability * 100).toStringAsFixed(2)}%";
-    
     return Container(
       padding: const EdgeInsets.all(16),
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -165,14 +264,11 @@ class _LatestAssessmentCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// Title + Heart
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                "LatestAssessment".tr(),
-                style: TextStyle(color: Colors.grey),
-              ),
+              Text("LatestAssessment".tr(),
+                  style: const TextStyle(color: Colors.grey)),
               CircleAvatar(
                 backgroundColor: Colors.red.withOpacity(0.1),
                 child: const Icon(Icons.favorite, color: Colors.red),
@@ -184,7 +280,7 @@ class _LatestAssessmentCard extends StatelessWidget {
 
           Text(
             DateFormat('MMMM d, y').format(DateTime.parse(createdAt)),
-            style: TextStyle(
+            style: const TextStyle(
                 fontSize: 16, fontWeight: FontWeight.w600, color: Colors.teal),
           ),
 
@@ -203,6 +299,105 @@ class _LatestAssessmentCard extends StatelessWidget {
     );
   }
 }
+
+///------------------------------------------------------------
+/// HISTORY CARD
+///------------------------------------------------------------
+
+class _HistoryCard extends StatelessWidget {
+  final String predictionResult;
+  final String riskLevel;
+  final String probability;
+  final String createdAt;
+  final ProfileSuccessState state;
+
+  const _HistoryCard({
+    required this.predictionResult,
+    required this.riskLevel,
+    required this.probability,
+    required this.createdAt,
+    required this.state,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      decoration: _cardDecoration(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          /// DATE + BADGE
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                DateFormat('MMMM d, y').format(DateTime.parse(createdAt)),
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: state.riskBadgeColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  state.riskTitle,
+                  style: TextStyle(color: state.riskColor, fontSize: 11),
+                ),
+              )
+            ],
+          ),
+
+          const SizedBox(height: 8),
+
+          Text(
+            state.riskHint,
+            style: TextStyle(color: state.riskColor),
+          ),
+
+          const SizedBox(height: 12),
+
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xffE9EEF8),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _MetricItem(title: "Status", value: predictionResult),
+                _MetricItem(title: "RiskLevel", value: riskLevel),
+                _MetricItem(title: "Probability", value: probability),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xffDCE6F7),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              state.riskMessage,
+              style: const TextStyle(fontSize: 12),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+///------------------------------------------------------------
+/// QUICK ACTION TILE
+///------------------------------------------------------------
 
 class _QuickActionTile extends StatelessWidget {
   final IconData icon;
@@ -238,11 +433,11 @@ class _QuickActionTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title,
+                Text(title.tr(),
                     style: const TextStyle(fontWeight: FontWeight.w500)),
                 const SizedBox(height: 4),
                 Text(
-                  subtitle,
+                  subtitle.tr(),
                   style: const TextStyle(color: Colors.grey, fontSize: 12),
                 ),
               ],
@@ -255,88 +450,9 @@ class _QuickActionTile extends StatelessWidget {
   }
 }
 
-class _HistoryCard extends StatelessWidget {
-  final String predictionResult;
-  final String riskLevel;
-  final String probability;
-  final String createdAt;
-
-  const _HistoryCard( this.predictionResult, this.riskLevel, this.probability, this.createdAt);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: _cardDecoration(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          /// Date + Badge
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-               Text(
-                DateFormat('MMMM d, y').format(DateTime.parse(createdAt)),
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Text(
-                  "Moderate Risk",
-                  style: TextStyle(color: Colors.orange, fontSize: 11),
-                ),
-              )
-            ],
-          ),
-
-          const SizedBox(height: 8),
-
-          const Text(
-            "Needs Attention",
-            style: TextStyle(color: Colors.grey),
-          ),
-
-          const SizedBox(height: 12),
-
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xffE9EEF8),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child:  Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _MetricItem(title: "Status", value: predictionResult),
-                _MetricItem(title: "RiskLevel", value: riskLevel),
-                _MetricItem(title: "Probability", value: probability),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 12),
-
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xffDCE6F7),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Text(
-              "Initial assessment. Follow dietary recommendations.",
-              style: TextStyle(fontSize: 12),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-}
+///------------------------------------------------------------
+/// METRIC ITEM
+///------------------------------------------------------------
 
 class _MetricItem extends StatelessWidget {
   final String title;
@@ -351,13 +467,18 @@ class _MetricItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(title.tr(), style: const TextStyle(color: Colors.grey, fontSize: 11)),
+        Text(title.tr(),
+            style: const TextStyle(color: Colors.grey, fontSize: 11)),
         const SizedBox(height: 4),
         Text(value, style: const TextStyle(fontWeight: FontWeight.w600)),
       ],
     );
   }
 }
+
+///------------------------------------------------------------
+/// CARD STYLE
+///------------------------------------------------------------
 
 BoxDecoration _cardDecoration() {
   return BoxDecoration(
