@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:heart_disease/core/di/service_locator.dart';
 import 'package:heart_disease/core/network/dio_helper.dart';
 import 'package:heart_disease/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:heart_disease/features/auth/data/data_sources/local_data_source.dart';
@@ -11,6 +12,7 @@ import 'package:heart_disease/features/auth/domain/use_cases/logout_usecase.dart
 import 'package:heart_disease/features/auth/domain/use_cases/signup_usecase.dart';
 import 'package:heart_disease/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:heart_disease/features/auth/presentation/pages/welcome_screen.dart';
+import 'package:heart_disease/features/submit_assessment/presentation/manager/cubit.dart';
 
 
 void main() async {
@@ -24,7 +26,9 @@ void main() async {
   final logoutUseCase = LogoutUseCase(authRepository);
   final signUpUseCase = SignUpUseCase(authRepository);
   
+  
   await EasyLocalization.ensureInitialized();
+  init();
   runApp(
     EasyLocalization(
       supportedLocales: const [
@@ -43,8 +47,10 @@ void main() async {
               signUpUseCase,
             )..checkLogin(),
           ),
+          BlocProvider<AssessmentCubit>(create: (_) =>  sl<AssessmentCubit>())
           
         ],
+        
         child: const MyApp(),
       ),
     ),

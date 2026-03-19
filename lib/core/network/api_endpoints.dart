@@ -5,6 +5,7 @@ class ApiEndpoints  {
   static const String login = "/api/auth/login";
   static const String signUp = "/api/auth/register";
   static const String profile = "/api/patient/profile";
+  static const String submitAssessment = "/api/health-data/submit";
   // static const String verifyOTP = "auth/verify-otp";
   // static const String completeProfile = "auth/complete-user-data";
   // static const String getUserTransactions = "transaction/get-transaction";
