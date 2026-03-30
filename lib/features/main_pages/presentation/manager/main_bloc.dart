@@ -1,10 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:heart_disease/features/main_pages/data/models/assessment_model.dart';
+import 'package:heart_disease/features/main_pages/data/models/assessment_ui_model.dart';
 import 'package:heart_disease/features/main_pages/data/repository/main_repo.dart';
-
-import '../../data/models/patient_model.dart';
 import 'main_event.dart';
 import 'main_state.dart';
 
@@ -37,56 +35,107 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
     try {
       final patient = await mainRepo.getProfile();
-      final assessment = await mainRepo.getLatestHealthData();
+      // final latestAssessment = await mainRepo.getLatestHealthData();
+      final allAssessment = await mainRepo.getAllHealthData();
 
-      String riskTitle = "";
-      String riskHint = "";
-      String riskMessage = "";
-      Color riskColor = Colors.grey;
-      Color riskBadgeColor = Colors.grey.withOpacity(.15);
+      final assessmentsUI =
+          allAssessment.map((e) => _mapAssessment(e)).toList();
 
-      if (assessment != null) {
-        switch (assessment.riskLevel.toLowerCase()) {
-          case "low":
-            riskTitle = "LowRiskTitle".tr();
-            riskHint = "LowRiskHint".tr();
-            riskMessage =
-                "LowRiskMessage".tr();
-            riskColor = Colors.green;
-            riskBadgeColor = Colors.green.withOpacity(.15);
-            break;
+      // String riskTitle = "";
+      // String riskHint = "";
+      // String riskMessage = "";
+      // Color riskColor = Colors.grey;
+      // Color riskBadgeColor = Colors.grey.withOpacity(.15);
 
-          case "medium":
-            riskTitle = "MediumRiskTitle".tr();
-            riskHint = "MediumRiskHint".tr();
-            riskMessage =
-                "MediumRiskMessage".tr();
-            riskColor = Colors.orange;
-            riskBadgeColor = Colors.orange.withOpacity(.15);
-            break;
+      // if (allAssessment != null) {
+      //   switch (allAssessment.first.riskLevel.toLowerCase()) {
+      //     case "low":
+      //       riskTitle = "LowRiskTitle".tr();
+      //       riskHint = "LowRiskHint".tr();
+      //       riskMessage =
+      //           "LowRiskMessage".tr();
+      //       riskColor = Colors.green;
+      //       riskBadgeColor = Colors.green.withOpacity(.15);
+      //       break;
 
-          case "high":
-            riskTitle = "HighRiskTitle".tr();
-            riskHint = "HighRiskHint".tr();
-            riskMessage =
-                "HighRiskMessage".tr();
-            riskColor = Colors.red;
-            riskBadgeColor = Colors.red.withOpacity(.15);
-            break;
-        }
-      }
+      //     case "medium":
+      //       riskTitle = "MediumRiskTitle".tr();
+      //       riskHint = "MediumRiskHint".tr();
+      //       riskMessage =
+      //           "MediumRiskMessage".tr();
+      //       riskColor = Colors.orange;
+      //       riskBadgeColor = Colors.orange.withOpacity(.15);
+      //       break;
+
+      //     case "high":
+      //       riskTitle = "HighRiskTitle".tr();
+      //       riskHint = "HighRiskHint".tr();
+      //       riskMessage =
+      //           "HighRiskMessage".tr();
+      //       riskColor = Colors.red;
+      //       riskBadgeColor = Colors.red.withOpacity(.15);
+      //       break;
+      //   }
+      // }
 
       emit(ProfileSuccessState(
         patient: patient,
-        assessment: assessment,
-        riskTitle: riskTitle,
-        riskHint: riskHint,
-        riskMessage: riskMessage,
-        riskColor: riskColor,
-        riskBadgeColor: riskBadgeColor,
+        assessment: allAssessment.first,
+        assessments: assessmentsUI,
+        // riskTitle: riskTitle,
+        // riskHint: riskHint,
+        // riskMessage: riskMessage,
+        // riskColor: riskColor,
+        // riskBadgeColor: riskBadgeColor,
       ));
     } catch (e) {
       emit(ProfileErrorState(e.toString()));
     }
+  }
+
+  AssessmentUIModel _mapAssessment(assessment) {
+    String riskTitle = "";
+    String riskHint = "";
+    String riskMessage = "";
+    Color riskColor = Colors.grey;
+    Color riskBadgeColor = Colors.grey.withOpacity(.15);
+
+    switch (assessment.riskLevel.toLowerCase()) {
+      case "low":
+        riskTitle = "LowRiskTitle".tr();
+        riskHint = "LowRiskHint".tr();
+        riskMessage = "LowRiskMessage".tr();
+        riskColor = Colors.green;
+        riskBadgeColor = Colors.green.withOpacity(.15);
+        break;
+
+      case "medium":
+        riskTitle = "MediumRiskTitle".tr();
+        riskHint = "MediumRiskHint".tr();
+        riskMessage = "MediumRiskMessage".tr();
+        riskColor = Colors.orange;
+        riskBadgeColor = Colors.orange.withOpacity(.15);
+        break;
+
+      case "high":
+        riskTitle = "HighRiskTitle".tr();
+        riskHint = "HighRiskHint".tr();
+        riskMessage = "HighRiskMessage".tr();
+        riskColor = Colors.red;
+        riskBadgeColor = Colors.red.withOpacity(.15);
+        break;
+    }
+
+    return AssessmentUIModel(
+      predictionResult: assessment.predictionResult,
+      riskLevel: assessment.riskLevel,
+      probability: "${(assessment.probability * 100).toStringAsFixed(2)}%",
+      createdAt: assessment.createdAt,
+      riskTitle: riskTitle,
+      riskHint: riskHint,
+      riskMessage: riskMessage,
+      riskColor: riskColor,
+      riskBadgeColor: riskBadgeColor,
+    );
   }
 }

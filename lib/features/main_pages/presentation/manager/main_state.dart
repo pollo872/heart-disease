@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:heart_disease/features/main_pages/data/models/assessment_model.dart';
+import 'package:heart_disease/features/main_pages/data/models/assessment_ui_model.dart';
 import 'package:heart_disease/features/main_pages/data/models/patient_model.dart';
 
 abstract class MainState {}
@@ -19,21 +19,23 @@ class ProfileLoadingState extends MainState {}
 class ProfileSuccessState extends MainState {
   final PatientModel patient;
   final AssessmentModel? assessment;
+  final List<AssessmentUIModel> assessments;
 
-  final String riskTitle;
-  final String riskHint;
-  final String riskMessage;
-  final Color riskColor;
-  final Color riskBadgeColor;
+  // final String riskTitle;
+  // final String riskHint;
+  // final String riskMessage;
+  // final Color riskColor;
+  // final Color riskBadgeColor;
 
   ProfileSuccessState({
     required this.patient,
     required this.assessment,
-    required this.riskTitle,
-    required this.riskHint,
-    required this.riskMessage,
-    required this.riskColor,
-    required this.riskBadgeColor,
+    required this.assessments,
+    // required this.riskTitle,
+    // required this.riskHint,
+    // required this.riskMessage,
+    // required this.riskColor,
+    // required this.riskBadgeColor,
   });
 }
 

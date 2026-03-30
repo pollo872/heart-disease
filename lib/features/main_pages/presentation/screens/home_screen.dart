@@ -1,7 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:heart_disease/features/home_screen/presentation/widgets/header.dart';
+import 'package:heart_disease/features/main_pages/presentation/widgets/history_card.dart';
+import 'package:heart_disease/features/main_pages/presentation/widgets/history_header.dart';
+import 'package:heart_disease/features/main_pages/presentation/widgets/home_screen_header.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_state.dart';
 
@@ -68,7 +70,6 @@ class _HomeContent extends StatelessWidget {
               probability: probability,
               createdAt: createdAt,
             ),
-
             _BodySection(
               state: state,
               hasAssessment: hasAssessment,
@@ -115,7 +116,6 @@ class _HeaderSection extends StatelessWidget {
           profileImageUrl: "assets/images/defualt_profile.png",
           hasAssessment: hasAssessment,
         ),
-
         if (hasAssessment)
           Positioned(
             top: 100,
@@ -200,44 +200,37 @@ class _BodySection extends StatelessWidget {
           const SizedBox(height: 24),
 
           if (hasAssessment) ...[
-            _HistoryHeader(),
+            HistoryHeader(),
             const SizedBox(height: 12),
-            _HistoryCard(
-              predictionResult: predictionResult,
-              riskLevel: riskLevel,
-              probability: probability,
-              createdAt: createdAt,
-              state: state,
+            
+            HistoryCard(
+              assessment: state.assessments.first,
+              predictionResult: state.assessments.first.predictionResult,
+              riskLevel: state.assessments.first.riskLevel,
+              probability: state.assessments.first.probability,
+              createdAt: state.assessments.first.createdAt,
             ),
           ],
+
+//           Column(
+//   children: state.assessments.map((item) {
+//     return _HistoryCard(
+//       predictionResult: item.predictionResult,
+//       riskLevel: item.riskLevel,
+//       probability: item.probability,
+//       createdAt: item.createdAt,
+//       riskTitle: item.riskTitle,
+//       riskHint: item.riskHint,
+//       riskMessage: item.riskMessage,
+//       riskColor: item.riskColor,
+//       riskBadgeColor: item.riskBadgeColor,
+//     );
+//   }).toList(),
+// )
 
           const SizedBox(height: 80)
         ],
       ),
-    );
-  }
-}
-
-///------------------------------------------------------------
-/// HISTORY HEADER
-///------------------------------------------------------------
-
-class _HistoryHeader extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          "AssessmentHistory".tr(),
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-        ),
-        TextButton.icon(
-          onPressed: () {},
-          icon: const Icon(Icons.download, size: 16),
-          label: Text("Export".tr()),
-        )
-      ],
     );
   }
 }
@@ -260,7 +253,7 @@ class _LatestAssessmentCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: _cardDecoration(),
+      decoration: cardDecoration(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -275,23 +268,19 @@ class _LatestAssessmentCard extends StatelessWidget {
               )
             ],
           ),
-
           const SizedBox(height: 6),
-
           Text(
             DateFormat('MMMM d, y').format(DateTime.parse(createdAt)),
             style: const TextStyle(
                 fontSize: 16, fontWeight: FontWeight.w600, color: Colors.teal),
           ),
-
           const SizedBox(height: 16),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _MetricItem(title: "Status", value: predictionResult),
-              _MetricItem(title: "RiskLevel", value: riskLevel),
-              _MetricItem(title: "Probability", value: probability),
+              MetricItem(title: "Status", value: predictionResult),
+              MetricItem(title: "RiskLevel", value: riskLevel),
+              MetricItem(title: "Probability", value: probability),
             ],
           )
         ],
@@ -303,97 +292,6 @@ class _LatestAssessmentCard extends StatelessWidget {
 ///------------------------------------------------------------
 /// HISTORY CARD
 ///------------------------------------------------------------
-
-class _HistoryCard extends StatelessWidget {
-  final String predictionResult;
-  final String riskLevel;
-  final String probability;
-  final String createdAt;
-  final ProfileSuccessState state;
-
-  const _HistoryCard({
-    required this.predictionResult,
-    required this.riskLevel,
-    required this.probability,
-    required this.createdAt,
-    required this.state,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      decoration: _cardDecoration(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          /// DATE + BADGE
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                DateFormat('MMMM d, y').format(DateTime.parse(createdAt)),
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: state.riskBadgeColor,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  state.riskTitle,
-                  style: TextStyle(color: state.riskColor, fontSize: 11),
-                ),
-              )
-            ],
-          ),
-
-          const SizedBox(height: 8),
-
-          Text(
-            state.riskHint,
-            style: TextStyle(color: state.riskColor),
-          ),
-
-          const SizedBox(height: 12),
-
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xffE9EEF8),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _MetricItem(title: "Status", value: predictionResult),
-                _MetricItem(title: "RiskLevel", value: riskLevel),
-                _MetricItem(title: "Probability", value: probability),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 12),
-
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xffDCE6F7),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              state.riskMessage,
-              style: const TextStyle(fontSize: 12),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-}
 
 ///------------------------------------------------------------
 /// QUICK ACTION TILE
@@ -416,7 +314,7 @@ class _QuickActionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: _cardDecoration(),
+      decoration: cardDecoration(),
       child: Row(
         children: [
           Container(
@@ -454,41 +352,41 @@ class _QuickActionTile extends StatelessWidget {
 /// METRIC ITEM
 ///------------------------------------------------------------
 
-class _MetricItem extends StatelessWidget {
-  final String title;
-  final String value;
+// class _MetricItem extends StatelessWidget {
+//   final String title;
+//   final String value;
 
-  const _MetricItem({
-    required this.title,
-    required this.value,
-  });
+//   const _MetricItem({
+//     required this.title,
+//     required this.value,
+//   });
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(title.tr(),
-            style: const TextStyle(color: Colors.grey, fontSize: 11)),
-        const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.w600)),
-      ],
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       children: [
+//         Text(title.tr(),
+//             style: const TextStyle(color: Colors.grey, fontSize: 11)),
+//         const SizedBox(height: 4),
+//         Text(value, style: const TextStyle(fontWeight: FontWeight.w600)),
+//       ],
+//     );
+//   }
+// }
 
-///------------------------------------------------------------
-/// CARD STYLE
-///------------------------------------------------------------
+// ///------------------------------------------------------------
+// /// CARD STYLE
+// ///------------------------------------------------------------
 
-BoxDecoration _cardDecoration() {
-  return BoxDecoration(
-    color: Colors.white,
-    borderRadius: BorderRadius.circular(14),
-    boxShadow: [
-      BoxShadow(
-        color: Colors.black.withOpacity(0.05),
-        blurRadius: 8,
-      )
-    ],
-  );
-}
+// BoxDecoration _cardDecoration() {
+//   return BoxDecoration(
+//     color: Colors.white,
+//     borderRadius: BorderRadius.circular(14),
+//     boxShadow: [
+//       BoxShadow(
+//         color: Colors.black.withOpacity(0.05),
+//         blurRadius: 8,
+//       )
+//     ],
+//   );
+// }

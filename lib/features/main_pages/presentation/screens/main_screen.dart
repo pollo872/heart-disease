@@ -1,21 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:heart_disease/features/home_screen/presentation/screens/home_screen.dart';
+import 'package:heart_disease/features/main_pages/data/data_source/get_profile_remote_data_source.dart';
+import 'package:heart_disease/features/main_pages/data/repository/main_repo.dart';
+import 'package:heart_disease/features/main_pages/presentation/screens/home_screen.dart';
+import 'package:heart_disease/features/main_pages/presentation/screens/history_screen.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/bottom_nav_bar_item.dart';
 import 'package:heart_disease/features/main_pages/presentation/init_navbar_screens/init_navbar_screens.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_event.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_state.dart';
 
-
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-
     final screens = [
       const HomeScreen(),
+      BlocProvider(
+        create: (_) => MainBloc(
+          MainRepo(
+            MainRemoteDataSource(),
+          ),
+        )..add(GetProfileEvent()),
+        child: const HistoryScreen(),
+      ),
       const HistoryScreen(),
       const DoctorsScreen(),
       const ArticlesScreen(),
@@ -25,7 +34,6 @@ class MainScreen extends StatelessWidget {
 
     return BlocBuilder<MainBloc, MainState>(
       builder: (context, state) {
-
         int currentIndex = 0;
 
         if (state is MainIndexChangedState) {

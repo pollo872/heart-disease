@@ -23,16 +23,9 @@ class BaseButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 42,
-      width: 327,
+      width: double.infinity,
       child: TextButton(
         onPressed: onPressed,
-        child: Text(
-          buttonTitle,
-          style: TextStyle(
-            color: titleColor,
-            backgroundColor: Colors.transparent,
-          ),
-        ),
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(backgroundColor),
           shape: MaterialStateProperty.all(
@@ -40,6 +33,13 @@ class BaseButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(borderRadius),
               side: BorderSide(color: borderColor),
             ),
+          ),
+        ),
+        child: Text(
+          buttonTitle,
+          style: TextStyle(
+            color: titleColor,
+            backgroundColor: Colors.transparent,
           ),
         ),
       ),

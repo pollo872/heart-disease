@@ -23,4 +23,7 @@ class AssessmentModel {
       createdAt: json['createdAt'],
     );
   }
+  List<AssessmentModel> get allAssessments {
+    return [];
+  }
 }
