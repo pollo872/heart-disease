@@ -51,5 +51,8 @@
     "HighRiskHint": "Need Doctor",
     "LowRiskMessage": "Your results indicate a low risk of heart disease. Maintain your healthy habits and regular check-ups with your healthcare provider.",
     "MediumRiskMessage": "Your results indicate a moderate risk of heart disease. Please consult with your healthcare provider for further evaluation.",
-    "HighRiskMessage": "Your results indicate a high risk of heart disease. Please consult with your healthcare provider immediately for further evaluation and treatment."
+    "HighRiskMessage": "Your results indicate a high risk of heart disease. Please consult with your healthcare provider immediately for further evaluation and treatment.",
+    "StartNewAssessment": "Start New Assessment",
+    "CompleteEvaluation":"Complete a comprehensive heart health evaluation",
+    "BeginAssessment":"Begin Assessment"
 }

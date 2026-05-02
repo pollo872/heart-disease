@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:heart_disease/res/app_colors.dart';
 import 'package:heart_disease/shared/widgets/base_button.dart';
@@ -44,8 +45,8 @@ class StartAssessmentCard extends StatelessWidget {
           const SizedBox(height: 16),
 
           /// 📝 العنوان
-          const Text(
-            "Start New Assessment",
+           Text(
+            "StartNewAssessment".tr(),
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -56,8 +57,8 @@ class StartAssessmentCard extends StatelessWidget {
           const SizedBox(height: 8),
 
           /// 📄 الوصف
-          const Text(
-            "Complete a comprehensive heart health evaluation",
+           Text(
+            "CompleteEvaluation".tr(),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 13,
@@ -68,7 +69,7 @@ class StartAssessmentCard extends StatelessWidget {
 
           const SizedBox(height: 20),
           BaseButton(
-            buttonTitle: "Begin Assessment",
+            buttonTitle: "BeginAssessment",
             titleColor: AppColors.baseBtnColorWhite,
             borderRadius: 10,
             borderColor: AppColors.primary,

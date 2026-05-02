@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:heart_disease/features/main_pages/data/data_source/article_data.dart';
 
 
 
@@ -8,15 +9,6 @@ class DoctorsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(child: const Text('doctors screen'));
-  }
-}
-
-class ArticlesScreen extends StatelessWidget {
-  const ArticlesScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: const Text('articles screen'));
   }
 }
 

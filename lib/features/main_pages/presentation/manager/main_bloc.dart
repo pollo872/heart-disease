@@ -21,7 +21,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     Emitter<MainState> emit,
   ) {
     currentIndex = event.index;
-    if (currentIndex == 0) {
+    if (currentIndex == 0 ) {
       add(GetProfileEvent());
     }
     emit(MainIndexChangedState(currentIndex));
@@ -35,7 +35,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
     try {
       final patient = await mainRepo.getProfile();
-      // final latestAssessment = await mainRepo.getLatestHealthData();
+      final latestAssessment = await mainRepo.getLatestHealthData();
       final allAssessment = await mainRepo.getAllHealthData();
 
       final assessmentsUI =
@@ -80,7 +80,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
       emit(ProfileSuccessState(
         patient: patient,
-        assessment: allAssessment.first,
+        assessment: latestAssessment,
         assessments: assessmentsUI,
         // riskTitle: riskTitle,
         // riskHint: riskHint,
@@ -129,7 +129,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     return AssessmentUIModel(
       predictionResult: assessment.predictionResult,
       riskLevel: assessment.riskLevel,
-      probability: "${(assessment.probability * 100).toStringAsFixed(2)}%",
+      probability: "${(assessment.probability * 100).toStringAsFixed(2)}",
       createdAt: assessment.createdAt,
       riskTitle: riskTitle,
       riskHint: riskHint,

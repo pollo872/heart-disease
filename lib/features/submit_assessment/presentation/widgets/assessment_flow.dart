@@ -3,8 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/core/di/service_locator.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/manager/cubit.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/manager/state.dart';
+import 'package:heart_disease/features/submit_assessment/presentation/screens/last_review_screen.dart';
+import 'package:heart_disease/features/submit_assessment/presentation/screens/last_step1_screen.dart';
+import 'package:heart_disease/features/submit_assessment/presentation/screens/last_step2_screen.dart';
+import 'package:heart_disease/features/submit_assessment/presentation/screens/last_step3_screen.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/screens/review_screen.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/screens/step1_screen.dart';
+import 'package:heart_disease/features/submit_assessment/presentation/screens/step1_screen1.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/screens/step2_screen.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/screens/step3_screen.dart';
 

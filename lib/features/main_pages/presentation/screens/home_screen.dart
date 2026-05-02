@@ -1,11 +1,16 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:heart_disease/features/main_pages/presentation/manager/main_event.dart';
+import 'package:heart_disease/features/main_pages/presentation/screens/history_screen.dart';
+import 'package:heart_disease/features/main_pages/presentation/screens/result_screen.dart';
+import 'package:heart_disease/features/main_pages/presentation/widgets/find_doctor.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/history_card.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/history_header.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/home_screen_header.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_state.dart';
+import 'package:heart_disease/features/submit_assessment/presentation/widgets/assessment_flow.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -172,43 +177,71 @@ class _BodySection extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          const _QuickActionTile(
+          _QuickActionTile(
             icon: Icons.favorite_border,
             color: Colors.blue,
             title: "NewAssessment",
             subtitle: "takeAssessment",
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AssessmentFlow(),
+                ),
+              );
+            },
           ),
 
           const SizedBox(height: 12),
 
-          const _QuickActionTile(
+          _QuickActionTile(
             icon: Icons.calendar_today,
             color: Colors.teal,
             title: "ViewHistory",
             subtitle: "SeePastAssessments",
+            onPressed: () {
+              context.read<MainBloc>().add(MainTabChangedEvent(1));
+            },
           ),
 
           const SizedBox(height: 12),
 
-          const _QuickActionTile(
-            icon: Icons.location_on_outlined,
-            color: Colors.purple,
-            title: "FindDoctors",
-            subtitle: "ConnectWithCardiologists",
-          ),
+          _QuickActionTile(
+              icon: Icons.location_on_outlined,
+              color: Colors.purple,
+              title: "FindDoctors",
+              subtitle: "ConnectWithCardiologists",
+              onPressed: findDoctor),
 
           const SizedBox(height: 24),
 
           if (hasAssessment) ...[
             HistoryHeader(),
             const SizedBox(height: 12),
-            
             HistoryCard(
               assessment: state.assessments.first,
               predictionResult: state.assessments.first.predictionResult,
               riskLevel: state.assessments.first.riskLevel,
               probability: state.assessments.first.probability,
               createdAt: state.assessments.first.createdAt,
+              onpressed: () {
+                // لما بتعمل push للـ ResultScreen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider.value(
+                      value: context.read<MainBloc>(), // ← مرر الـ bloc الموجود
+                      child: ResultScreen(
+                        score:
+                            double.parse(state.assessments.first.probability),
+                        riskLevel: state.assessments.first.riskLevel,
+                        createdAt: state.assessments.first.createdAt,
+                        assessment: state.assessments.first,
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ],
 
@@ -302,47 +335,52 @@ class _QuickActionTile extends StatelessWidget {
   final Color color;
   final String title;
   final String subtitle;
+  final VoidCallback onPressed;
 
   const _QuickActionTile({
     required this.icon,
     required this.color,
     required this.title,
     required this.subtitle,
+    required this.onPressed,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: cardDecoration(),
-      child: Row(
-        children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: cardDecoration(),
+        child: Row(
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: color),
             ),
-            child: Icon(icon, color: color),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title.tr(),
-                    style: const TextStyle(fontWeight: FontWeight.w500)),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle.tr(),
-                  style: const TextStyle(color: Colors.grey, fontSize: 12),
-                ),
-              ],
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title.tr(),
+                      style: const TextStyle(fontWeight: FontWeight.w500)),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle.tr(),
+                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
-        ],
+            const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+          ],
+        ),
       ),
     );
   }

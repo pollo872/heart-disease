@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_state.dart';
+import 'package:heart_disease/features/main_pages/presentation/screens/result_screen.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/history_card.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/history_header.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/main_appbar.dart';
@@ -15,7 +16,6 @@ class HistoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<MainBloc, MainState>(
       builder: (context, state) {
-        
         if (state is ProfileLoadingState) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -88,21 +88,96 @@ class _HistoryContent extends StatelessWidget {
                         probability: item.probability,
                         createdAt: item.createdAt,
                         assessment: item,
+                        onpressed: () {
+                          // لما بتعمل push للـ ResultScreen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => BlocProvider.value(
+                                value: context
+                                    .read<MainBloc>(), // ← مرر الـ bloc الموجود
+                                child: ResultScreen(
+                                  score: double.parse(
+                                      item.probability),
+                                  riskLevel: item.riskLevel,
+                                  createdAt: item.createdAt,
+                                  assessment: item,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                       );
                     }).toList(),
-                    
-                    
-                    
                   ),
                 ),
               ),
               const SizedBox(height: 40),
             ] else ...[
               const SizedBox(height: 20),
-              const Text("No Data Yet please enter data"),
+              _EmptyHistoryCard(),
             ]
           ],
         ),
+      ),
+    );
+  }
+}
+
+
+
+class _EmptyHistoryCard extends StatelessWidget {
+  const _EmptyHistoryCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF5F7FA), // خلفية فاتحة
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: const Color(0xFFE0E6ED),
+          width: 1.2,
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          /// 📈 الايقونة
+          Icon(
+            Icons.trending_up_rounded,
+            size: 48,
+            color: Colors.grey.shade400,
+          ),
+
+          const SizedBox(height: 16),
+
+          /// 📝 العنوان
+          const Text(
+            "No Assessment History",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1C2A3A),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          /// 📄 الوصف
+          const Text(
+            "Start your first assessment to begin\ntracking your heart health",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.grey,
+              height: 1.4,
+            ),
+          ),
+        ],
       ),
     );
   }

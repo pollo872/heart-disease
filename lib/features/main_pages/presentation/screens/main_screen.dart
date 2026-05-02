@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/features/main_pages/data/data_source/get_profile_remote_data_source.dart';
 import 'package:heart_disease/features/main_pages/data/repository/main_repo.dart';
+import 'package:heart_disease/features/main_pages/presentation/screens/article_screen.dart';
 import 'package:heart_disease/features/main_pages/presentation/screens/home_screen.dart';
 import 'package:heart_disease/features/main_pages/presentation/screens/history_screen.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/bottom_nav_bar_item.dart';
@@ -25,7 +26,6 @@ class MainScreen extends StatelessWidget {
         )..add(GetProfileEvent()),
         child: const HistoryScreen(),
       ),
-      const HistoryScreen(),
       const DoctorsScreen(),
       const ArticlesScreen(),
       const ChatScreen(),

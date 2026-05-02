@@ -15,17 +15,17 @@ class MainRepo {
     );
   }
 
-//  Future<AssessmentModel?> getLatestHealthData() async {
-//   final response = await remoteDataSource.getProfile();
+ Future<AssessmentModel?> getLatestHealthData() async {
+  final response = await remoteDataSource.getProfile();
 
-//   var data = response.data['latestHealthData'];
+  var data = response.data['latestHealthData'];
 
-//   if (data == null) {
-//     return null;
-//   }
+  if (data == null) {
+    return null;
+  }
 
-//   return AssessmentModel.fromJson(data);
-// }
+  return AssessmentModel.fromJson(data);
+}
  Future<List<AssessmentModel>> getAllHealthData() async {
   final response = await remoteDataSource.getProfile();
 
