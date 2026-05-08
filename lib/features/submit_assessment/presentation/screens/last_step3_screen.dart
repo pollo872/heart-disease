@@ -102,11 +102,11 @@ class _Step3State extends State<Step3> {
           CustomDropdown<String>(
             hint: 'Select option',
             items: const [
-              "Good",
-              "Fair",
               "Poor",
-              "Excellent",
+              "Fair",
+              "Good",
               "Very good",
+              "Excellent",
             ],
             value: generalHealth,
             onChanged: (v) => setState(() => generalHealth = v),

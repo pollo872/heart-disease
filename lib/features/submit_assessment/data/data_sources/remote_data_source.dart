@@ -1,15 +1,17 @@
+import 'package:dio/dio.dart';
 import 'package:heart_disease/core/network/api_endpoints.dart';
 import 'package:heart_disease/core/network/dio_helper.dart';
 
 
 
 class AssessmentRemoteDataSource {
-  Future<void> submit(Map<String, dynamic> data) async {
+  Future<Response> submit(Map<String, dynamic> data) async { // ← رجّع Response
     try {
-      await DioHelper.post(
+      final response = await DioHelper.post(
         url: ApiEndpoints.submitAssessment,
         data: data,
       );
+      return response; // ← رجّع الـ response
     } catch (e) {
       throw Exception("Server Error");
     }

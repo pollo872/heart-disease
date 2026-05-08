@@ -39,7 +39,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       final allAssessment = await mainRepo.getAllHealthData();
 
       final assessmentsUI =
-          allAssessment.map((e) => _mapAssessment(e)).toList();
+          allAssessment.map((e) => mapAssessment(e)).toList();
 
       // String riskTitle = "";
       // String riskHint = "";
@@ -93,7 +93,9 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     }
   }
 
-  AssessmentUIModel _mapAssessment(assessment) {
+  
+}
+AssessmentUIModel mapAssessment(assessment) {
     String riskTitle = "";
     String riskHint = "";
     String riskMessage = "";
@@ -138,4 +140,4 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       riskBadgeColor: riskBadgeColor,
     );
   }
-}
+

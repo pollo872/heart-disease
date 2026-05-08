@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:heart_disease/features/main_pages/data/data_source/get_profile_remote_data_source.dart';
 import 'package:heart_disease/features/main_pages/data/models/assessment_ui_model.dart';
+import 'package:heart_disease/features/main_pages/data/repository/main_repo.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_event.dart';
+import 'package:heart_disease/features/main_pages/presentation/screens/main_screen.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/find_doctor.dart';
 import 'package:heart_disease/res/app_colors.dart';
 import 'dart:math' as math;
@@ -241,10 +244,23 @@ class ResultScreen extends StatelessWidget {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(12),
                     onTap: () {
-                      final bloc = context.read<MainBloc>();
-                      bloc.add(MainTabChangedEvent(1));
-                      Navigator.of(context).popUntil((route) => route.isFirst);
-                      bloc.add(GetProfileEvent());
+                      Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => BlocProvider(
+                          create: (_) => MainBloc(
+                            MainRepo(
+                              MainRemoteDataSource(),
+                            ),
+                          )..add(MainTabChangedEvent(1)),
+                          child: const MainScreen(),
+                        ),
+                      ),
+                    );
+                      // final bloc = context.read<MainBloc>();
+                      // bloc.add(MainTabChangedEvent(1));
+                      // Navigator.of(context).popUntil((route) => route.isFirst);
+                      // bloc.add(GetProfileEvent());
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:heart_disease/features/chat/chat_cubit.dart';
-import 'package:heart_disease/features/chat/chat_repository.dart';
-import 'package:heart_disease/features/chat/chat_screen.dart';
+import 'package:heart_disease/features/chat/presentation/manager/chat_cubit.dart';
+import 'package:heart_disease/features/chat/data/repo/chat_repository.dart';
+import 'package:heart_disease/features/chat/presentation/screens/chat_screen.dart';
 
 import 'package:heart_disease/features/main_pages/data/data_source/get_profile_remote_data_source.dart';
 import 'package:heart_disease/features/main_pages/data/repository/main_repo.dart';
@@ -32,10 +32,11 @@ class MainScreen extends StatelessWidget {
       ),
       const DoctorsScreen(),
       const ArticlesScreen(),
-      BlocProvider(
-        create: (_) => ChatCubit(ChatRepository()), // ✅ أضف ChatRepository()
-        child: ChatPage(),
-      ),
+      const ChatPage(),
+      // BlocProvider(
+      //   create: (_) => ChatCubit(ChatRepository()), // ✅ أضف ChatRepository()
+      //   child: ChatPage(),
+      // ),
       const SizedBox(),
     ];
 

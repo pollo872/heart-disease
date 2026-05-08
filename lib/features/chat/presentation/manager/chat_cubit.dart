@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:heart_disease/features/chat/chat_message_model.dart';
-import 'package:heart_disease/features/chat/chat_repository.dart';
+import 'package:heart_disease/features/chat/data/models/chat_message_model.dart';
+import 'package:heart_disease/features/chat/data/repo/chat_repository.dart';
 
 import 'chat_state.dart';
 

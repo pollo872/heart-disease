@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:heart_disease/features/chat/chat_cubit.dart';
-import 'package:heart_disease/features/chat/chat_repository.dart';
-import 'package:heart_disease/features/chat/chat_state.dart';
-import 'package:heart_disease/features/chat/chat_widgets.dart';
-
+import 'package:heart_disease/features/chat/presentation/manager/chat_cubit.dart';
+import 'package:heart_disease/features/chat/data/repo/chat_repository.dart';
+import 'package:heart_disease/features/chat/presentation/manager/chat_state.dart';
+import 'package:heart_disease/features/chat/presentation/widgets/chat_widgets.dart';
 
 // ─────────────────────────────────────────────────────────
 // ENTRY POINT — يفتحها من أي مكان في التطبيق
@@ -14,10 +13,7 @@ class ChatPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => ChatCubit(ChatRepository()),
-      child: const _ChatView(),
-    );
+    return const _ChatView();
   }
 }
 
@@ -101,8 +97,7 @@ class _ChatViewState extends State<_ChatView> {
               ),
 
               // ── Quick Questions (أول مرة بس) ──
-              if (showQuickQ)
-                QuickQuestionsPanel(onTap: _onSend),
+              if (showQuickQ) QuickQuestionsPanel(onTap: _onSend),
 
               // ── Input Bar ──
               ChatInputBar(
@@ -141,9 +136,7 @@ class _ChatViewState extends State<_ChatView> {
       title: const Text(
         'chat',
         style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.w500),
+            color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500),
       ),
       centerTitle: true,
       actions: [
@@ -192,5 +185,4 @@ class _ChatViewState extends State<_ChatView> {
   //     },
   //   );
   // }
-
 }

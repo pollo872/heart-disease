@@ -1,6 +1,6 @@
 
 
-import 'package:heart_disease/features/chat/chat_message_model.dart';
+import 'package:heart_disease/features/chat/data/models/chat_message_model.dart';
 
 abstract class ChatState {}
 

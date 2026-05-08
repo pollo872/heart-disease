@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:heart_disease/features/main_pages/presentation/screens/result_screen.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/manager/cubit.dart';
 import 'package:heart_disease/shared/widgets/base_button.dart';
 
@@ -68,8 +69,7 @@ class ReviewScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      _InfoTile(
-                          label: 'Race', value: model.race ?? '—'),
+                      _InfoTile(label: 'Race', value: model.race ?? '—'),
                       _InfoTile(
                           label: 'BMI',
                           value: model.bmi != null
@@ -90,13 +90,15 @@ class ReviewScreen extends StatelessWidget {
               child: Column(
                 children: [
                   _LabelValue(
-                      label: 'Smoking Status',
-                      value: model.smoking ?? '—'),
-                  _LabelValue(label: 'Drinking Alcohol', value: model.alcohol ?? '—'),
+                      label: 'Smoking Status', value: model.smoking ?? '—'),
+                  _LabelValue(
+                      label: 'Drinking Alcohol', value: model.alcohol ?? '—'),
                   _LabelValue(
                       label: 'Physical activity',
                       value: model.physicalActivity ?? '—'),
-                  _LabelValue(label: 'Difficulty walking', value: model.difficultyWalking ?? '—'),
+                  _LabelValue(
+                      label: 'Difficulty walking',
+                      value: model.difficultyWalking ?? '—'),
                 ],
               ),
             ),
@@ -173,8 +175,7 @@ class ReviewScreen extends StatelessWidget {
                         SizedBox(height: 4),
                         Text(
                           'Your information will be analyzed to provide you with a personalized heart health risk assessment.',
-                          style:
-                              TextStyle(fontSize: 12, color: Colors.black54),
+                          style: TextStyle(fontSize: 12, color: Colors.black54),
                         ),
                       ],
                     ),
@@ -190,10 +191,9 @@ class ReviewScreen extends StatelessWidget {
               borderRadius: 10,
               borderColor: Colors.transparent,
               backgroundColor: const Color(0xFF1E63F3),
-              onPressed: () {
-                cubit.submit();
-                Navigator.pop(context, true);
-                
+              onPressed: () async {
+                await cubit
+                    .submit(); // بس، الـ navigation هيتعمل من الـ AssessmentFlow
               },
             ),
             const SizedBox(height: 16),
@@ -272,8 +272,7 @@ class _InfoTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label,
-              style: const TextStyle(fontSize: 11, color: Colors.grey)),
+          Text(label, style: const TextStyle(fontSize: 11, color: Colors.grey)),
           const SizedBox(height: 2),
           Text(value,
               style: const TextStyle(
@@ -299,8 +298,7 @@ class _LabelValue extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label,
-              style: const TextStyle(fontSize: 11, color: Colors.grey)),
+          Text(label, style: const TextStyle(fontSize: 11, color: Colors.grey)),
           const SizedBox(height: 2),
           Text(value,
               style: const TextStyle(

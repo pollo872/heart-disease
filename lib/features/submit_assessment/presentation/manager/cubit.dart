@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:heart_disease/features/submit_assessment/data/models/assessment_model.dart';
+import 'package:heart_disease/features/main_pages/data/models/assessment_ui_model.dart';
+import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
 import 'package:heart_disease/features/submit_assessment/data/models/assessment_model1.dart';
-
 import 'package:heart_disease/features/submit_assessment/data/repositories/assessment_repo.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/manager/state.dart';
 
@@ -14,7 +14,6 @@ class AssessmentCubit extends Cubit<AssessmentState> {
 
   final model = SubmitAssessmentModel();
 
-  /// 🔄 NAVIGATION
   void nextStep() {
     step++;
     emit(AssessmentStepChanged(step));
@@ -85,15 +84,23 @@ class AssessmentCubit extends Cubit<AssessmentState> {
   // }
 
   /// 🚀 SUBMIT
-  Future<void> submit() async {
-    emit(AssessmentLoading());
+  Future<AssessmentUIModel?> submit() async {
+  emit(AssessmentLoading());
 
-    final result = await repo.submit(model.toJson());
-    if (isClosed) return;
+  final result = await repo.submit(model.toJson());
+  if (isClosed) return null;
 
-    result.fold(
-      (failure) => emit(AssessmentError(failure.message)),
-      (_) => emit(AssessmentSuccess()),
-    );
-  }
+  // AssessmentUIModel? assessmentUI;
+
+  result.fold(
+    (failure) => emit(AssessmentError(failure.message)),
+    (assessmentModel) {
+      final assessmentUI = mapAssessment(assessmentModel); // map الداتا الجاية من السيرفر
+      emit(AssessmentSuccess(assessmentUI));
+    },
+  );
+
+
+  return null;
+}
 }
