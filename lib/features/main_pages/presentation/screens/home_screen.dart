@@ -234,7 +234,7 @@ class _BodySection extends StatelessWidget {
                       child: ResultScreen(
                         score:
                             double.parse(state.assessments.first.probability),
-                        riskLevel: state.assessments.first.riskLevel,
+                        // riskLevel: state.assessments.first.riskLevel,
                         createdAt: state.assessments.first.createdAt,
                         assessment: state.assessments.first,
                       ),
@@ -311,8 +311,8 @@ class _LatestAssessmentCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              MetricItem(title: "Status", value: predictionResult),
-              MetricItem(title: "RiskLevel", value: riskLevel),
+              MetricItem(title: "Status", value:'StatusFromBack.$predictionResult'.tr() ),
+              MetricItem(title: "RiskLevel", value: 'RiskLevelFromBack.$riskLevel'.tr() ),
               MetricItem(title: "Probability", value: probability),
             ],
           )

@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:heart_disease/profile.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
+import 'package:heart_disease/features/main_pages/presentation/screens/profile.dart';
 
 class WelcomeHeader extends StatelessWidget {
   final String userName;
@@ -18,7 +20,7 @@ class WelcomeHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height:hasAssessment ? 150 : 100,
+      height: hasAssessment ? 150 : 100,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -93,7 +95,10 @@ class WelcomeHeader extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const ProfileScreen(),
+                    builder: (_) => BlocProvider.value(
+                      value: context.read<MainBloc>(),
+                      child: ProfileScreen(),
+                    ),
                   ),
                 );
               },
@@ -107,6 +112,7 @@ class WelcomeHeader extends StatelessWidget {
                 ),
               ),
             ),
+          
           ],
         ),
       ),

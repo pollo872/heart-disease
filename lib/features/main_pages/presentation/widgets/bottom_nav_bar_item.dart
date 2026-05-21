@@ -19,9 +19,10 @@ class AppBottomNavBar extends StatelessWidget {
     final iconList = <String>[
       "assets/icons/home.png",
       "assets/icons/history.png",
-      "assets/icons/doctors.png",
+      // "assets/icons/doctors.png",
       "assets/icons/articles.png",
       "assets/icons/chat.png",
+      "assets/icons/profile.png",
     ];
 
     final iconTitles = [
@@ -32,9 +33,10 @@ class AppBottomNavBar extends StatelessWidget {
       // AppStrings.profile,
       'Home'.tr(),
       'History'.tr(),
-      'Doctors'.tr(),
+      // 'Doctors'.tr(),
       'Articles'.tr(),
       'Chat'.tr(),
+      'Settings'.tr(),
     ];
 
     return Container(

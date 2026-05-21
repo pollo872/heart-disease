@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/manager/cubit.dart';
@@ -5,6 +6,8 @@ import 'package:heart_disease/features/submit_assessment/presentation/widgets/dr
 import 'package:heart_disease/shared/widgets/base_button.dart';
 
 class Step1 extends StatefulWidget {
+  const Step1({super.key});
+
   @override
   State<Step1> createState() => _Step1State();
 }
@@ -37,9 +40,9 @@ class _Step1State extends State<Step1> {
         leading: const BackButton(color: Colors.black87),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
+          children:  [
             Text(
-              'Health Assessment',
+              'HealthAssessment'.tr(),
               style: TextStyle(
                 color: Color(0xFF1E63F3),
                 fontSize: 13,
@@ -47,7 +50,7 @@ class _Step1State extends State<Step1> {
               ),
             ),
             Text(
-              'Step 1 of 3',
+              'Step 1 of 3'.tr(),
               style: TextStyle(color: Colors.grey, fontSize: 11),
             ),
           ],
@@ -68,8 +71,8 @@ class _Step1State extends State<Step1> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 12),
-            const Text(
-              'Demographics & Basic Health',
+             Text(
+              'Demographics & Basic Health'.tr(),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -77,8 +80,8 @@ class _Step1State extends State<Step1> {
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
-              'Please provide your basic information and vital signs',
+             Text(
+              'Please provide your basic information and vital signs'.tr(),
               style: TextStyle(fontSize: 13, color: Colors.grey),
             ),
             const SizedBox(height: 20),
@@ -102,7 +105,7 @@ class _Step1State extends State<Step1> {
             // Sex field
             _buildLabel('Gender'),
             const SizedBox(height: 6),
-            _buildDropdown<String>(
+            CustomDropdown<String>(
               hint: 'Select your gender',
               items: ['Male', 'Female'],
               value: gender,
@@ -126,6 +129,8 @@ class _Step1State extends State<Step1> {
               value: race,
               onChanged: (v) => setState(() => race = v),
             ),
+            const SizedBox(height: 16),
+
 
             // Height field
             _buildLabel('Height (cm)'),
@@ -275,7 +280,7 @@ class _Step1State extends State<Step1> {
   }
 
   Widget _buildLabel(String text) => Text(
-        text,
+        'FormFieldLabel.$text'.tr(),
         style: const TextStyle(
             fontSize: 13, fontWeight: FontWeight.w500, color: Colors.black87),
       );
@@ -311,36 +316,37 @@ class _Step1State extends State<Step1> {
     );
   }
 
-  Widget _buildDropdown<T>({
-    required String hint,
-    required List<T> items,
-    required T? value,
-    required ValueChanged<T?> onChanged,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<T>(
-          isExpanded: true,
-          hint: Text(hint,
-              style: const TextStyle(color: Colors.black38, fontSize: 14)),
-          value: value,
-          icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
-          items: items
-              .map((e) => DropdownMenuItem<T>(
-                    value: e,
-                    child: Text(e.toString(),
-                        style: const TextStyle(fontSize: 14)),
-                  ))
-              .toList(),
-          onChanged: onChanged,
-        ),
-      ),
-    );
-  }
+  // Widget _buildDropdown<T>({
+  //   required String hint,
+  //   required List<T> items,
+  //   required T? value,
+  //   required ValueChanged<T?> onChanged,
+  // }) {
+  //   return Container(
+  //     decoration: BoxDecoration(
+  //       color: Colors.white,
+  //       borderRadius: BorderRadius.circular(8),
+  //       border: Border.all(color: Colors.grey.shade200),
+  //     ),
+  //     padding: const EdgeInsets.symmetric(horizontal: 14),
+  //     child: DropdownButtonHideUnderline(
+  //       child: DropdownButton<T>(
+  //         isExpanded: true,
+  //         hint: Text(hint,
+  //             style: const TextStyle(color: Colors.black38, fontSize: 14)),
+  //         value: value,
+  //         icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
+  //         items: items
+  //             .map((e) => DropdownMenuItem<T>(
+  //                   value: e,
+  //                   child: Text(e.toString(),
+  //                       style: const TextStyle(fontSize: 14)),
+  //                 ))
+  //             .toList(),
+  //         onChanged: onChanged,
+  //       ),
+  //     ),
+  //   );
+  // }
+
 }

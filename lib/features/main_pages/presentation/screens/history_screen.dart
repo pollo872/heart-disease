@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
@@ -99,7 +100,7 @@ class _HistoryContent extends StatelessWidget {
                                 child: ResultScreen(
                                   score: double.parse(
                                       item.probability),
-                                  riskLevel: item.riskLevel,
+                                  // riskLevel: item.riskLevel,
                                   createdAt: item.createdAt,
                                   assessment: item,
                                 ),
@@ -156,8 +157,8 @@ class _EmptyHistoryCard extends StatelessWidget {
           const SizedBox(height: 16),
 
           /// 📝 العنوان
-          const Text(
-            "No Assessment History",
+           Text(
+            "No Assessment History".tr(),
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -168,8 +169,8 @@ class _EmptyHistoryCard extends StatelessWidget {
           const SizedBox(height: 8),
 
           /// 📄 الوصف
-          const Text(
-            "Start your first assessment to begin\ntracking your heart health",
+           Text(
+            "Start your first assessment".tr(),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 13,

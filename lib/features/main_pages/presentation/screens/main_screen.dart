@@ -9,6 +9,7 @@ import 'package:heart_disease/features/main_pages/data/repository/main_repo.dart
 import 'package:heart_disease/features/main_pages/presentation/screens/article_screen.dart';
 import 'package:heart_disease/features/main_pages/presentation/screens/home_screen.dart';
 import 'package:heart_disease/features/main_pages/presentation/screens/history_screen.dart';
+import 'package:heart_disease/features/main_pages/presentation/screens/profile.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/bottom_nav_bar_item.dart';
 import 'package:heart_disease/features/main_pages/presentation/init_navbar_screens/init_navbar_screens.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
@@ -22,33 +23,17 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final screens = [
       const HomeScreen(),
-      BlocProvider(
-        create: (_) => MainBloc(
-          MainRepo(
-            MainRemoteDataSource(),
-          ),
-        )..add(GetProfileEvent()),
-        child: const HistoryScreen(),
-      ),
-      const DoctorsScreen(),
+      const HistoryScreen(), // ← من غير BlocProvider جديد
       const ArticlesScreen(),
       const ChatPage(),
-      // BlocProvider(
-      //   create: (_) => ChatCubit(ChatRepository()), // ✅ أضف ChatRepository()
-      //   child: ChatPage(),
-      // ),
+      const ProfileScreen(),
       const SizedBox(),
     ];
 
     return BlocBuilder<MainBloc, MainState>(
       builder: (context, state) {
-        int currentIndex = 0;
-
-        if (state is MainIndexChangedState) {
-          currentIndex = state.currentIndex;
-        } else if (state is MainInitialState) {
-          currentIndex = state.currentIndex;
-        }
+        final currentIndex =
+            context.read<MainBloc>().currentIndex; // ← من الـ bloc
 
         return Scaffold(
           extendBodyBehindAppBar: true,

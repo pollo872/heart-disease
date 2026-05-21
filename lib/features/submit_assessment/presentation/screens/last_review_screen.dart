@@ -1,6 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:heart_disease/features/main_pages/presentation/screens/result_screen.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/manager/cubit.dart';
 import 'package:heart_disease/shared/widgets/base_button.dart';
 
@@ -18,8 +18,8 @@ class ReviewScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: const BackButton(color: Colors.black87),
-        title: const Text(
-          'Review Your Information',
+        title: Text(
+          'Review Your Information'.tr(),
           style: TextStyle(
             color: Colors.black87,
             fontSize: 15,
@@ -32,8 +32,8 @@ class ReviewScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Please verify all details before submitting',
+            Text(
+              'Please verify all details before submitting'.tr(),
               style: TextStyle(fontSize: 13, color: Colors.grey),
             ),
             const SizedBox(height: 16),
@@ -48,7 +48,7 @@ class ReviewScreen extends StatelessWidget {
                   Row(
                     children: [
                       _InfoTile(label: 'Age', value: model.age ?? '—'),
-                      _InfoTile(label: 'Sex', value: model.sex ?? '—'),
+                      _InfoTile(label: 'Sex', value: 'sex.${model.sex}'.tr()),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -69,7 +69,7 @@ class ReviewScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      _InfoTile(label: 'Race', value: model.race ?? '—'),
+                      _InfoTile(label: 'Race', value: 'race.${model.race}'.tr()),
                       _InfoTile(
                           label: 'BMI',
                           value: model.bmi != null
@@ -90,15 +90,15 @@ class ReviewScreen extends StatelessWidget {
               child: Column(
                 children: [
                   _LabelValue(
-                      label: 'Smoking Status', value: model.smoking ?? '—'),
+                      label: 'Smoking Status', value: 'YesNo.${model.smoking}'),
                   _LabelValue(
-                      label: 'Drinking Alcohol', value: model.alcohol ?? '—'),
+                      label: 'Drinking Alcohol', value: 'YesNo.${model.alcohol}'),
                   _LabelValue(
                       label: 'Physical activity',
-                      value: model.physicalActivity ?? '—'),
+                      value: 'YesNo.${model.physicalActivity}'),
                   _LabelValue(
                       label: 'Difficulty walking',
-                      value: model.difficultyWalking ?? '—'),
+                      value: 'YesNo.${model.difficultyWalking}'),
                 ],
               ),
             ),
@@ -112,8 +112,8 @@ class ReviewScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Past Heart Conditions',
+                   Text(
+                    'Past Heart Conditions'.tr(),
                     style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey,
@@ -129,16 +129,16 @@ class ReviewScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'Family History',
+                   Text(
+                    'Family History'.tr(),
                     style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey,
                         fontWeight: FontWeight.w500),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
-                    'None reported',
+                   Text(
+                    'None reported'.tr(),
                     style: TextStyle(fontSize: 14, color: Colors.black87),
                   ),
                 ],
@@ -163,9 +163,9 @@ class ReviewScreen extends StatelessWidget {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children:  [
                         Text(
-                          'Ready to Submit',
+                          'Ready to Submit'.tr(),
                           style: TextStyle(
                             color: Color(0xFF1E63F3),
                             fontWeight: FontWeight.w600,
@@ -174,7 +174,7 @@ class ReviewScreen extends StatelessWidget {
                         ),
                         SizedBox(height: 4),
                         Text(
-                          'Your information will be analyzed to provide you with a personalized heart health risk assessment.',
+                          'Your information will be analyzed'.tr(),
                           style: TextStyle(fontSize: 12, color: Colors.black54),
                         ),
                       ],
@@ -192,8 +192,7 @@ class ReviewScreen extends StatelessWidget {
               borderColor: Colors.transparent,
               backgroundColor: const Color(0xFF1E63F3),
               onPressed: () async {
-                await cubit
-                    .submit(); // بس، الـ navigation هيتعمل من الـ AssessmentFlow
+                await cubit.submit();
               },
             ),
             const SizedBox(height: 16),
@@ -243,7 +242,7 @@ class _SectionCard extends StatelessWidget {
               Icon(icon, color: iconColor, size: 18),
               const SizedBox(width: 8),
               Text(
-                title,
+                title.tr(),
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -272,7 +271,8 @@ class _InfoTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+          Text(label.tr(),
+              style: const TextStyle(fontSize: 11, color: Colors.grey)),
           const SizedBox(height: 2),
           Text(value,
               style: const TextStyle(
@@ -298,9 +298,9 @@ class _LabelValue extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+          Text(label.tr(), style: const TextStyle(fontSize: 11, color: Colors.grey)),
           const SizedBox(height: 2),
-          Text(value,
+          Text(value.tr(),
               style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -324,7 +324,7 @@ class _Chip extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        label,
+        label.tr(),
         style: const TextStyle(
           fontSize: 12,
           color: Color(0xFFD32F2F),

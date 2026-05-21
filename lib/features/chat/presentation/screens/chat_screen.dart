@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/features/chat/presentation/manager/chat_cubit.dart';
-import 'package:heart_disease/features/chat/data/repo/chat_repository.dart';
 import 'package:heart_disease/features/chat/presentation/manager/chat_state.dart';
 import 'package:heart_disease/features/chat/presentation/widgets/chat_widgets.dart';
+import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
+import 'package:heart_disease/features/main_pages/presentation/screens/profile.dart';
 
 // ─────────────────────────────────────────────────────────
 // ENTRY POINT — يفتحها من أي مكان في التطبيق
@@ -59,10 +60,8 @@ class _ChatViewState extends State<_ChatView> {
       appBar: _buildAppBar(),
       body: BlocConsumer<ChatCubit, ChatState>(
         listener: (context, state) {
-          // نسكرول لتحت كل ما تيجي حالة جديدة
           _scrollToBottom();
 
-          // نبيّن snackbar لو حصل error
           if (state is ChatError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -77,7 +76,7 @@ class _ChatViewState extends State<_ChatView> {
         builder: (context, state) {
           final messages = _getMessages(state);
           final isLoading = state is ChatLoading;
-          final showQuickQ = messages.length == 1; // بس أول رسالة الـ greeting
+          final showQuickQ = messages.length == 1; 
 
           return Column(
             children: [
@@ -128,9 +127,27 @@ class _ChatViewState extends State<_ChatView> {
       elevation: 0.5,
       leading: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: CircleAvatar(
-          backgroundColor: Colors.grey[200],
-          child: const Icon(Icons.person, color: Colors.grey, size: 20),
+        child: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => BlocProvider.value(
+                  value: context.read<MainBloc>(),
+                  child: ProfileScreen(),
+                ),
+              ),
+            );
+          },
+          child: CircleAvatar(
+            radius: 18,
+            backgroundColor: Colors.white,
+            child: CircleAvatar(
+              radius: 16,
+              backgroundImage: AssetImage("assets/images/defualt_profile.png"),
+              onBackgroundImageError: (_, __) {},
+            ),
+          ),
         ),
       ),
       title: const Text(

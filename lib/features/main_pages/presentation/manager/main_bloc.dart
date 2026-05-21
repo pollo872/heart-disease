@@ -16,16 +16,18 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     on<GetProfileEvent>(_getProfile);
   }
 
-  void _onTabChanged(
-    MainTabChangedEvent event,
-    Emitter<MainState> emit,
-  ) {
-    currentIndex = event.index;
-    if (currentIndex == 0 ) {
-      add(GetProfileEvent());
-    }
-    emit(MainIndexChangedState(currentIndex));
+ void _onTabChanged(
+  MainTabChangedEvent event,
+  Emitter<MainState> emit,
+) {
+  currentIndex = event.index;
+  emit(MainIndexChangedState(currentIndex));
+
+  if (state is! ProfileSuccessState) {
+    add(GetProfileEvent()); // ← جيب الداتا بس لو مش موجودة
   }
+}
+  
 
   Future<void> _getProfile(
     GetProfileEvent event,

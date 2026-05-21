@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:heart_disease/profile.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
+import 'package:heart_disease/features/main_pages/presentation/screens/profile.dart';
 import 'package:heart_disease/res/app_colors.dart';
 
 AppBar mainAppBar(String title, BuildContext context) {
@@ -10,7 +12,10 @@ AppBar mainAppBar(String title, BuildContext context) {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => const ProfileScreen(),
+            builder: (_) => BlocProvider.value(
+              value: context.read<MainBloc>(),
+              child: ProfileScreen(),
+            ),
           ),
         );
       },
@@ -24,6 +29,7 @@ AppBar mainAppBar(String title, BuildContext context) {
         ),
       ),
     ),
+   
     title: Text(
       title.tr(),
       style: TextStyle(

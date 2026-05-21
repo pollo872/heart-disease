@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/manager/cubit.dart';
@@ -5,6 +6,8 @@ import 'package:heart_disease/features/submit_assessment/presentation/widgets/dr
 import 'package:heart_disease/shared/widgets/base_button.dart';
 
 class Step3 extends StatefulWidget {
+  const Step3({super.key});
+
   @override
   State<Step3> createState() => _Step3State();
 }
@@ -43,9 +46,9 @@ class _Step3State extends State<Step3> {
         leading: const BackButton(color: Colors.black87),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
+          children:  [
             Text(
-              'Health Assessment',
+              'HealthAssessment'.tr(),
               style: TextStyle(
                 color: Color(0xFF1E63F3),
                 fontSize: 13,
@@ -53,7 +56,7 @@ class _Step3State extends State<Step3> {
               ),
             ),
             Text(
-              'Step 3 of 3',
+              'Step 3 of 3'.tr(),
               style: TextStyle(color: Colors.grey, fontSize: 11),
             ),
           ],
@@ -72,8 +75,8 @@ class _Step3State extends State<Step3> {
         padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const SizedBox(height: 12),
-          const Text(
-            'Medical History',
+           Text(
+            'Medical History'.tr(),
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -81,8 +84,8 @@ class _Step3State extends State<Step3> {
             ),
           ),
           const SizedBox(height: 4),
-          const Text(
-            'Select any conditions that apply to you',
+           Text(
+            'Select any conditions that apply to you'.tr(),
             style: TextStyle(fontSize: 13, color: Colors.grey),
           ),
           const SizedBox(height: 20),
@@ -339,7 +342,7 @@ class _Step3State extends State<Step3> {
   // }
 
   Widget _buildLabel(String text) => Text(
-        text,
+        'FormFieldLabel.$text'.tr(),
         style: const TextStyle(
             fontSize: 13, fontWeight: FontWeight.w500, color: Colors.black87),
       );

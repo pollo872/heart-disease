@@ -30,7 +30,7 @@ class AssessmentFlow extends StatelessWidget {
         MaterialPageRoute(
           builder: (_) => ResultScreen(
             score: double.parse(state.assessment.probability),
-            riskLevel: state.assessment.riskLevel,
+            // riskLevel: state.assessment.riskLevel,
             createdAt: state.assessment.createdAt,
             assessment: state.assessment,
           ),

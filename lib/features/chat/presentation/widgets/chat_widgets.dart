@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:heart_disease/features/chat/data/models/chat_message_model.dart';
 import 'package:heart_disease/res/app_colors.dart';
@@ -247,15 +248,15 @@ class QuickQuestionsPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Quick questions:',
+           Text(
+            'Quick questions:'.tr(),
             style: TextStyle(
                 color: Color(0xFF757575),
                 fontSize: 13,
                 fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 8),
-          ..._questions.map((q) => _QuickChip(label: q, onTap: onTap)),
+          ..._questions.map((q) => _QuickChip(label:'questions.$q'.tr(), onTap: onTap)),
         ],
       ),
     );

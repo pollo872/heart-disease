@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/features/main_pages/data/data_source/get_profile_remote_data_source.dart';
@@ -10,29 +11,29 @@ import 'package:heart_disease/features/main_pages/presentation/widgets/find_doct
 import 'package:heart_disease/res/app_colors.dart';
 import 'dart:math' as math;
 
-import 'package:intl/intl.dart';
 
 class ResultScreen extends StatelessWidget {
   final double score;
   final int maxScore;
-  final String riskLevel;
+  // final String riskLevel;
   final String createdAt;
   final AssessmentUIModel assessment;
   // final String description;
 
   const ResultScreen({
-    Key? key,
+    super.key,
     required this.score,
     this.maxScore = 100,
-    required this.riskLevel,
+    // required this.riskLevel,
     required this.createdAt,
     required this.assessment,
     // this.description =
     //     'Your assessment shows a low risk for heart disease. Continue maintaining your healthy lifestyle habits.',
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
+    final isEnglish = context.locale.languageCode == 'en';
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
@@ -41,9 +42,9 @@ class ResultScreen extends StatelessWidget {
         leading: const BackButton(color: Colors.black87),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
+          children:  [
             Text(
-              'Assessment Result',
+              'Assessment Result'.tr(),
               style: TextStyle(
                 color: Color(0xFF1E63F3),
                 fontSize: 13,
@@ -51,7 +52,7 @@ class ResultScreen extends StatelessWidget {
               ),
             ),
             Text(
-              'Your heart health assessment result',
+              'Your heart health assessment result'.tr(),
               style: TextStyle(color: Colors.grey, fontSize: 11),
             ),
           ],
@@ -64,8 +65,8 @@ class ResultScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ── Header ───────────────────────────────────────
-              const Text(
-                'Your Heart Health Assessment',
+               Text(
+                'Your Heart Health Assessment'.tr(),
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -74,7 +75,7 @@ class ResultScreen extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                'Completed ${DateFormat('MMMM d, y').format(DateTime.parse(createdAt))}',
+               '${'Completed'.tr()} ${DateFormat('MMMM d, y').format(DateTime.parse(createdAt))}',
                 style: TextStyle(fontSize: 13, color: Colors.grey),
               ),
               const SizedBox(height: 20),
@@ -131,7 +132,7 @@ class ResultScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 50),
                     Text(
-                      '$riskLevel Risk Level',
+                     isEnglish?  '${'RiskLevelFromBack.${assessment.riskLevel}'.tr()} ${'RiskLevel'.tr()}': '${'RiskLevel'.tr()} ${'RiskLevelFromBack.${assessment.riskLevel}'.tr()} ',
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w600,
@@ -140,7 +141,7 @@ class ResultScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Your assessment shows a ${assessment.riskLevel} risk for heart disease. Continue maintaining your healthy lifestyle habits.',
+                      '${'Your assessment shows'.tr()} ${'RiskLevelFromBack.${assessment.riskLevel}'.tr()} ${'risk for heart disease'.tr()}',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 13,
@@ -154,8 +155,8 @@ class ResultScreen extends StatelessWidget {
               const SizedBox(height: 24),
 
               // ── Recommended Next Steps ───────────────────────
-              const Text(
-                'Recommended Next Steps',
+               Text(
+                'Recommended Next Steps'.tr(),
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -175,7 +176,7 @@ class ResultScreen extends StatelessWidget {
               _NextStepCard(
                 title: 'Monitor Your Heart Health',
                 subtitle:
-                    'Track your blood pressure and maintain regular check-ups.',
+                    'Track your blood pressure'.tr(),
                 titleColor: Color(0xFF1C398E),
                 subtitleColor: Color(0xFF1447E6),
                 backgroundColor: Color(0xFFBEDBFF),
@@ -184,7 +185,7 @@ class ResultScreen extends StatelessWidget {
               _NextStepCard(
                 title: 'Learn More',
                 subtitle:
-                    'Read educational articles about heart disease prevention.',
+                    'Read educational articles'.tr(),
                 titleColor: Color(0xFF1C398E),
                 subtitleColor: Color(0xFF1447E6),
                 backgroundColor: Color(0xFFBEDBFF),
@@ -207,13 +208,13 @@ class ResultScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 15),
                       child: Row(
-                        children: const [
+                        children:  [
                           Icon(Icons.medical_services_outlined,
                               color: Colors.white, size: 20),
                           SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'Find a Doctor Nearby',
+                              'Find a Doctor Nearby'.tr(),
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 15,
@@ -267,12 +268,12 @@ class ResultScreen extends StatelessWidget {
                           horizontal: 20, vertical: 15),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children:  [
                           Icon(Icons.history,
                               color: Color(0xFF1A1A2E), size: 18),
                           SizedBox(width: 8),
                           Text(
-                            'View Assessment History',
+                            'View Assessment History'.tr(),
                             style: TextStyle(
                               color: Color(0xFF1A1A2E),
                               fontSize: 15,
@@ -324,7 +325,7 @@ class _NextStepCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            title,
+            title.tr(),
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,

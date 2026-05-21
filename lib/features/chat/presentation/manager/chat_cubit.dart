@@ -10,7 +10,7 @@ class ChatCubit extends Cubit<ChatState> {
   ChatCubit(this._repository)
       : super(ChatInitial([ChatMessageModel.greeting()]));
 
-  /// Getter مريح للوصول للـ messages من أي state
+  //// Getter مريح للوصول للـ messages من أي state
   List<ChatMessageModel> get _currentMessages {
     final s = state;
     if (s is ChatInitial) return s.messages;
@@ -20,11 +20,11 @@ class ChatCubit extends Cubit<ChatState> {
     return [];
   }
 
-  /// ترسل رسالة المستخدم وتجيب رد الـ AI
+  //// ترسل رسالة المستخدم وتجيب رد الـ AI
   Future<void> sendMessage(String text) async {
     if (text.trim().isEmpty) return;
 
-    // ✅ نضيف رسالة المستخدم فوراً
+    //// ✅ نضيف رسالة المستخدم فوراً
     final userMsg = ChatMessageModel.fromUser(text.trim());
     final updatedMessages = [..._currentMessages, userMsg];
 
@@ -39,7 +39,7 @@ class ChatCubit extends Cubit<ChatState> {
       final botMsg = ChatMessageModel.fromApi(reply);
       emit(ChatSuccess([...updatedMessages, botMsg]));
     } catch (e) {
-      // ✅ في حالة error نضيف رسالة خطأ من الـ bot
+      //// ✅ في حالة error نضيف رسالة خطأ من الـ bot
       final errorMsg = ChatMessageModel.fromApi(
         e.toString().replaceFirst('Exception: ', ''),
       );
@@ -50,7 +50,7 @@ class ChatCubit extends Cubit<ChatState> {
     }
   }
 
-  /// إعادة ضبط المحادثة من الأول
+  ///// إعادة ضبط المحادثة من الأول
   void resetChat() {
     emit(ChatInitial([ChatMessageModel.greeting()]));
   }

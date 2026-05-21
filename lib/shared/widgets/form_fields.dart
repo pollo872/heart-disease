@@ -9,7 +9,7 @@ class PasswordFormFeild extends StatefulWidget {
   final TextEditingController? controller;
   final String? Function(String?)? validator;
 
-  PasswordFormFeild({
+  const PasswordFormFeild({
     super.key,
     required this.formTitle,
     this.controller, // Made optional
@@ -101,7 +101,7 @@ class AnyFormFeild extends StatefulWidget {
   final TextEditingController? controller;
   final String? Function(String?)? validator;
 
-  AnyFormFeild({
+  const AnyFormFeild({
     super.key,
     required this.formTitle,
     required this.keyboardType,
@@ -117,7 +117,7 @@ class _AnyFormFeildState extends State<AnyFormFeild> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 327, // Consider using double.infinity for responsiveness
+      width: double.infinity, // Consider using double.infinity for responsiveness
       // height: 80, // Remove fixed height when using validators/error messages
       child: Column(
         children: [

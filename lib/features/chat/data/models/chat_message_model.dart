@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+
 class ChatMessageModel {
   final String text;
   final bool isUser;
@@ -32,7 +34,7 @@ class ChatMessageModel {
   /// الرسالة الترحيبية الأولى
   factory ChatMessageModel.greeting() => ChatMessageModel(
         text:
-            "Hello! I'm your Heart Health Assistant. I can help answer questions about heart health, prevention, and lifestyle choices. How can I assist you today?",
+            "Hello I'm your Heart Health Assistant".tr(),
         isUser: false,
         timestamp: DateTime.now(),
       );

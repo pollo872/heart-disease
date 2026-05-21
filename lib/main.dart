@@ -14,8 +14,6 @@ import 'package:heart_disease/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:heart_disease/features/auth/presentation/pages/welcome_screen.dart';
 import 'package:heart_disease/features/chat/presentation/manager/chat_cubit.dart';
 import 'package:heart_disease/features/chat/data/repo/chat_repository.dart';
-import 'package:heart_disease/features/main_pages/data/data_source/get_profile_remote_data_source.dart';
-import 'package:heart_disease/features/main_pages/data/repository/main_repo.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/manager/cubit.dart';
 
@@ -51,6 +49,7 @@ void main() async {
             )..checkLogin(),
           ),
           BlocProvider<AssessmentCubit>(create: (_) => sl<AssessmentCubit>()),
+          BlocProvider<MainBloc>(create: (_) => sl<MainBloc>()),
           BlocProvider(
             create: (_) => ChatCubit(ChatRepository()), // ✅ هنا فوق كل حاجة
           ),

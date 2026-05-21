@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class CustomDropdown<T> extends StatelessWidget {
@@ -38,7 +39,7 @@ class CustomDropdown<T> extends StatelessWidget {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<T>(
           isExpanded: true,
-          hint: Text(hint,
+          hint: Text('DropDownHint.$hint'.tr(),
               style: const TextStyle(color: Colors.black38, fontSize: 14)),
           value: value,
           icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),

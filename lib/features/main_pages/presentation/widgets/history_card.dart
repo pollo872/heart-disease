@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:heart_disease/features/main_pages/data/models/assessment_ui_model.dart';
-import 'package:heart_disease/features/main_pages/presentation/screens/result_screen.dart';
 
 class HistoryCard extends StatelessWidget {
   final String predictionResult;
@@ -11,7 +10,7 @@ class HistoryCard extends StatelessWidget {
   final AssessmentUIModel assessment;
   final VoidCallback onpressed;
 
-  const HistoryCard({
+  const HistoryCard({super.key, 
     required this.predictionResult,
     required this.riskLevel,
     required this.probability,
@@ -72,8 +71,8 @@ class HistoryCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  MetricItem(title: "Status", value: predictionResult),
-                  MetricItem(title: "RiskLevel", value: riskLevel),
+                  MetricItem(title: "Status", value:'StatusFromBack.$predictionResult'.tr() ),
+                  MetricItem(title: "RiskLevel", value: 'RiskLevelFromBack.$riskLevel'.tr() ),
                   MetricItem(title: "Probability", value: "$probability%"),
                 ],
               ),
@@ -104,7 +103,7 @@ class MetricItem extends StatelessWidget {
   final String title;
   final String value;
 
-  const MetricItem({
+  const MetricItem({super.key, 
     required this.title,
     required this.value,
   });
