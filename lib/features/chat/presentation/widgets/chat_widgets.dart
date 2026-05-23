@@ -1,8 +1,11 @@
+import 'dart:typed_data';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:heart_disease/features/chat/data/models/chat_message_model.dart';
 import 'package:heart_disease/res/app_colors.dart';
-
+import 'package:image_picker/image_picker.dart';
 
 // ─────────────────────────────────────────────────────────
 // MESSAGE BUBBLE
@@ -13,7 +16,11 @@ class ChatBubble extends StatelessWidget {
   const ChatBubble({super.key, required this.message});
 
   String _formatTime(DateTime dt) {
-    final hour = dt.hour > 12 ? dt.hour - 12 : dt.hour == 0 ? 12 : dt.hour;
+    final hour = dt.hour > 12
+        ? dt.hour - 12
+        : dt.hour == 0
+            ? 12
+            : dt.hour;
     final min = dt.minute.toString().padLeft(2, '0');
     final period = dt.hour >= 12 ? 'PM' : 'AM';
     return '$hour:$min $period';
@@ -34,19 +41,58 @@ class ChatBubble extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(18),
+                // ── File indicator ──
+                if (message.hasFile)
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(12),
+                      border:
+                          Border.all(color: AppColors.primary.withOpacity(0.3)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          message.isPdf
+                              ? Icons.picture_as_pdf
+                              : Icons.image_outlined,
+                          color: AppColors.primary,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            message.fileName ?? 'Attached file',
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Text(
-                    message.text,
-                    style: const TextStyle(
-                        color: Colors.white, fontSize: 15, height: 1.4),
+                // ── Text bubble ──
+                if (message.text.isNotEmpty && !message.text.startsWith('📎'))
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Text(
+                      message.text,
+                      style: const TextStyle(
+                          color: Colors.white, fontSize: 15, height: 1.4),
+                    ),
                   ),
-                ),
                 const SizedBox(height: 4),
                 Text(
                   _formatTime(message.timestamp),
@@ -73,8 +119,8 @@ class ChatBubble extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(18),
@@ -89,9 +135,7 @@ class ChatBubble extends StatelessWidget {
                   child: Text(
                     message.text,
                     style: const TextStyle(
-                        color: Color(0xFF2D2D2D),
-                        fontSize: 15,
-                        height: 1.4),
+                        color: Color(0xFF2D2D2D), fontSize: 15, height: 1.4),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -121,19 +165,18 @@ class _BotAvatar extends StatelessWidget {
         color: AppColors.primary,
         shape: BoxShape.circle,
       ),
-      child:  Image.asset(
-            'assets/icons/bot.png',
-            width: 22,
-            height: 22,
-            color: Colors.white,
-            
-          ),
+      child: Image.asset(
+        'assets/icons/bot.png',
+        width: 22,
+        height: 22,
+        color: Colors.white,
+      ),
     );
   }
 }
 
 // ─────────────────────────────────────────────────────────
-// TYPING INDICATOR (animated dots)
+// TYPING INDICATOR
 // ─────────────────────────────────────────────────────────
 class TypingIndicator extends StatefulWidget {
   const TypingIndicator({super.key});
@@ -153,9 +196,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
     _controllers = List.generate(
       3,
       (i) => AnimationController(
-        vsync: this,
-        duration: const Duration(milliseconds: 500),
-      ),
+          vsync: this, duration: const Duration(milliseconds: 500)),
     );
     _animations = _controllers.asMap().entries.map((e) {
       Future.delayed(Duration(milliseconds: e.key * 150), () {
@@ -169,9 +210,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
 
   @override
   void dispose() {
-    for (var c in _controllers) {
-      c.dispose();
-    }
+    for (var c in _controllers) c.dispose();
     super.dispose();
   }
 
@@ -185,8 +224,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
           _BotAvatar(),
           const SizedBox(width: 8),
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(18),
@@ -210,7 +248,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
                       height: 8,
                       margin: const EdgeInsets.symmetric(horizontal: 2),
                       decoration: const BoxDecoration(
-                        color: Color(0xFF26A69A),
+                        color: AppColors.primary,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -248,15 +286,16 @@ class QuickQuestionsPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-           Text(
+          Text(
             'Quick questions:'.tr(),
-            style: TextStyle(
+            style: const TextStyle(
                 color: Color(0xFF757575),
                 fontSize: 13,
                 fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 8),
-          ..._questions.map((q) => _QuickChip(label:'questions.$q'.tr(), onTap: onTap)),
+          ..._questions
+              .map((q) => _QuickChip(label: 'questions.$q'.tr(), onTap: onTap)),
         ],
       ),
     );
@@ -283,13 +322,11 @@ class _QuickChip extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: const Color(0xFFE0E0E0)),
           ),
-          child: Text(
-            label,
-            style: const TextStyle(
-                color: Color(0xFF424242),
-                fontSize: 14,
-                fontWeight: FontWeight.w400),
-          ),
+          child: Text(label,
+              style: const TextStyle(
+                  color: Color(0xFF424242),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400)),
         ),
       ),
     );
@@ -297,15 +334,22 @@ class _QuickChip extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────
-// INPUT BAR
+// INPUT BAR — with attachment button
 // ─────────────────────────────────────────────────────────
 class ChatInputBar extends StatefulWidget {
   final void Function(String) onSend;
+  final void Function({
+    required Uint8List fileBytes,
+    required String mimeType,
+    required String fileName,
+    required String message,
+  }) onSendFile;
   final bool isLoading;
 
   const ChatInputBar({
     super.key,
     required this.onSend,
+    required this.onSendFile,
     required this.isLoading,
   });
 
@@ -315,11 +359,146 @@ class ChatInputBar extends StatefulWidget {
 
 class _ChatInputBarState extends State<ChatInputBar> {
   final TextEditingController _ctrl = TextEditingController();
+  final ImagePicker _picker = ImagePicker();
 
   void _submit() {
     if (_ctrl.text.trim().isEmpty || widget.isLoading) return;
     widget.onSend(_ctrl.text.trim());
     _ctrl.clear();
+  }
+
+  // ── Pick image (camera or gallery) ──
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final XFile? picked = await _picker.pickImage(
+        source: source,
+        imageQuality: 85,
+        maxWidth: 1920,
+      );
+      if (picked == null) return;
+
+      final bytes = await picked.readAsBytes();
+      final ext = picked.name.split('.').last.toLowerCase();
+      final mime = ext == 'png' ? 'image/png' : 'image/jpeg';
+
+      widget.onSendFile(
+        fileBytes: bytes,
+        mimeType: mime,
+        fileName: picked.name,
+        message: _ctrl.text.trim(),
+      );
+      _ctrl.clear();
+    } catch (e) {
+      debugPrint('Image pick error: $e');
+    }
+  }
+
+  // ── Pick file (PDF or image from file picker) ──
+  Future<void> _pickFile() async {
+    try {
+      final result = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'webp'],
+        withData: true,
+      );
+
+      if (result == null || result.files.isEmpty) return;
+
+      final file = result.files.first;
+      final bytes = file.bytes;
+
+      if (bytes == null) return;
+
+      final ext = (file.extension ?? 'jpg').toLowerCase();
+      final mimeMap = {
+        'pdf': 'application/pdf',
+        'png': 'image/png',
+        'jpg': 'image/jpeg',
+        'jpeg': 'image/jpeg',
+        'webp': 'image/webp',
+      };
+      final mime = mimeMap[ext] ?? 'image/jpeg';
+
+      widget.onSendFile(
+        fileBytes: bytes,
+        mimeType: mime,
+        fileName: file.name,
+        message: _ctrl.text.trim(),
+      );
+      _ctrl.clear();
+    } catch (e) {
+      debugPrint('File pick error: $e');
+    }
+  }
+
+  void _showAttachmentOptions() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const Text(
+                'Attach Medical File',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'ECG, X-ray, Lab Results, Reports',
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              const SizedBox(height: 16),
+              // ── Camera (mobile only) ──
+              if (!kIsWeb)
+                _AttachOption(
+                  icon: Icons.camera_alt_outlined,
+                  label: 'Take Photo',
+                  color: const Color(0xFF26A69A),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(ImageSource.camera);
+                  },
+                ),
+              // ── Gallery (mobile only) ──
+              if (!kIsWeb)
+                _AttachOption(
+                  icon: Icons.photo_library_outlined,
+                  label: 'Choose from Gallery',
+                  color: Colors.blue,
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(ImageSource.gallery);
+                  },
+                ),
+              // ── File picker (web + mobile) ──
+              _AttachOption(
+                icon: Icons.attach_file,
+                label: 'Upload File (PDF / Image)',
+                color: Colors.orange,
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickFile();
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -337,6 +516,28 @@ class _ChatInputBarState extends State<ChatInputBar> {
         top: false,
         child: Row(
           children: [
+            // ── Attach button ──
+            GestureDetector(
+              onTap: widget.isLoading ? null : _showAttachmentOptions,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: widget.isLoading
+                      ? Colors.grey[100]
+                      : const Color(0xFFF0F9F8),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.attach_file_rounded,
+                  color: widget.isLoading ? Colors.grey : AppColors.primary,
+                  size: 20,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            // ── Text field ──
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
@@ -348,22 +549,22 @@ class _ChatInputBarState extends State<ChatInputBar> {
                   textCapitalization: TextCapitalization.sentences,
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
-                  // ✅ على Web — Enter يرسل، Shift+Enter سطر جديد
                   textInputAction: TextInputAction.send,
                   onSubmitted: (_) => _submit(),
                   enabled: !widget.isLoading,
                   style: const TextStyle(fontSize: 15),
                   decoration: const InputDecoration(
-                    hintText: 'Ask about heart health...',
+                    hintText: 'Ask or send a medical file...',
                     hintStyle: TextStyle(color: Colors.grey),
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 10),
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   ),
                 ),
               ),
             ),
             const SizedBox(width: 8),
+            // ── Send button ──
             GestureDetector(
               onTap: _submit,
               child: AnimatedContainer(
@@ -371,9 +572,8 @@ class _ChatInputBarState extends State<ChatInputBar> {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: widget.isLoading
-                      ? Colors.grey[300]
-                      : AppColors.primary,
+                  color:
+                      widget.isLoading ? Colors.grey[300] : AppColors.primary,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -386,6 +586,38 @@ class _ChatInputBarState extends State<ChatInputBar> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _AttachOption extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _AttachOption({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Container(
+        width: 42,
+        height: 42,
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: color, size: 22),
+      ),
+      title: Text(label,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+      onTap: onTap,
     );
   }
 }

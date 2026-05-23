@@ -172,7 +172,7 @@
     "Log Out": "Log Out",
     "Cancel": "Cancel",
     "Save Changes": "Save Changes",
-    "Hello I'm your Heart Health Assistant": "Hello! I'm your Heart Health Assistant. I can help answer questions about heart health, prevention, and lifestyle choices. How can I assist you today?",
+    "Hello I'm your Heart Health Assistant": "Hello! I'm your Heart Health Assistant. I can help answer questions about heart health, prevention, and lifestyle choices.\n\nYou can also send me medical images or reports (ECG, X-rays, lab results) and I'll analyze them for you! 💙",
     "Quick questions:": "Quick questions:",
     "questions": {
         "What foods are good for heart health?": "What foods are good for heart health?",

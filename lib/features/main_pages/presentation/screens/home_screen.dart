@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_event.dart';
-import 'package:heart_disease/features/main_pages/presentation/screens/history_screen.dart';
 import 'package:heart_disease/features/main_pages/presentation/screens/result_screen.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/find_doctor.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/history_card.dart';

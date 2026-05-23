@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/features/chat/presentation/manager/chat_cubit.dart';
@@ -6,9 +7,6 @@ import 'package:heart_disease/features/chat/presentation/widgets/chat_widgets.da
 import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
 import 'package:heart_disease/features/main_pages/presentation/screens/profile.dart';
 
-// ─────────────────────────────────────────────────────────
-// ENTRY POINT — يفتحها من أي مكان في التطبيق
-// ─────────────────────────────────────────────────────────
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
 
@@ -18,9 +16,6 @@ class ChatPage extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────
-// MAIN VIEW
-// ─────────────────────────────────────────────────────────
 class _ChatView extends StatefulWidget {
   const _ChatView();
 
@@ -53,6 +48,20 @@ class _ChatViewState extends State<_ChatView> {
     context.read<ChatCubit>().sendMessage(text);
   }
 
+  void _onSendFile({
+    required Uint8List fileBytes,
+    required String mimeType,
+    required String fileName,
+    required String message,
+  }) {
+    context.read<ChatCubit>().sendMessageWithFile(
+          message: message,
+          fileBytes: fileBytes,
+          mimeType: mimeType,
+          fileName: fileName,
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,7 +70,6 @@ class _ChatViewState extends State<_ChatView> {
       body: BlocConsumer<ChatCubit, ChatState>(
         listener: (context, state) {
           _scrollToBottom();
-
           if (state is ChatError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -76,11 +84,10 @@ class _ChatViewState extends State<_ChatView> {
         builder: (context, state) {
           final messages = _getMessages(state);
           final isLoading = state is ChatLoading;
-          final showQuickQ = messages.length == 1; 
+          final showQuickQ = messages.length == 1;
 
           return Column(
             children: [
-              // ── Messages ──
               Expanded(
                 child: ListView.builder(
                   controller: _scrollCtrl,
@@ -94,24 +101,19 @@ class _ChatViewState extends State<_ChatView> {
                   },
                 ),
               ),
-
-              // ── Quick Questions (أول مرة بس) ──
               if (showQuickQ) QuickQuestionsPanel(onTap: _onSend),
-
-              // ── Input Bar ──
+              // ✅ onSendFile متربط بالـ cubit
               ChatInputBar(
                 onSend: _onSend,
+                onSendFile: _onSendFile,
                 isLoading: isLoading,
               ),
             ],
           );
         },
       ),
-      // bottomNavigationBar: _buildBottomNav(),
     );
   }
-
-  // ─── Helpers ───────────────────────────────
 
   List _getMessages(ChatState state) {
     if (state is ChatInitial) return state.messages;
@@ -144,7 +146,8 @@ class _ChatViewState extends State<_ChatView> {
             backgroundColor: Colors.white,
             child: CircleAvatar(
               radius: 16,
-              backgroundImage: AssetImage("assets/images/defualt_profile.png"),
+              backgroundImage:
+                  const AssetImage("assets/images/defualt_profile.png"),
               onBackgroundImageError: (_, __) {},
             ),
           ),
@@ -153,15 +156,17 @@ class _ChatViewState extends State<_ChatView> {
       title: const Text(
         'chat',
         style: TextStyle(
-            color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500),
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.w500),
       ),
       centerTitle: true,
       actions: [
         IconButton(
-          icon: const Icon(Icons.notifications_outlined, color: Colors.black),
+          icon:
+              const Icon(Icons.notifications_outlined, color: Colors.black),
           onPressed: () {},
         ),
-        // زرار لإعادة ضبط المحادثة
         IconButton(
           icon: const Icon(Icons.refresh, color: Colors.grey),
           tooltip: 'New conversation',
@@ -170,36 +175,4 @@ class _ChatViewState extends State<_ChatView> {
       ],
     );
   }
-
-  // BottomNavigationBar _buildBottomNav() {
-  //   return BottomNavigationBar(
-  //     currentIndex: 3,
-  //     selectedItemColor: const Color(0xFF26A69A),
-  //     unselectedItemColor: Colors.grey,
-  //     showSelectedLabels: true,
-  //     showUnselectedLabels: true,
-  //     type: BottomNavigationBarType.fixed,
-  //     items: const [
-  //       BottomNavigationBarItem(
-  //         icon: Icon(Icons.history),
-  //         label: 'History',
-  //       ),
-  //       BottomNavigationBarItem(
-  //         icon: Icon(Icons.medical_services_outlined),
-  //         label: 'Doctors',
-  //       ),
-  //       BottomNavigationBarItem(
-  //         icon: Icon(Icons.article_outlined),
-  //         label: 'Articles',
-  //       ),
-  //       BottomNavigationBarItem(
-  //         icon: Icon(Icons.chat_bubble_outline),
-  //         label: 'Chat',
-  //       ),
-  //     ],
-  //     onTap: (index) {
-  //       // ربطها بالـ navigation بتاعك
-  //     },
-  //   );
-  // }
 }
