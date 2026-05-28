@@ -4,6 +4,7 @@ class AssessmentModel {
   final double probability;
   final String riskLevel;
   final String createdAt;
+  final double bmi; // من الـ response: "BMI": 64.07
 
   AssessmentModel({
     required this.id,
@@ -11,6 +12,7 @@ class AssessmentModel {
     required this.probability,
     required this.riskLevel,
     required this.createdAt,
+    required this.bmi,
 
   });
 
@@ -21,6 +23,7 @@ class AssessmentModel {
       probability: json['probability'].toDouble(),
       riskLevel: json['riskLevel'],
       createdAt: json['createdAt'],
+      bmi: json['BMI'].toDouble(),
     );
   }
   List<AssessmentModel> get allAssessments {

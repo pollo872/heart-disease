@@ -140,6 +140,7 @@ AssessmentUIModel mapAssessment(assessment) {
       riskMessage: riskMessage,
       riskColor: riskColor,
       riskBadgeColor: riskBadgeColor,
+      bmi: assessment.bmi,
     );
   }
 

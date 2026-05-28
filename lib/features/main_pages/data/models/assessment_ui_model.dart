@@ -11,6 +11,7 @@ class AssessmentUIModel {
   final String riskMessage;
   final Color riskColor;
   final Color riskBadgeColor;
+  final double bmi; // من الـ response: "BMI": 64.07
 
   AssessmentUIModel({
     required this.predictionResult,
@@ -22,5 +23,6 @@ class AssessmentUIModel {
     required this.riskMessage,
     required this.riskColor,
     required this.riskBadgeColor,
+    required this.bmi,
   });
 }
