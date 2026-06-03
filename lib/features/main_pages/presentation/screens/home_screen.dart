@@ -1,16 +1,17 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:heart_disease/core/path_strings.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_event.dart';
 import 'package:heart_disease/features/main_pages/presentation/screens/result_screen.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/find_doctor.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/history_card.dart';
-import 'package:heart_disease/features/main_pages/presentation/widgets/history_header.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/home_screen_header.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_state.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/loading.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/widgets/assessment_flow.dart';
+import 'package:heart_disease/theme/app_theme.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -178,7 +179,7 @@ class _BodySection extends StatelessWidget {
           const SizedBox(height: 12),
 
           _QuickActionTile(
-            icon: Icons.favorite_border,
+            icon: PathStrings.newAssessmentIconPath,
             color: Colors.blue,
             title: "NewAssessment",
             subtitle: "takeAssessment",
@@ -195,7 +196,7 @@ class _BodySection extends StatelessWidget {
           const SizedBox(height: 12),
 
           _QuickActionTile(
-            icon: Icons.calendar_today,
+            icon: PathStrings.viewHistoryIconPath,
             color: Colors.teal,
             title: "ViewHistory",
             subtitle: "SeePastAssessments",
@@ -207,7 +208,7 @@ class _BodySection extends StatelessWidget {
           const SizedBox(height: 12),
 
           _QuickActionTile(
-              icon: Icons.location_on_outlined,
+              icon: PathStrings.findDoctorIconPath,
               color: Colors.purple,
               title: "FindDoctors",
               subtitle: "ConnectWithCardiologists",
@@ -305,14 +306,18 @@ class _LatestAssessmentCard extends StatelessWidget {
           Text(
             DateFormat('MMMM d, y').format(DateTime.parse(createdAt)),
             style: const TextStyle(
-                fontSize: 16, fontWeight: FontWeight.w600, color: Colors.teal),
+                fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textGreen),
           ),
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              MetricItem(title: "Status", value:'StatusFromBack.$predictionResult'.tr() ),
-              MetricItem(title: "RiskLevel", value: 'RiskLevelFromBack.$riskLevel'.tr() ),
+              MetricItem(
+                  title: "Status",
+                  value: 'StatusFromBack.$predictionResult'.tr()),
+              MetricItem(
+                  title: "RiskLevel",
+                  value: 'RiskLevelFromBack.$riskLevel'.tr()),
               MetricItem(title: "Probability", value: probability),
             ],
           )
@@ -331,7 +336,7 @@ class _LatestAssessmentCard extends StatelessWidget {
 ///------------------------------------------------------------
 
 class _QuickActionTile extends StatelessWidget {
-  final IconData icon;
+  final String icon;
   final Color color;
   final String title;
   final String subtitle;
@@ -361,7 +366,9 @@ class _QuickActionTile extends StatelessWidget {
                 color: color.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(icon, color: color),
+              child: Image.asset(
+                icon,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(

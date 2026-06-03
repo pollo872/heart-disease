@@ -141,6 +141,17 @@ AssessmentUIModel mapAssessment(assessment) {
       riskColor: riskColor,
       riskBadgeColor: riskBadgeColor,
       bmi: assessment.bmi,
+      aiAnalysis: assessment.aiAnalysis != null
+    ? AiAnalysisUI(
+        summary:         assessment.aiAnalysis!.summary,
+        riskFactors:     assessment.aiAnalysis!.riskFactors,
+        positiveFactors: assessment.aiAnalysis!.positiveFactors,
+        recommendations: assessment.aiAnalysis!.recommendations,
+        lifestyleTips:   assessment.aiAnalysis!.lifestyleTips,
+        warningSigns:    assessment.aiAnalysis!.warningSigns,
+        followUp:        assessment.aiAnalysis!.followUp,
+      )
+    : null,
     );
   }
 

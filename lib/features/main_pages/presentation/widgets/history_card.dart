@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:heart_disease/core/path_strings.dart';
 import 'package:heart_disease/features/main_pages/data/models/assessment_ui_model.dart';
+import 'package:heart_disease/theme/app_theme.dart';
 
 class HistoryCard extends StatelessWidget {
   final String predictionResult;
@@ -10,7 +12,8 @@ class HistoryCard extends StatelessWidget {
   final AssessmentUIModel assessment;
   final VoidCallback onpressed;
 
-  const HistoryCard({super.key, 
+  const HistoryCard({
+    super.key,
     required this.predictionResult,
     required this.riskLevel,
     required this.probability,
@@ -32,11 +35,27 @@ class HistoryCard extends StatelessWidget {
           children: [
             /// DATE + BADGE
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  DateFormat('MMMM d, y').format(DateTime.parse(createdAt)),
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFE6EEFF),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Image.asset(
+                    PathStrings.historyCardIconPath,
+                    width: 22,
+                    height: 22,
+                    color: AppColors.primary,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    DateFormat('MMMM d, y').format(DateTime.parse(createdAt)),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
                 ),
                 Container(
                   padding:
@@ -49,20 +68,21 @@ class HistoryCard extends StatelessWidget {
                     assessment.riskTitle,
                     style: TextStyle(color: assessment.riskColor, fontSize: 11),
                   ),
-                )
+                ),
               ],
             ),
-      
+
             const SizedBox(height: 8),
-      
+
             Text(
               assessment.riskHint,
               style: TextStyle(color: assessment.riskColor),
             ),
-      
+
             const SizedBox(height: 12),
-      
+
             Container(
+              width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: const Color(0xffE9EEF8),
@@ -71,16 +91,26 @@ class HistoryCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  MetricItem(title: "Status", value:'StatusFromBack.$predictionResult'.tr() ),
-                  MetricItem(title: "RiskLevel", value: 'RiskLevelFromBack.$riskLevel'.tr() ),
-                  MetricItem(title: "Probability", value: "$probability%"),
+                  MetricItem(
+                    title: "Status",
+                    value: 'StatusFromBack.$predictionResult'.tr(),
+                  ),
+                  MetricItem(
+                    title: "RiskLevel",
+                    value: 'RiskLevelFromBack.$riskLevel'.tr(),
+                  ),
+                  MetricItem(
+                    title: "Probability",
+                    value: "$probability%",
+                  ),
                 ],
               ),
             ),
-      
+
             const SizedBox(height: 12),
-      
+
             Container(
+              width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: const Color(0xffDCE6F7),
@@ -91,7 +121,8 @@ class HistoryCard extends StatelessWidget {
                 style: const TextStyle(fontSize: 12),
               ),
             ),
-           const SizedBox(height: 20),
+
+            const SizedBox(height: 12),
           ],
         ),
       ),
@@ -103,7 +134,8 @@ class MetricItem extends StatelessWidget {
   final String title;
   final String value;
 
-  const MetricItem({super.key, 
+  const MetricItem({
+    super.key,
     required this.title,
     required this.value,
   });
@@ -115,7 +147,9 @@ class MetricItem extends StatelessWidget {
         Text(title.tr(),
             style: const TextStyle(color: Colors.grey, fontSize: 11)),
         const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.w600)),
+        Text(value,
+            style: TextStyle(
+                fontWeight: FontWeight.w600, color: AppColors.textGreen)),
       ],
     );
   }

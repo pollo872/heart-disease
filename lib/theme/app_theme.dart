@@ -9,43 +9,44 @@ class AppColors {
   AppColors._();
 
   // --- Primary ---
-  static const Color primary        = Color(0xFF2563EB);
-  static const Color primaryDark    = Color(0xFF1D4ED8);
-  static const Color primaryLight   = Color(0xFFEFF6FF);
+  static const Color primary = Color(0xFF2563EB);
+  static const Color primaryDark = Color(0xFF1D4ED8);
+  static const Color primaryLight = Color(0xFFEFF6FF);
 
   // --- Background & Surface ---
-  static const Color background     = Color(0xFFFFFFFF);
-  static const Color surface        = Color(0xFFF8FAFC);
+  static const Color background = Color(0xFFFFFFFF);
+  static const Color surface = Color(0xFFF8FAFC);
   static const Color cardBackground = Color(0xFFFFFFFF);
+  static const Color textGreen = Color(0xFF0B4F4A);
 
   // --- Text ---
-  static const Color textPrimary    = Color(0xFF1E293B);
-  static const Color textSecondary  = Color(0xFF64748B);
-  static const Color textHint       = Color(0xFF94A3B8);
+  static const Color textPrimary = Color(0xFF1E293B);
+  static const Color textSecondary = Color(0xFF64748B);
+  static const Color textHint = Color(0xFF94A3B8);
 
   // --- Border ---
-  static const Color border         = Color(0xFFCBD5E1);
-  static const Color borderLight    = Color(0xFFE2E8F0);
+  static const Color border = Color(0xFFCBD5E1);
+  static const Color borderLight = Color(0xFFE2E8F0);
 
   // --- Risk: Low ---
-  static const Color riskLow        = Color(0xFF22C55E);
-  static const Color riskLowBg      = Color(0xFFEAF3DE);
-  static const Color riskLowText    = Color(0xFF3B6D11);
+  static const Color riskLow = Color(0xFF22C55E);
+  static const Color riskLowBg = Color(0xFFEAF3DE);
+  static const Color riskLowText = Color(0xFF3B6D11);
 
   // --- Risk: Medium ---
-  static const Color riskMedium     = Color(0xFFF59E0B);
-  static const Color riskMediumBg   = Color(0xFFFAEEDA);
+  static const Color riskMedium = Color(0xFFF59E0B);
+  static const Color riskMediumBg = Color(0xFFFAEEDA);
   static const Color riskMediumText = Color(0xFF854F0B);
 
   // --- Risk: High ---
-  static const Color riskHigh       = Color(0xFFEF4444);
-  static const Color riskHighBg     = Color(0xFFFCEBEB);
-  static const Color riskHighText   = Color(0xFFA32D2D);
+  static const Color riskHigh = Color(0xFFEF4444);
+  static const Color riskHighBg = Color(0xFFFCEBEB);
+  static const Color riskHighText = Color(0xFFA32D2D);
 
   // --- Icon accent colors (Quick Actions) ---
-  static const Color iconBlue       = Color(0xFFEFF6FF);
-  static const Color iconGreen      = Color(0xFFEAF3DE);
-  static const Color iconPurple     = Color(0xFFEEEDFE);
+  static const Color iconBlue = Color(0xFFEFF6FF);
+  static const Color iconGreen = Color(0xFFEAF3DE);
+  static const Color iconPurple = Color(0xFFEEEDFE);
 }
 
 // ============================================================
@@ -125,15 +126,16 @@ class AppTextStyles {
 class AppRadius {
   AppRadius._();
 
-  static const double sm  = 8;   // inputs, small elements
-  static const double md  = 12;  // buttons
-  static const double lg  = 16;  // cards
+  static const double sm = 8; // inputs, small elements
+  static const double md = 12; // buttons
+  static const double lg = 16; // cards
   static const double pill = 50; // badges / chips
 
-  static const BorderRadius radiusSm   = BorderRadius.all(Radius.circular(sm));
-  static const BorderRadius radiusMd   = BorderRadius.all(Radius.circular(md));
-  static const BorderRadius radiusLg   = BorderRadius.all(Radius.circular(lg));
-  static const BorderRadius radiusPill = BorderRadius.all(Radius.circular(pill));
+  static const BorderRadius radiusSm = BorderRadius.all(Radius.circular(sm));
+  static const BorderRadius radiusMd = BorderRadius.all(Radius.circular(md));
+  static const BorderRadius radiusLg = BorderRadius.all(Radius.circular(lg));
+  static const BorderRadius radiusPill =
+      BorderRadius.all(Radius.circular(pill));
 }
 
 // ============================================================
@@ -141,11 +143,11 @@ class AppRadius {
 class AppSpacing {
   AppSpacing._();
 
-  static const double xs  = 4;
-  static const double sm  = 8;
-  static const double md  = 12;
-  static const double lg  = 16;
-  static const double xl  = 20;
+  static const double xs = 4;
+  static const double sm = 8;
+  static const double md = 12;
+  static const double lg = 16;
+  static const double xl = 20;
   static const double xxl = 24;
 }
 
@@ -156,7 +158,6 @@ ThemeData buildAppTheme() {
     useMaterial3: true,
     fontFamily: 'Inter',
     scaffoldBackgroundColor: AppColors.background,
-
     colorScheme: const ColorScheme.light(
       primary: AppColors.primary,
       onPrimary: Colors.white,
@@ -167,7 +168,6 @@ ThemeData buildAppTheme() {
       error: AppColors.riskHigh,
       onError: Colors.white,
     ),
-
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.background,
       foregroundColor: AppColors.textPrimary,
@@ -175,7 +175,6 @@ ThemeData buildAppTheme() {
       centerTitle: false,
       titleTextStyle: AppTextStyles.heading,
     ),
-
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
@@ -188,7 +187,6 @@ ThemeData buildAppTheme() {
         elevation: 0,
       ),
     ),
-
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: AppColors.primary,
@@ -201,7 +199,6 @@ ThemeData buildAppTheme() {
         elevation: 0,
       ),
     ),
-
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: AppColors.background,
@@ -220,7 +217,6 @@ ThemeData buildAppTheme() {
         borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
       ),
     ),
-
     cardTheme: CardTheme(
       color: AppColors.cardBackground,
       elevation: 0,
@@ -230,13 +226,11 @@ ThemeData buildAppTheme() {
       ),
       margin: const EdgeInsets.symmetric(vertical: 6),
     ),
-
     dividerTheme: const DividerThemeData(
       color: AppColors.borderLight,
       thickness: 1,
       space: 0,
     ),
-
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: AppColors.background,
       selectedItemColor: AppColors.primary,
@@ -261,9 +255,17 @@ class RiskBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (label, bg, fg) = switch (level) {
-      RiskLevel.low    => ('Low Risk',    AppColors.riskLowBg,    AppColors.riskLowText),
-      RiskLevel.medium => ('Medium Risk', AppColors.riskMediumBg, AppColors.riskMediumText),
-      RiskLevel.high   => ('High Risk',   AppColors.riskHighBg,   AppColors.riskHighText),
+      RiskLevel.low => ('Low Risk', AppColors.riskLowBg, AppColors.riskLowText),
+      RiskLevel.medium => (
+          'Medium Risk',
+          AppColors.riskMediumBg,
+          AppColors.riskMediumText
+        ),
+      RiskLevel.high => (
+          'High Risk',
+          AppColors.riskHighBg,
+          AppColors.riskHighText
+        ),
     };
 
     return Container(

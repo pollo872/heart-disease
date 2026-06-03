@@ -4,11 +4,9 @@ import 'dart:ui' as ui;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:heart_disease/features/dashboard/data/services/pdf_export_service.dart';
 import 'package:heart_disease/features/main_pages/data/models/assessment_ui_model.dart';
 import 'package:heart_disease/theme/app_theme.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 
 
 class DashboardScreen extends StatefulWidget {
@@ -142,104 +140,16 @@ class _DashboardScreenState extends State<DashboardScreen>
 
   Future<void> _exportPdf() async {
     final sorted = _sorted;
-    final latest = sorted.isNotEmpty ? sorted.last : null;
     final probBytes = await _capture(_probabilityChartKey);
-    final bmiBytes = await _capture(_bmiChartKey);
-    final now = DateTime.now().toLocal().toString().substring(0, 10);
+    final bmiBytes  = await _capture(_bmiChartKey);
 
-    final pdf = pw.Document();
-    pdf.addPage(
-      pw.MultiPage(
-        pageFormat: PdfPageFormat.a4,
-        margin: const pw.EdgeInsets.all(36),
-        build: (ctx) => [
-          pw.Text('Heart Health Report',
-              style:
-                  pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold)),
-          pw.Text('Date: $now',
-              style: pw.TextStyle(fontSize: 12, color: PdfColors.grey600)),
-          pw.SizedBox(height: 12),
-          pw.Divider(),
-          pw.SizedBox(height: 16),
-          if (latest != null) ...[
-            pw.Text('Latest Assessment',
-                style:
-                    pw.TextStyle(fontSize: 15, fontWeight: pw.FontWeight.bold)),
-            pw.SizedBox(height: 8),
-            pw.Container(
-              padding: const pw.EdgeInsets.all(12),
-              decoration: pw.BoxDecoration(
-                  color: PdfColors.grey100,
-                  borderRadius: pw.BorderRadius.circular(8)),
-              child: pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
-                children: [
-                  _pdfCell('Risk Score',
-                      '${_toPercent(latest.probability).toStringAsFixed(1)}%'),
-                  _pdfCell('BMI', latest.bmi.toStringAsFixed(1)),
-                  _pdfCell('Level', latest.riskLevel),
-                  _pdfCell('Result', latest.predictionResult),
-                ],
-              ),
-            ),
-            pw.SizedBox(height: 20),
-          ],
-          if (probBytes != null) ...[
-            pw.Text('Heart Disease Risk Probability',
-                style:
-                    pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
-            pw.SizedBox(height: 8),
-            pw.Image(pw.MemoryImage(probBytes), height: 160),
-            pw.SizedBox(height: 16),
-          ],
-          if (bmiBytes != null) ...[
-            pw.Text('BMI Over Time',
-                style:
-                    pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
-            pw.SizedBox(height: 8),
-            pw.Image(pw.MemoryImage(bmiBytes), height: 160),
-            pw.SizedBox(height: 20),
-          ],
-          pw.Divider(),
-          pw.SizedBox(height: 12),
-          pw.Text('All Assessments',
-              style:
-                  pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
-          pw.SizedBox(height: 8),
-          pw.Table.fromTextArray(
-            headers: ['Date', 'Risk %', 'BMI', 'Level', 'Result'],
-            data: sorted
-                .map((a) => [
-                      a.createdAt.length >= 10
-                          ? a.createdAt.substring(0, 10)
-                          : a.createdAt,
-                      '${_toPercent(a.probability).toStringAsFixed(1)}%',
-                      a.bmi.toStringAsFixed(1),
-                      a.riskLevel,
-                      a.predictionResult,
-                    ])
-                .toList(),
-            headerStyle: pw.TextStyle(
-                fontWeight: pw.FontWeight.bold,
-                fontSize: 10,
-                color: PdfColors.white),
-            headerDecoration: const pw.BoxDecoration(color: PdfColors.blue800),
-            cellStyle: const pw.TextStyle(fontSize: 9),
-            oddRowDecoration: const pw.BoxDecoration(color: PdfColors.grey100),
-          ),
-        ],
-      ),
+    await PdfExportService.exportHealthReport(
+      userName: '',
+      sortedAssessments: sorted,
+      riskChartBytes: probBytes,
+      bmiChartBytes: bmiBytes,
     );
-    await Printing.layoutPdf(onLayout: (_) async => pdf.save());
   }
-
-  static pw.Widget _pdfCell(String label, String value) => pw.Column(children: [
-        pw.Text(value,
-            style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold)),
-        pw.SizedBox(height: 3),
-        pw.Text(label,
-            style: pw.TextStyle(fontSize: 10, color: PdfColors.grey600)),
-      ]);
 
   // ─────────────────────────────────────────────────────────────────────────
   @override
@@ -473,6 +383,14 @@ class _DashboardScreenState extends State<DashboardScreen>
 
                     // ── Latest Assessment detail ───────────────────
                     _buildLatestDetail(latest),
+                    const SizedBox(height: 24),
+
+                    // ── AI Insights (cross-assessment) ─────────────
+                    if (sorted.any((a) => a.aiAnalysis != null)) ...[
+                      _buildAiInsights(sorted),
+                      const SizedBox(height: 24),
+                    ],
+
                   ],
                 ),
               ),
@@ -647,6 +565,414 @@ class _DashboardScreenState extends State<DashboardScreen>
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+
+  // ── AI Insights — cross-assessment analytics ─────────────────────────────
+  Widget _buildAiInsights(List<AssessmentUIModel> sorted) {
+    // ── جمع الداتا من كل الفحوصات اللي عندها aiAnalysis ──────────────────
+    final withAI = sorted.where((a) => a.aiAnalysis != null).toList();
+    if (withAI.isEmpty) return const SizedBox.shrink();
+
+    // عدّ تكرار كل risk factor عبر كل الفحوصات
+    final Map<String, int> rfCount = {};
+    final Map<String, int> wsCount = {};
+    final Map<String, int> recCount = {};
+
+    for (final a in withAI) {
+      for (final f in a.aiAnalysis!.riskFactors) {
+        rfCount[f] = (rfCount[f] ?? 0) + 1;
+      }
+      for (final w in a.aiAnalysis!.warningSigns) {
+        wsCount[w] = (wsCount[w] ?? 0) + 1;
+      }
+      for (final r in a.aiAnalysis!.recommendations) {
+        recCount[r] = (recCount[r] ?? 0) + 1;
+      }
+    }
+
+    // ترتيب تنازلي حسب التكرار
+    final topRiskFactors = (rfCount.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value)))
+        .take(5)
+        .toList();
+    final topWarningSigns = (wsCount.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value)))
+        .take(4)
+        .toList();
+    final topRecs = (recCount.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value)))
+        .take(4)
+        .toList();
+
+    // مقارنة أول فحص vs آخر فحص
+    final first = withAI.first.aiAnalysis!;
+    final last  = withAI.last.aiAnalysis!;
+    final newRisks = last.riskFactors
+        .where((r) => !first.riskFactors.contains(r))
+        .toList();
+    final resolvedRisks = first.riskFactors
+        .where((r) => !last.riskFactors.contains(r))
+        .toList();
+
+    final totalAssessments = withAI.length;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.borderLight),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Row(children: [
+            Container(
+              padding: const EdgeInsets.all(7),
+              decoration: BoxDecoration(
+                color: AppColors.primaryLight,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.insights_rounded,
+                  size: 16, color: AppColors.primary),
+            ),
+            const SizedBox(width: 10),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('AI Health Insights',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      )),
+                  Text('Based on all your assessments',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 11,
+                        color: AppColors.textSecondary,
+                      )),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.primaryLight,
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: Text('$totalAssessments assessments',
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primary,
+                  )),
+            ),
+          ]),
+          const SizedBox(height: 16),
+
+          // ── أكتر risk factors تكررت ─────────────────────────────────────
+          if (topRiskFactors.isNotEmpty) ...[
+            _insightSectionTitle(
+                Icons.warning_amber_rounded,
+                const Color(0xFFE53935),
+                'Most Recurring Risk Factors'),
+            const SizedBox(height: 8),
+            ...topRiskFactors.map((e) => _insightBarRow(
+                  label: e.key,
+                  count: e.value,
+                  total: totalAssessments,
+                  color: e.value == totalAssessments
+                      ? AppColors.riskHigh
+                      : e.value >= totalAssessments / 2
+                          ? AppColors.riskMedium
+                          : AppColors.riskLow,
+                )),
+            const SizedBox(height: 14),
+          ],
+
+          // ── Warning signs المتكررة ───────────────────────────────────────
+          if (topWarningSigns.isNotEmpty) ...[
+            _insightSectionTitle(
+                Icons.notifications_active_outlined,
+                const Color(0xFFE65100),
+                'Persistent Warning Signs'),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFF8F0),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                children: topWarningSigns
+                    .map((e) => Padding(
+                          padding: const EdgeInsets.only(bottom: 5),
+                          child: Row(children: [
+                            const Icon(Icons.circle,
+                                size: 6, color: Color(0xFFE65100)),
+                            const SizedBox(width: 8),
+                            Expanded(
+                                child: Text(e.key,
+                                    style: const TextStyle(
+                                      fontFamily: 'Inter',
+                                      fontSize: 12,
+                                      color: Color(0xFFBF360C),
+                                      height: 1.3,
+                                    ))),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 7, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFFCCBC),
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: Text('${e.value}x',
+                                  style: const TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xFFBF360C),
+                                  )),
+                            ),
+                          ]),
+                        ))
+                    .toList(),
+              ),
+            ),
+            const SizedBox(height: 14),
+          ],
+
+          // ── مقارنة أول vs آخر فحص ───────────────────────────────────────
+          if (withAI.length >= 2) ...[
+            _insightSectionTitle(
+                Icons.compare_arrows_rounded,
+                AppColors.primary,
+                'First vs Latest Assessment'),
+            const SizedBox(height: 8),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (newRisks.isNotEmpty)
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF3F3),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Row(children: [
+                            Icon(Icons.trending_up_rounded,
+                                size: 13, color: Color(0xFFE53935)),
+                            SizedBox(width: 5),
+                            Text('New Risks',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFFE53935),
+                                )),
+                          ]),
+                          const SizedBox(height: 6),
+                          ...newRisks.map((r) => Padding(
+                                padding: const EdgeInsets.only(bottom: 3),
+                                child: Text('• $r',
+                                    style: const TextStyle(
+                                      fontFamily: 'Inter',
+                                      fontSize: 11,
+                                      color: Color(0xFFB71C1C),
+                                      height: 1.3,
+                                    )),
+                              )),
+                        ],
+                      ),
+                    ),
+                  ),
+                if (newRisks.isNotEmpty && resolvedRisks.isNotEmpty)
+                  const SizedBox(width: 10),
+                if (resolvedRisks.isNotEmpty)
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF1FFF3),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Row(children: [
+                            Icon(Icons.trending_down_rounded,
+                                size: 13, color: Color(0xFF2E7D32)),
+                            SizedBox(width: 5),
+                            Text('Resolved',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF2E7D32),
+                                )),
+                          ]),
+                          const SizedBox(height: 6),
+                          ...resolvedRisks.map((r) => Padding(
+                                padding: const EdgeInsets.only(bottom: 3),
+                                child: Text('• $r',
+                                    style: const TextStyle(
+                                      fontFamily: 'Inter',
+                                      fontSize: 11,
+                                      color: Color(0xFF1B5E20),
+                                      height: 1.3,
+                                    )),
+                              )),
+                        ],
+                      ),
+                    ),
+                  ),
+                if (newRisks.isEmpty && resolvedRisks.isEmpty)
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryLight,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Text(
+                      'Risk factors are consistent across assessments.',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 14),
+          ],
+
+          // ── Top Recommendations ──────────────────────────────────────────
+          if (topRecs.isNotEmpty) ...[
+            _insightSectionTitle(
+                Icons.medical_services_outlined,
+                AppColors.primary,
+                'Most Recommended Actions'),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.primaryLight,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                children: topRecs
+                    .asMap()
+                    .entries
+                    .map((e) => Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 18,
+                                height: 18,
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary,
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: Center(
+                                  child: Text('${e.key + 1}',
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white,
+                                      )),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(e.value.key,
+                                    style: const TextStyle(
+                                      fontFamily: 'Inter',
+                                      fontSize: 12,
+                                      color: AppColors.textPrimary,
+                                      height: 1.4,
+                                    )),
+                              ),
+                            ],
+                          ),
+                        ))
+                    .toList(),
+              ),
+            ),
+          ],
+        SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
+  Widget _insightSectionTitle(IconData icon, Color color, String title) {
+    return Row(children: [
+      Icon(icon, size: 14, color: color),
+      const SizedBox(width: 6),
+      Text(title,
+          style: TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: color,
+          )),
+    ]);
+  }
+
+  Widget _insightBarRow({
+    required String label,
+    required int count,
+    required int total,
+    required Color color,
+  }) {
+    final pct = total > 0 ? count / total : 0.0;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 7),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            Expanded(
+              child: Text(label,
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 12,
+                    color: AppColors.textPrimary,
+                  )),
+            ),
+            Text('$count/$total',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: color,
+                )),
+          ]),
+          const SizedBox(height: 4),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: pct,
+              minHeight: 6,
+              backgroundColor: color.withOpacity(0.15),
+              valueColor: AlwaysStoppedAnimation<Color>(color),
+            ),
+          ),
         ],
       ),
     );

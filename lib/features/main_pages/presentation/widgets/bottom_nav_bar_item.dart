@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:heart_disease/core/path_strings.dart';
 import 'package:heart_disease/res/app_colors.dart';
 
 class AppBottomNavBar extends StatelessWidget {
@@ -14,13 +15,13 @@ class AppBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final iconList = <String>[
-      "assets/icons/home.png",
-      "assets/icons/history.png",
-      // "assets/icons/doctors.png",
-      "assets/icons/articles.png",
-      "assets/icons/chat.png",
-      "assets/icons/profile.png",
+    final iconList = [
+      PathStrings.homeIconPath,
+      PathStrings.historyIconPath,
+      // PathStrings.doctorsIconPath,
+      PathStrings.articlesIconPath,
+      PathStrings.chatIconPath,
+      PathStrings.profileIconPath,
     ];
 
     final iconTitles = [

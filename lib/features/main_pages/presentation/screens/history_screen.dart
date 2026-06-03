@@ -6,7 +6,6 @@ import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc
 import 'package:heart_disease/features/main_pages/presentation/manager/main_state.dart';
 import 'package:heart_disease/features/main_pages/presentation/screens/result_screen.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/history_card.dart';
-import 'package:heart_disease/features/main_pages/presentation/widgets/history_header.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/loading.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/main_appbar.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/new_assessment_card.dart';
