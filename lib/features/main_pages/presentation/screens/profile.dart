@@ -6,6 +6,7 @@ import 'package:heart_disease/features/auth/presentation/pages/login_screen.dart
 import 'package:heart_disease/core/change_language/change_language_screen.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_state.dart';
+import 'package:heart_disease/features/main_pages/presentation/widgets/loading.dart';
 import 'package:heart_disease/features/update_profile/presentation/screens/edit_profile_screen.dart';
 import 'package:heart_disease/shared/widgets/base_button.dart';
 
@@ -26,6 +27,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         // if (state is ProfileLoadingState) {
         //   return const Center(child: CircularProgressIndicator());
         // }
+        if (state is ProfileLoadingState) {
+          return const Center(child: MyLoadingWidget());
+        }
 
         if (state is ProfileErrorState) {
           return Center(child: Text(state.error));
@@ -37,13 +41,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             appBar: AppBar(
               elevation: 0,
               backgroundColor: Colors.white,
-              leading: IconButton(
-                color: Colors.blue,
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: Icon(Icons.arrow_back),
-              ),
+              // leading: IconButton(
+              //   color: Colors.blue,
+              //   onPressed: () {
+              //     Navigator.pop(context);
+              //   },
+              //   icon: Icon(Icons.arrow_back),
+              // ),
               title:  Text(
                 "profile".tr(),
                 style: TextStyle(color: Colors.blue),

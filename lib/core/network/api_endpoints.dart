@@ -1,7 +1,7 @@
 class ApiEndpoints  {
   // static const String baseUrl =
   //     "https://a26cc89e437b.ngrok-free.app/api/v1/";
-  static const String baseUrl = "http://localhost:5001";
+  static const String baseUrl = "http://192.168.1.5:5001";
   static const String login = "/api/auth/login";
   static const String signUp = "/api/auth/register";
   static const String profile = "/api/patient/profile";

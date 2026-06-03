@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
-import 'package:heart_disease/features/main_pages/presentation/screens/profile.dart';
+import 'package:heart_disease/features/main_pages/presentation/manager/main_event.dart';
 
 class WelcomeHeader extends StatelessWidget {
   final String userName;
@@ -92,27 +92,21 @@ class WelcomeHeader extends StatelessWidget {
             /// PROFILE IMAGE
             GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => BlocProvider.value(
-                      value: context.read<MainBloc>(),
-                      child: ProfileScreen(),
-                    ),
-                  ),
-                );
+                context.read<MainBloc>().add(MainTabChangedEvent(4));
               },
               child: CircleAvatar(
                 radius: 18,
                 backgroundColor: Colors.white,
                 child: CircleAvatar(
                   radius: 16,
-                  backgroundImage: NetworkImage(profileImageUrl),
+                  // backgroundImage: NetworkImage(profileImageUrl),
+                  backgroundImage:
+                      AssetImage("assets/images/defualt_profile.png"),
+
                   onBackgroundImageError: (_, __) {},
                 ),
               ),
             ),
-          
           ],
         ),
       ),

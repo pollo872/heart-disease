@@ -36,6 +36,7 @@ class _Step1State extends State<Step1> {
       backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
         backgroundColor: Colors.white,
+        scrolledUnderElevation: 0,
         elevation: 0,
         leading: const BackButton(color: Colors.black87),
         title: Column(
@@ -65,6 +66,7 @@ class _Step1State extends State<Step1> {
           ),
         ),
       ),
+    
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

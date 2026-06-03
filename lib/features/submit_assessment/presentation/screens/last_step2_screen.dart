@@ -27,7 +27,7 @@ class _Step2State extends State<Step2> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: const BackButton(color: Colors.black87),
+        leading:  BackButton(color: Colors.black87,onPressed: () => cubit.prevStep(),),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children:  [

@@ -5,7 +5,7 @@ import 'package:heart_disease/features/chat/presentation/manager/chat_cubit.dart
 import 'package:heart_disease/features/chat/presentation/manager/chat_state.dart';
 import 'package:heart_disease/features/chat/presentation/widgets/chat_widgets.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
-import 'package:heart_disease/features/main_pages/presentation/screens/profile.dart';
+import 'package:heart_disease/features/main_pages/presentation/manager/main_event.dart';
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
@@ -126,20 +126,13 @@ class _ChatViewState extends State<_ChatView> {
   AppBar _buildAppBar() {
     return AppBar(
       backgroundColor: Colors.white,
+      scrolledUnderElevation: 0,
       elevation: 0.5,
       leading: Padding(
         padding: const EdgeInsets.all(8.0),
         child: GestureDetector(
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => BlocProvider.value(
-                  value: context.read<MainBloc>(),
-                  child: ProfileScreen(),
-                ),
-              ),
-            );
+            context.read<MainBloc>().add(MainTabChangedEvent(4));
           },
           child: CircleAvatar(
             radius: 18,

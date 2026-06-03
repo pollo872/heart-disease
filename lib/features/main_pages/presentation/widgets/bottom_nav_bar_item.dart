@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:heart_disease/res/app_colors.dart';
@@ -71,17 +69,17 @@ class AppBottomNavBar extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(10),
-        child: Row(
+        constraints: const BoxConstraints(minWidth: 48),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Image.asset(
-            iconPath,
-            width: 22,
-            height: 22,
-            color: isSelected
-                ? AppColors.primary
-                : AppColors.mainGreyIcons,
-          ),
-            const SizedBox(width: 6),
+              iconPath,
+              width: 22,
+              height: 22,
+              color: isSelected ? AppColors.primary : AppColors.mainGreyIcons,
+            ),
+            const SizedBox(height: 4),
             AnimatedCrossFade(
               firstChild: Text(
                 title,
@@ -106,3 +104,6 @@ class AppBottomNavBar extends StatelessWidget {
     );
   }
 }
+
+
+

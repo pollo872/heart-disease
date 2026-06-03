@@ -7,6 +7,7 @@ import 'package:heart_disease/features/main_pages/presentation/manager/main_stat
 import 'package:heart_disease/features/main_pages/presentation/screens/result_screen.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/history_card.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/history_header.dart';
+import 'package:heart_disease/features/main_pages/presentation/widgets/loading.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/main_appbar.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/new_assessment_card.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/widgets/assessment_flow.dart';
@@ -23,7 +24,7 @@ class HistoryScreen extends StatelessWidget {
     return BlocBuilder<MainBloc, MainState>(
       builder: (context, state) {
         if (state is ProfileLoadingState) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: MyLoadingWidget());
         }
         if (state is ProfileErrorState) {
           return Center(child: Text(state.error));
@@ -217,8 +218,8 @@ class _HistoryList extends StatelessWidget {
             );
           },
         ),
-        HistoryHeader(),
-        const SizedBox(height: 12),
+        // HistoryHeader(),
+        // const SizedBox(height: 12),
         Expanded(
           child: SingleChildScrollView(
             child: Column(

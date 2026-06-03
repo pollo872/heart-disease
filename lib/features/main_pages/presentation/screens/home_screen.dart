@@ -9,6 +9,7 @@ import 'package:heart_disease/features/main_pages/presentation/widgets/history_h
 import 'package:heart_disease/features/main_pages/presentation/widgets/home_screen_header.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_state.dart';
+import 'package:heart_disease/features/main_pages/presentation/widgets/loading.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/widgets/assessment_flow.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -19,7 +20,7 @@ class HomeScreen extends StatelessWidget {
     return BlocBuilder<MainBloc, MainState>(
       builder: (context, state) {
         if (state is ProfileLoadingState) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: MyLoadingWidget());
         }
 
         if (state is ProfileErrorState) {
@@ -122,7 +123,7 @@ class _HeaderSection extends StatelessWidget {
         ),
         if (hasAssessment)
           Positioned(
-            top: 100,
+            top: 120,
             left: 16,
             right: 16,
             child: _LatestAssessmentCard(
@@ -215,8 +216,8 @@ class _BodySection extends StatelessWidget {
           const SizedBox(height: 24),
 
           if (hasAssessment) ...[
-            HistoryHeader(),
-            const SizedBox(height: 12),
+            // HistoryHeader(),
+            // const SizedBox(height: 12),
             HistoryCard(
               assessment: state.assessments.first,
               predictionResult: state.assessments.first.predictionResult,
