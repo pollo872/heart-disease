@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/manager/cubit.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/widgets/drop_down.dart';
+import 'package:heart_disease/features/submit_assessment/presentation/widgets/select_option.dart';
 import 'package:heart_disease/shared/widgets/base_button.dart';
 
 class Step3 extends StatefulWidget {
@@ -43,10 +44,13 @@ class _Step3State extends State<Step3> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading:  BackButton(color: Colors.black87,onPressed: () => cubit.prevStep(),),
+        leading: BackButton(
+          color: Colors.black87,
+          onPressed: () => cubit.prevStep(),
+        ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children:  [
+          children: [
             Text(
               'HealthAssessment'.tr(),
               style: TextStyle(
@@ -75,7 +79,7 @@ class _Step3State extends State<Step3> {
         padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const SizedBox(height: 12),
-           Text(
+          Text(
             'Medical History'.tr(),
             style: TextStyle(
               fontSize: 18,
@@ -84,22 +88,11 @@ class _Step3State extends State<Step3> {
             ),
           ),
           const SizedBox(height: 4),
-           Text(
+          Text(
             'Select any conditions that apply to you'.tr(),
             style: TextStyle(fontSize: 13, color: Colors.grey),
           ),
           const SizedBox(height: 20),
-          _buildLabel('Diabetic?'),
-          const SizedBox(height: 6),
-          CustomDropdown<String>(
-            hint: 'Select option',
-            items: const [
-              'Yes',
-              'No',
-            ],
-            value: diabetic,
-            onChanged: (v) => setState(() => diabetic = v),
-          ),
           _buildLabel('General Health?'),
           const SizedBox(height: 6),
           CustomDropdown<String>(
@@ -114,54 +107,8 @@ class _Step3State extends State<Step3> {
             value: generalHealth,
             onChanged: (v) => setState(() => generalHealth = v),
           ),
-          _buildLabel('Asthma?'),
-          const SizedBox(height: 6),
-          CustomDropdown<String>(
-            hint: 'Select option',
-            items: const [
-              'Yes',
-              'No',
-            ],
-            value: asthma,
-            onChanged: (v) => setState(() => asthma = v),
-          ),
           const SizedBox(height: 16),
-          _buildLabel('Stroke?'),
-          const SizedBox(height: 6),
-          CustomDropdown<String>(
-            hint: 'Select option',
-            items: const [
-              'Yes',
-              'No',
-            ],
-            value: stroke,
-            onChanged: (v) => setState(() => stroke = v),
-          ),
-          const SizedBox(height: 16),
-          _buildLabel('Kidney Disease?'),
-          const SizedBox(height: 6),
-          CustomDropdown<String>(
-            hint: 'Select option',
-            items: const [
-              'Yes',
-              'No',
-            ],
-            value: kidneyDisease,
-            onChanged: (v) => setState(() => kidneyDisease = v),
-          ),
-          const SizedBox(height: 16),
-          _buildLabel('Skin Cancer?'),
-          const SizedBox(height: 6),
-          CustomDropdown<String>(
-            hint: 'Select option',
-            items: const [
-              'Yes',
-              'No',
-            ],
-            value: skinCancer,
-            onChanged: (v) => setState(() => skinCancer = v),
-          ),
-          const SizedBox(height: 16),
+
           _buildLabel('Physical Health Days (last 30 days)?'),
           const SizedBox(height: 6),
           _buildTextField(
@@ -186,6 +133,42 @@ class _Step3State extends State<Step3> {
             onChanged: (v) => sleepTime = int.tryParse(v),
           ),
           const SizedBox(height: 16),
+          _buildLabel('Diabetic?'),
+          const SizedBox(height: 6),
+          YesNoSelector(
+            value: diabetic,
+            onChanged: (v) => setState(() => diabetic = v),
+          ),
+          const SizedBox(height: 6),
+
+          _buildLabel('Asthma?'),
+          const SizedBox(height: 6),
+          YesNoSelector(
+            value: asthma,
+            onChanged: (v) => setState(() => asthma = v),
+          ),
+          const SizedBox(height: 16),
+          _buildLabel('Stroke?'),
+          const SizedBox(height: 6),
+          YesNoSelector(
+            value: stroke,
+            onChanged: (v) => setState(() => stroke = v),
+          ),
+          const SizedBox(height: 16),
+          _buildLabel('Kidney Disease?'),
+          const SizedBox(height: 6),
+          YesNoSelector(
+            value: kidneyDisease,
+            onChanged: (v) => setState(() => kidneyDisease = v),
+          ),
+          const SizedBox(height: 16),
+          _buildLabel('Skin Cancer?'),
+          const SizedBox(height: 6),
+          YesNoSelector(
+            value: skinCancer,
+            onChanged: (v) => setState(() => skinCancer = v),
+          ),
+          
 
           // Past Heart Conditions
           // const Text(

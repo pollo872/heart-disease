@@ -503,27 +503,12 @@ class ResultScreen extends StatelessWidget {
                           fillColor: assessment.riskColor,
                         ),
                         child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 24),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  '$score',
-                                  style: TextStyle(
-                                    fontSize: 26,
-                                    fontWeight: FontWeight.bold,
-                                    color: assessment.riskColor,
-                                  ),
-                                ),
-                                Text(
-                                  '/ $maxScore',
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
+                          child: Text(
+                            '$score%',
+                            style: TextStyle(
+                              fontSize: 26,
+                              fontWeight: FontWeight.bold,
+                              color: assessment.riskColor,
                             ),
                           ),
                         ),

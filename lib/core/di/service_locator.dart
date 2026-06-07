@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:heart_disease/features/main_pages/data/data_source/get_profile_remote_data_source.dart';
 import 'package:heart_disease/features/main_pages/data/repository/main_repo.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_event.dart';
@@ -11,6 +12,7 @@ final sl = GetIt.instance;
 void init() {
   /// DataSource
   sl.registerLazySingleton(() => AssessmentRemoteDataSource());
+   sl.registerLazySingleton(() => MainRemoteDataSource()); 
 
   /// Repository
   sl.registerLazySingleton(

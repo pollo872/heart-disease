@@ -35,7 +35,7 @@ class AppBottomNavBar extends StatelessWidget {
       // 'Doctors'.tr(),
       'Articles'.tr(),
       'Chat'.tr(),
-      'Settings'.tr(),
+      'profile'.tr(),
     ];
 
     return Container(

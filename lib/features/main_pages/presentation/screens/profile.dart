@@ -23,6 +23,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MainBloc, MainState>(
+      buildWhen: (previous, current) =>
+          current is ProfileLoadingState ||
+          current is ProfileSuccessState ||
+          current is ProfileErrorState,
       builder: (context, state) {
         // if (state is ProfileLoadingState) {
         //   return const Center(child: CircularProgressIndicator());
@@ -48,7 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               //   },
               //   icon: Icon(Icons.arrow_back),
               // ),
-              title:  Text(
+              title: Text(
                 "profile".tr(),
                 style: TextStyle(color: Colors.blue),
               ),
@@ -128,7 +132,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         _IconBox(icon: Icons.notifications, color: Colors.blue),
                         const SizedBox(width: 12),
-                         Expanded(
+                        Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -205,6 +209,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       );
                     },
                   ),
+                  SizedBox(height: 100),
                 ],
               ),
             ),

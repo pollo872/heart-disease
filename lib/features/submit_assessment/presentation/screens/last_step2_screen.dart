@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/manager/cubit.dart';
-import 'package:heart_disease/features/submit_assessment/presentation/widgets/drop_down.dart';
+import 'package:heart_disease/features/submit_assessment/presentation/widgets/select_option.dart';
 import 'package:heart_disease/shared/widgets/base_button.dart';
 
 class Step2 extends StatefulWidget {
@@ -27,12 +27,15 @@ class _Step2State extends State<Step2> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading:  BackButton(color: Colors.black87,onPressed: () => cubit.prevStep(),),
+        leading: BackButton(
+          color: Colors.black87,
+          onPressed: () => cubit.prevStep(),
+        ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children:  [
+          children: [
             Text(
-             'HealthAssessment'.tr(),
+              'HealthAssessment'.tr(),
               style: TextStyle(
                 color: Color(0xFF1E63F3),
                 fontSize: 13,
@@ -61,7 +64,7 @@ class _Step2State extends State<Step2> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 12),
-             Text(
+            Text(
               'Lifestyle & Habits'.tr(),
               style: TextStyle(
                 fontSize: 18,
@@ -70,7 +73,7 @@ class _Step2State extends State<Step2> {
               ),
             ),
             const SizedBox(height: 4),
-             Text(
+            Text(
               'Help us understand your daily lifestyle choices'.tr(),
               style: TextStyle(fontSize: 13, color: Colors.grey),
             ),
@@ -79,12 +82,7 @@ class _Step2State extends State<Step2> {
             // Smoking
             _buildLabel('Do you smoke?'),
             const SizedBox(height: 6),
-            CustomDropdown<String>(
-              hint: 'Select option',
-              items: const [
-                'Yes',
-                'No',
-              ],
+            YesNoSelector(
               value: smoking,
               onChanged: (v) => setState(() => smoking = v),
             ),
@@ -93,12 +91,7 @@ class _Step2State extends State<Step2> {
             // Diet
             _buildLabel('Do you drink alcohol?'),
             const SizedBox(height: 6),
-            CustomDropdown<String>(
-              hint: 'Select option',
-              items: const [
-                'Yes',
-                'No',
-              ],
+            YesNoSelector(
               value: alcohol,
               onChanged: (v) => setState(() => alcohol = v),
             ),
@@ -107,12 +100,7 @@ class _Step2State extends State<Step2> {
             // Exercise
             _buildLabel('Physical activity (exercise)?'),
             const SizedBox(height: 6),
-            CustomDropdown<String>(
-              hint: 'Select option',
-              items: const [
-                'Yes',
-                'No',
-              ],
+            YesNoSelector(
               value: exerciseFrequency,
               onChanged: (v) => setState(() => exerciseFrequency = v),
             ),
@@ -121,12 +109,7 @@ class _Step2State extends State<Step2> {
             // Stress
             _buildLabel('Difficulty walking/climbing stairs?'),
             const SizedBox(height: 6),
-            CustomDropdown<String>(
-              hint: 'Select option',
-              items: const [
-                'Yes',
-                'No',
-              ],
+            YesNoSelector(
               value: stressLevel,
               onChanged: (v) => setState(() => stressLevel = v),
             ),
@@ -203,5 +186,4 @@ class _Step2State extends State<Step2> {
   //     ),
   //   );
   // }
-
 }

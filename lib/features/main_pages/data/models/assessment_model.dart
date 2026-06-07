@@ -53,32 +53,32 @@ class AiAnalysis {
   // من Flask مباشرة (snake_case)
   factory AiAnalysis.fromJson(Map<String, dynamic> json) {
     return AiAnalysis(
-      summary:         json['summary'] ?? '',
-      riskFactors:     List<String>.from(json['risk_factors'] ?? []),
+      summary: json['summary'] ?? '',
+      riskFactors: List<String>.from(json['risk_factors'] ?? []),
       positiveFactors: List<String>.from(json['positive_factors'] ?? []),
       recommendations: List<String>.from(json['recommendations'] ?? []),
-      lifestyleTips:   List<String>.from(json['lifestyle_tips'] ?? []),
-      warningSigns:    List<String>.from(json['warning_signs'] ?? []),
-      followUp:        json['follow_up'] ?? '',
+      lifestyleTips: List<String>.from(json['lifestyle_tips'] ?? []),
+      warningSigns: List<String>.from(json['warning_signs'] ?? []),
+      followUp: json['follow_up'] ?? '',
     );
   }
 
   // من MongoDB — بيحفظ camelCase، فنقرأ الاتنين
   factory AiAnalysis.fromMongoJson(Map<String, dynamic> json) {
-    print("#####################################################aiAnalysis raw: ${json['aiAnalysis']}");
+    print("aiAnalysis keys: ${json.keys}"); // ✅ هتشوف الـ keys الحقيقية
+    print("summary: ${json['summary']}");
     return AiAnalysis(
-      summary:         json['summary'] ?? '',
-      riskFactors:     List<String>.from(
-                         json['riskFactors'] ?? json['risk_factors'] ?? []),
+      summary: json['summary'] ?? '',
+      riskFactors:
+          List<String>.from(json['riskFactors'] ?? json['risk_factors'] ?? []),
       positiveFactors: List<String>.from(
-                         json['positiveFactors'] ?? json['positive_factors'] ?? []),
-      recommendations: List<String>.from(
-                         json['recommendations'] ?? []),
-      lifestyleTips:   List<String>.from(
-                         json['lifestyleTips'] ?? json['lifestyle_tips'] ?? []),
-      warningSigns:    List<String>.from(
-                         json['warningSigns'] ?? json['warning_signs'] ?? []),
-      followUp:        json['followUp'] ?? json['follow_up'] ?? '',
+          json['positiveFactors'] ?? json['positive_factors'] ?? []),
+      recommendations: List<String>.from(json['recommendations'] ?? []),
+      lifestyleTips: List<String>.from(
+          json['lifestyleTips'] ?? json['lifestyle_tips'] ?? []),
+      warningSigns: List<String>.from(
+          json['warningSigns'] ?? json['warning_signs'] ?? []),
+      followUp: json['followUp'] ?? json['follow_up'] ?? '',
     );
   }
 }
@@ -104,15 +104,15 @@ class AssessmentModel {
 
   factory AssessmentModel.fromJson(Map<String, dynamic> json) {
     return AssessmentModel(
-      id:               json['_id'],
+      id: json['_id'],
       predictionResult: json['predictionResult'],
-      probability:      (json['probability'] as num).toDouble(),
-      riskLevel:        json['riskLevel'],
-      createdAt:        json['createdAt'],
-      bmi:              (json['BMI'] as num).toDouble(),
-      aiAnalysis:       json['aiAnalysis'] != null
-                          ? AiAnalysis.fromMongoJson(json['aiAnalysis'])
-                          : null,
+      probability: (json['probability'] as num).toDouble(),
+      riskLevel: json['riskLevel'],
+      createdAt: json['createdAt'],
+      bmi: (json['BMI'] as num).toDouble(),
+      aiAnalysis: json['aiAnalysis'] != null
+          ? AiAnalysis.fromMongoJson(json['aiAnalysis'])
+          : null,
     );
   }
 }

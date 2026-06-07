@@ -2,42 +2,45 @@ import 'package:heart_disease/features/main_pages/data/data_source/get_profile_r
 import 'package:heart_disease/features/main_pages/data/models/assessment_model.dart';
 import '../models/patient_model.dart';
 
+// main_repo.dart
 class MainRepo {
   final MainRemoteDataSource remoteDataSource;
-
   MainRepo(this.remoteDataSource);
 
-  Future<PatientModel> getProfile() async {
+  // ✅ call واحد بس بيرجع كل الداتا
+  Future<ProfileData> getFullProfile() async {
     final response = await remoteDataSource.getProfile();
+    final data = response.data;
 
-    return PatientModel.fromJson(
-      response.data['patient'],
+    final patient = PatientModel.fromJson(data['patient']);
+    
+    final latestRaw = data['latestHealthData'];
+    final latestAssessment = latestRaw != null 
+        ? AssessmentModel.fromJson(latestRaw) 
+        : null;
+
+    final allRaw = data['allHealthData'] as List? ?? [];
+    final allAssessments = allRaw
+        .map((item) => AssessmentModel.fromJson(item))
+        .toList();
+
+    return ProfileData(
+      patient: patient,
+      latestAssessment: latestAssessment,
+      allAssessments: allAssessments,
     );
   }
-
- Future<AssessmentModel?> getLatestHealthData() async {
-  final response = await remoteDataSource.getProfile();
-
-  var data = response.data['latestHealthData'];
-
-  if (data == null) {
-    return null;
-  }
-
-  return AssessmentModel.fromJson(data);
 }
- Future<List<AssessmentModel>> getAllHealthData() async {
-  final response = await remoteDataSource.getProfile();
 
-  var data = response.data['allHealthData'];
-  
+// model بسيط يجمع الداتا
+class ProfileData {
+  final PatientModel patient;
+  final AssessmentModel? latestAssessment;
+  final List<AssessmentModel> allAssessments;
 
-  if (data == null) {
-    return [];
-  }
-
-  return (data as List)
-      .map((item) => AssessmentModel.fromJson(item))
-      .toList();
-}
+  ProfileData({
+    required this.patient,
+    required this.latestAssessment,
+    required this.allAssessments,
+  });
 }

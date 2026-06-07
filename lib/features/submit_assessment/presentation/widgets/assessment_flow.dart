@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/core/di/service_locator.dart';
+import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
+import 'package:heart_disease/features/main_pages/presentation/manager/main_event.dart';
 import 'package:heart_disease/features/main_pages/presentation/screens/result_screen.dart';
+import 'package:heart_disease/features/main_pages/presentation/widgets/loading.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/manager/cubit.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/manager/state.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/screens/last_review_screen.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/screens/last_step1_screen.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/screens/last_step2_screen.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/screens/last_step3_screen.dart';
-
 
 class AssessmentFlow extends StatelessWidget {
   const AssessmentFlow({super.key});
@@ -25,24 +27,26 @@ class AssessmentFlow extends StatelessWidget {
           }
 
           if (state is AssessmentSuccess) {
-               Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ResultScreen(
-            score: double.parse(state.assessment.probability),
-            // riskLevel: state.assessment.riskLevel,
-            createdAt: state.assessment.createdAt,
-            assessment: state.assessment,
-          ),
-        ),
-      );
+            context.read<MainBloc>().invalidateCache();
+            context.read<MainBloc>().add(GetProfileEvent());
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ResultScreen(
+                  score: double.parse(state.assessment.probability),
+                  // riskLevel: state.assessment.riskLevel,
+                  createdAt: state.assessment.createdAt,
+                  assessment: state.assessment,
+                ),
+              ),
+            );
           }
         },
         builder: (context, state) {
           final cubit = context.read<AssessmentCubit>();
 
           if (state is AssessmentLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: MyLoadingWidget());
           }
 
           switch (cubit.step) {

@@ -6,3 +6,5 @@ class MainTabChangedEvent extends MainEvent {
 }
 
 class GetProfileEvent extends MainEvent {}
+
+class RefreshIfChangedEvent extends MainEvent {}

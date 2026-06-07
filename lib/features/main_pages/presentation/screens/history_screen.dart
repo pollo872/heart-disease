@@ -21,6 +21,10 @@ class HistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MainBloc, MainState>(
+      buildWhen: (previous, current) =>
+          current is ProfileLoadingState ||
+          current is ProfileSuccessState ||
+          current is ProfileErrorState,
       builder: (context, state) {
         if (state is ProfileLoadingState) {
           return const Center(child: MyLoadingWidget());

@@ -15,25 +15,29 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screens = [
-      const HomeScreen(),
-      const HistoryScreen(),
-      const ArticlesScreen(),
-      const ChatPage(),
-      const ProfileScreen(),
-      const SizedBox(),
-    ];
-
     return BlocBuilder<MainBloc, MainState>(
+      // ✅ بيبني بس لو الـ index اتغير
+      buildWhen: (previous, current) =>
+          current is MainIndexChangedState || current is MainInitialState,
       builder: (context, state) {
-        final currentIndex =
-            context.read<MainBloc>().currentIndex; // ← من الـ bloc
+        final currentIndex = context.read<MainBloc>().currentIndex;
 
         return Scaffold(
           extendBodyBehindAppBar: true,
           extendBody: true,
           backgroundColor: Colors.transparent,
-          body: screens[currentIndex],
+          // ✅ بيخلي كل الـ screens تتبني مرة واحدة وتفضل موجودة
+          body: IndexedStack(
+            index: currentIndex,
+            children: const [
+              HomeScreen(),
+              HistoryScreen(),
+              ArticlesScreen(),
+              ChatPage(),
+              ProfileScreen(),
+              SizedBox(),
+            ],
+          ),
           bottomNavigationBar: AppBottomNavBar(
             currentIndex: currentIndex,
             onTap: (index) {
