@@ -2,7 +2,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/manager/cubit.dart';
+import 'package:heart_disease/features/submit_assessment/presentation/widgets/bar_indecator.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/widgets/select_option.dart';
+import 'package:heart_disease/features/submit_assessment/presentation/widgets/text_field.dart';
 import 'package:heart_disease/shared/widgets/base_button.dart';
 
 class Step2 extends StatefulWidget {
@@ -15,49 +17,18 @@ class Step2 extends StatefulWidget {
 class _Step2State extends State<Step2> {
   String? smoking;
   String? alcohol;
-  String? exerciseFrequency;
-  String? stressLevel;
-
+  String? physicalActivity;
+  String? difficultyWalking;
+  int? sleepTime;
+  int? coffeeIntake;
+  @override
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<AssessmentCubit>();
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: BackButton(
-          color: Colors.black87,
-          onPressed: () => cubit.prevStep(),
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'HealthAssessment'.tr(),
-              style: TextStyle(
-                color: Color(0xFF1E63F3),
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            Text(
-              'Step 2 of 3'.tr(),
-              style: TextStyle(color: Colors.grey, fontSize: 11),
-            ),
-          ],
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(4),
-          child: LinearProgressIndicator(
-            value: 2 / 3,
-            backgroundColor: Colors.grey[200],
-            color: const Color(0xFF1E63F3),
-            minHeight: 3,
-          ),
-        ),
-      ),
+      appBar: buildBarIndicator('Step 2 of 4', 2, cubit),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -78,6 +49,22 @@ class _Step2State extends State<Step2> {
               style: TextStyle(fontSize: 13, color: Colors.grey),
             ),
             const SizedBox(height: 20),
+            _buildLabel('Sleep Time (hours per day)?'),
+            const SizedBox(height: 6),
+            buildTextField(
+              hint: '8',
+              keyboardType: TextInputType.number,
+              onChanged: (v) => sleepTime = int.tryParse(v),
+            ),
+            const SizedBox(height: 16),
+            _buildLabel('Caffeine Intake (cups per day)?'),
+            const SizedBox(height: 6),
+            buildTextField(
+              hint: '2',
+              keyboardType: TextInputType.number,
+              onChanged: (v) => coffeeIntake = int.tryParse(v),
+            ),
+            const SizedBox(height: 16),
 
             // Smoking
             _buildLabel('Do you smoke?'),
@@ -101,8 +88,8 @@ class _Step2State extends State<Step2> {
             _buildLabel('Physical activity (exercise)?'),
             const SizedBox(height: 6),
             YesNoSelector(
-              value: exerciseFrequency,
-              onChanged: (v) => setState(() => exerciseFrequency = v),
+              value: physicalActivity,
+              onChanged: (v) => setState(() => physicalActivity = v),
             ),
             const SizedBox(height: 16),
 
@@ -110,8 +97,8 @@ class _Step2State extends State<Step2> {
             _buildLabel('Difficulty walking/climbing stairs?'),
             const SizedBox(height: 6),
             YesNoSelector(
-              value: stressLevel,
-              onChanged: (v) => setState(() => stressLevel = v),
+              value: difficultyWalking,
+              onChanged: (v) => setState(() => difficultyWalking = v),
             ),
 
             const SizedBox(height: 28),
@@ -125,8 +112,10 @@ class _Step2State extends State<Step2> {
               onPressed: () {
                 if (smoking == null ||
                     alcohol == null ||
-                    exerciseFrequency == null ||
-                    stressLevel == null) {
+                    physicalActivity == null ||
+                    difficultyWalking == null ||
+                    sleepTime == null ||
+                    coffeeIntake == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Please fill all fields')),
                   );
@@ -135,8 +124,10 @@ class _Step2State extends State<Step2> {
                 cubit.updateLifestyle(
                   smoking: smoking!,
                   alcohol: alcohol!,
-                  physicalActivity: exerciseFrequency!,
-                  difficultyWalking: stressLevel!,
+                  physicalActivity: physicalActivity!,
+                  difficultyWalking: difficultyWalking!,
+                  sleepTime: sleepTime!,
+                  coffeeIntake: coffeeIntake! ,
                 );
                 cubit.nextStep();
               },

@@ -8,15 +8,15 @@ import 'package:heart_disease/features/dashboard/data/services/pdf_export_servic
 import 'package:heart_disease/features/main_pages/data/models/assessment_ui_model.dart';
 import 'package:heart_disease/theme/app_theme.dart';
 
-
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({
     super.key,
-    required this.assessments, // state.assessments مباشرة
+    required this.assessments,
+    required this.userName,
   });
 
-  /// مباشرة من state.assessments — نفس اللي بيستخدمه HistoryCard
   final List<AssessmentUIModel> assessments;
+  final String userName;
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -27,19 +27,16 @@ class _DashboardScreenState extends State<DashboardScreen>
   late AnimationController _animCtrl;
   late Animation<double> _fadeAnim;
 
-  // RepaintBoundary keys للـ PDF
   final GlobalKey _probabilityChartKey = GlobalKey();
   final GlobalKey _bmiChartKey = GlobalKey();
-  // 🔜 final GlobalKey _bpChartKey = GlobalKey();
+  final GlobalKey _bpChartKey = GlobalKey();
 
-  // BMI info dialog
   bool _showBmiInfo = false;
 
   @override
   void initState() {
     super.initState();
-    _animCtrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 600));
+    _animCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 600));
     _fadeAnim = CurvedAnimation(parent: _animCtrl, curve: Curves.easeOut);
     _animCtrl.forward();
   }
@@ -50,20 +47,17 @@ class _DashboardScreenState extends State<DashboardScreen>
     super.dispose();
   }
 
-  // ── Sorted تصاعدي بالتاريخ ────────────────────────────────────────────────
   List<AssessmentUIModel> get _sorted {
     final list = List<AssessmentUIModel>.from(widget.assessments);
     list.sort((a, b) => a.createdAt.compareTo(b.createdAt));
     return list;
   }
 
-  // ── probability String → double (0–100) ───────────────────────────────────
   double _toPercent(String prob) {
     final val = double.tryParse(prob) ?? 0.0;
     return val <= 1.0 ? val * 100 : val;
   }
 
-  // ── Risk color من AppColors ───────────────────────────────────────────────
   Color _riskColor(String level) => switch (level.toLowerCase()) {
         'low' => AppColors.riskLow,
         'medium' => AppColors.riskMedium,
@@ -82,12 +76,6 @@ class _DashboardScreenState extends State<DashboardScreen>
         _ => AppColors.riskHighText,
       };
 
-  // ── BMI Category (WHO Standard) ───────────────────────────────────────────
-  // Underweight: < 18.5
-  // Normal:      18.5 – 24.9  ✅ مثالي
-  // Overweight:  25 – 29.9    ⚠️ تحذير
-  // Obese I:     30 – 34.9    ❌ خطر
-  // Obese II+:   ≥ 35         ❌ خطر مرتفع
   String _bmiCategory(double bmi) {
     if (bmi < 18.5) return 'Underweight';
     if (bmi < 25) return 'Normal';
@@ -97,38 +85,48 @@ class _DashboardScreenState extends State<DashboardScreen>
   }
 
   Color _bmiColor(double bmi) {
-    if (bmi < 18.5) return AppColors.riskMedium; // نحيف جداً
-    if (bmi < 25) return AppColors.riskLow; // مثالي
-    if (bmi < 30) return AppColors.riskMedium; // overweight
-    return AppColors.riskHigh; // obese
+    if (bmi < 18.5) return AppColors.riskMedium;
+    if (bmi < 25) return AppColors.riskLow;
+    if (bmi < 30) return AppColors.riskMedium;
+    return AppColors.riskHigh;
   }
 
-  // ── Trend detection ───────────────────────────────────────────────────────
-  // lowerIsBetter=true → انخفاض = تحسن (زي probability)
-  // lowerIsBetter=false → ارتفاع = تحسن
   _TrendData _calcTrend(
     List<AssessmentUIModel> sorted,
     double Function(AssessmentUIModel) fn, {
     bool lowerIsBetter = true,
   }) {
-    if (sorted.length < 2) {
-      return _TrendData(type: _TrendType.stable, delta: 0);
-    }
+    if (sorted.length < 2) return _TrendData(type: _TrendType.stable, delta: 0);
     final delta = fn(sorted.last) - fn(sorted.first);
-    if (delta.abs() < 0.1)
-      return _TrendData(type: _TrendType.stable, delta: delta);
+    if (delta.abs() < 0.1) return _TrendData(type: _TrendType.stable, delta: delta);
     final improved = lowerIsBetter ? delta < 0 : delta > 0;
-    return _TrendData(
-      type: improved ? _TrendType.improved : _TrendType.worsened,
-      delta: delta,
-    );
+    return _TrendData(type: improved ? _TrendType.improved : _TrendType.worsened, delta: delta);
   }
 
-  // ── PDF Export ────────────────────────────────────────────────────────────
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  String _shortDate(String iso) {
+    try {
+      final d = DateTime.parse(iso);
+      return '${d.month}/${d.day}';
+    } catch (_) {
+      return iso.length >= 5 ? iso.substring(5, 10) : iso;
+    }
+  }
+
+  String _longDate(String iso) {
+    try {
+      final d = DateTime.parse(iso);
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return '${months[d.month - 1]} ${d.day}, ${d.year}';
+    } catch (_) {
+      return iso;
+    }
+  }
+
+  // ── PDF Capture ───────────────────────────────────────────────────────────
   Future<Uint8List?> _capture(GlobalKey key) async {
     try {
-      final boundary =
-          key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      final boundary = key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
       if (boundary == null) return null;
       final image = await boundary.toImage(pixelRatio: 2.5);
       final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
@@ -141,13 +139,15 @@ class _DashboardScreenState extends State<DashboardScreen>
   Future<void> _exportPdf() async {
     final sorted = _sorted;
     final probBytes = await _capture(_probabilityChartKey);
-    final bmiBytes  = await _capture(_bmiChartKey);
+    final bmiBytes = await _capture(_bmiChartKey);
+    final bpBytes = await _capture(_bpChartKey);
 
     await PdfExportService.exportHealthReport(
-      userName: '',
+      userName: widget.userName,
       sortedAssessments: sorted,
       riskChartBytes: probBytes,
       bmiChartBytes: bmiBytes,
+      bpChartBytes: bpBytes,
     );
   }
 
@@ -163,51 +163,6 @@ class _DashboardScreenState extends State<DashboardScreen>
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      // appBar: AppBar(
-      //   backgroundColor: AppColors.background,
-      //   elevation: 0,
-      //   leading: BackButton(color: AppColors.textPrimary),
-      //   title: const Text(
-      //     'Health Dashboard',
-      //     style: TextStyle(
-      //       fontFamily: 'Inter',
-      //       fontSize: 18,
-      //       fontWeight: FontWeight.w500,
-      //       color: AppColors.textPrimary,
-      //     ),
-      //   ),
-      //   actions: [
-      //     if (hasData)
-      //       Padding(
-      //         padding: const EdgeInsets.only(right: 16),
-      //         child: GestureDetector(
-      //           onTap: _exportPdf,
-      //           child: Container(
-      //             padding:
-      //                 const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-      //             decoration: BoxDecoration(
-      //               color: AppColors.primaryLight,
-      //               borderRadius: BorderRadius.circular(8),
-      //             ),
-      //             child: const Row(
-      //               children: [
-      //                 Icon(Icons.picture_as_pdf_rounded,
-      //                     size: 15, color: AppColors.primary),
-      //                 SizedBox(width: 5),
-      //                 Text('Export PDF',
-      //                     style: TextStyle(
-      //                       fontFamily: 'Inter',
-      //                       fontSize: 13,
-      //                       fontWeight: FontWeight.w500,
-      //                       color: AppColors.primary,
-      //                     )),
-      //               ],
-      //             ),
-      //           ),
-      //         ),
-      //       ),
-      //   ],
-      // ),
       body: !hasData
           ? _buildEmpty()
           : FadeTransition(
@@ -217,21 +172,21 @@ class _DashboardScreenState extends State<DashboardScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // ── Export PDF button ──────────────────────────
                     Padding(
                       padding: const EdgeInsets.only(right: 16),
                       child: GestureDetector(
                         onTap: _exportPdf,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 7),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                           decoration: BoxDecoration(
                             color: AppColors.primaryLight,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.picture_as_pdf_rounded,
-                                  size: 15, color: AppColors.primary),
+                              Icon(Icons.picture_as_pdf_rounded, size: 15, color: AppColors.primary),
                               SizedBox(width: 5),
                               Text('Export PDF',
                                   style: TextStyle(
@@ -245,6 +200,8 @@ class _DashboardScreenState extends State<DashboardScreen>
                         ),
                       ),
                     ),
+                    const SizedBox(height: 12),
+
                     // ── Summary cards ──────────────────────────────
                     _buildSummaryRow(latest!, sorted),
                     const SizedBox(height: 20),
@@ -263,31 +220,18 @@ class _DashboardScreenState extends State<DashboardScreen>
                     RepaintBoundary(
                       key: _probabilityChartKey,
                       child: _LineChartCard(
-                        spots: sorted
-                            .asMap()
-                            .entries
-                            .map((e) => FlSpot(e.key.toDouble(),
-                                _toPercent(e.value.probability)))
+                        spots: sorted.asMap().entries
+                            .map((e) => FlSpot(e.key.toDouble(), _toPercent(e.value.probability)))
                             .toList(),
-                        labels:
-                            sorted.map((a) => _shortDate(a.createdAt)).toList(),
+                        labels: sorted.map((a) => _shortDate(a.createdAt)).toList(),
                         lineColor: AppColors.primary,
                         unit: '%',
                         minY: 0,
                         maxY: 100,
                         referenceLines: const [
-                          _ReferenceLine(
-                              y: 20,
-                              label: 'Low Risk',
-                              color: Color(0xFF22C55E)),
-                          _ReferenceLine(
-                              y: 50,
-                              label: 'Medium Risk',
-                              color: Color(0xFFF59E0B)),
-                          _ReferenceLine(
-                              y: 75,
-                              label: 'High Risk',
-                              color: Color(0xFFEF4444)),
+                          _ReferenceLine(y: 20, label: 'Low Risk', color: Color(0xFF22C55E)),
+                          _ReferenceLine(y: 50, label: 'Medium Risk', color: Color(0xFFF59E0B)),
+                          _ReferenceLine(y: 75, label: 'High Risk', color: Color(0xFFEF4444)),
                         ],
                         tooltipSuffix: '%',
                       ),
@@ -305,8 +249,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                           ),
                         ),
                         GestureDetector(
-                          onTap: () =>
-                              setState(() => _showBmiInfo = !_showBmiInfo),
+                          onTap: () => setState(() => _showBmiInfo = !_showBmiInfo),
                           child: Container(
                             padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
@@ -315,9 +258,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                               border: Border.all(color: AppColors.borderLight),
                             ),
                             child: Icon(
-                              _showBmiInfo
-                                  ? Icons.info_rounded
-                                  : Icons.info_outline_rounded,
+                              _showBmiInfo ? Icons.info_rounded : Icons.info_outline_rounded,
                               size: 18,
                               color: AppColors.primary,
                             ),
@@ -326,43 +267,25 @@ class _DashboardScreenState extends State<DashboardScreen>
                       ],
                     ),
                     const SizedBox(height: 10),
-
-                    // BMI Info Panel (انضغط على ℹ️)
                     if (_showBmiInfo) ...[
                       _BmiInfoPanel(),
                       const SizedBox(height: 10),
                     ],
-
                     RepaintBoundary(
                       key: _bmiChartKey,
                       child: _LineChartCard(
-                        spots: sorted
-                            .asMap()
-                            .entries
+                        spots: sorted.asMap().entries
                             .map((e) => FlSpot(e.key.toDouble(), e.value.bmi))
                             .toList(),
-                        labels:
-                            sorted.map((a) => _shortDate(a.createdAt)).toList(),
+                        labels: sorted.map((a) => _shortDate(a.createdAt)).toList(),
                         lineColor: AppColors.riskMedium,
                         unit: '',
                         minY: 10,
-                        maxY: sorted
-                                .map((a) => a.bmi)
-                                .reduce((a, b) => a > b ? a : b) +
-                            10,
+                        maxY: sorted.map((a) => a.bmi).reduce((a, b) => a > b ? a : b) + 10,
                         referenceLines: const [
-                          _ReferenceLine(
-                              y: 18.5,
-                              label: '< 18.5 Underweight',
-                              color: Color(0xFFF59E0B)),
-                          _ReferenceLine(
-                              y: 25,
-                              label: '25 Overweight',
-                              color: Color(0xFFF59E0B)),
-                          _ReferenceLine(
-                              y: 30,
-                              label: '30 Obese I',
-                              color: Color(0xFFEF4444)),
+                          _ReferenceLine(y: 18.5, label: '< 18.5 Underweight', color: Color(0xFFF59E0B)),
+                          _ReferenceLine(y: 25, label: '25 Overweight', color: Color(0xFFF59E0B)),
+                          _ReferenceLine(y: 30, label: '30 Obese I', color: Color(0xFFEF4444)),
                         ],
                         tooltipSuffix: ' BMI',
                         highlightRange: const _HighlightRange(
@@ -373,12 +296,29 @@ class _DashboardScreenState extends State<DashboardScreen>
                         ),
                       ),
                     ),
+                    const SizedBox(height: 24),
 
-                    // 🔜 Blood Pressure Chart (هتضيفه بعدين)
-                    // const SizedBox(height: 24),
-                    // _SectionHeader(title: 'Blood Pressure', ...),
-                    // RepaintBoundary(key: _bpChartKey, child: _BloodPressureChart(...)),
+                    // ── Blood Pressure Chart ───────────────────────
+                    _SectionHeader(
+                      title: 'Blood Pressure',
+                      subtitle: 'Systolic / Diastolic over time (mmHg)',
+                      iconColor: AppColors.riskHigh,
+                    ),
+                    const SizedBox(height: 10),
+                    RepaintBoundary(
+                      key: _bpChartKey,
+                      child: _BloodPressureChart(sorted: sorted),
+                    ),
+                    const SizedBox(height: 24),
 
+                    // ── Cholesterol & Blood Sugar tiles ───────────
+                    _SectionHeader(
+                      title: 'Lab Values',
+                      subtitle: 'Latest cholesterol & blood sugar readings',
+                      iconColor: const Color(0xFF7B1FA2),
+                    ),
+                    const SizedBox(height: 10),
+                    _LabValuesRow(latest: latest),
                     const SizedBox(height: 24),
 
                     // ── Latest Assessment detail ───────────────────
@@ -390,7 +330,6 @@ class _DashboardScreenState extends State<DashboardScreen>
                       _buildAiInsights(sorted),
                       const SizedBox(height: 24),
                     ],
-
                   ],
                 ),
               ),
@@ -398,9 +337,27 @@ class _DashboardScreenState extends State<DashboardScreen>
     );
   }
 
+  // ── Empty State ───────────────────────────────────────────────────────────
+  Widget _buildEmpty() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.bar_chart_rounded, size: 64, color: AppColors.textSecondary.withOpacity(0.4)),
+          const SizedBox(height: 16),
+          const Text('No assessments yet',
+              style: TextStyle(fontFamily: 'Inter', fontSize: 16, color: AppColors.textSecondary)),
+          const SizedBox(height: 8),
+          const Text('Complete your first assessment to see your dashboard',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontFamily: 'Inter', fontSize: 13, color: AppColors.textSecondary)),
+        ],
+      ),
+    );
+  }
+
   // ── Summary Row ───────────────────────────────────────────────────────────
-  Widget _buildSummaryRow(
-      AssessmentUIModel latest, List<AssessmentUIModel> sorted) {
+  Widget _buildSummaryRow(AssessmentUIModel latest, List<AssessmentUIModel> sorted) {
     final percent = _toPercent(latest.probability);
     final rColor = _riskColor(latest.riskLevel);
     final rBg = _riskBg(latest.riskLevel);
@@ -442,38 +399,59 @@ class _DashboardScreenState extends State<DashboardScreen>
   }
 
   // ── Trend Row ─────────────────────────────────────────────────────────────
-  Widget _buildTrendRow(_TrendData probTrend, _TrendData bmiTrend,
-      List<AssessmentUIModel> sorted) {
+  Widget _buildTrendRow(
+    _TrendData probTrend,
+    _TrendData bmiTrend,
+    List<AssessmentUIModel> sorted,
+  ) {
+    if (sorted.length < 2) return const SizedBox.shrink();
+
+    Widget chip(_TrendData trend, String label) {
+      final Color color;
+      final IconData icon;
+      switch (trend.type) {
+        case _TrendType.improved:
+          color = AppColors.riskLow;
+          icon = Icons.trending_down_rounded;
+          break;
+        case _TrendType.worsened:
+          color = AppColors.riskHigh;
+          icon = Icons.trending_up_rounded;
+          break;
+        case _TrendType.stable:
+          color = AppColors.riskMedium;
+          icon = Icons.trending_flat_rounded;
+      }
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withOpacity(0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: color),
+            const SizedBox(width: 5),
+            Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color)),
+          ],
+        ),
+      );
+    }
+
     return Wrap(
       spacing: 8,
       runSpacing: 8,
       children: [
-        _TrendChip(label: 'Heart Risk', trend: probTrend),
-        _TrendChip(label: 'BMI', trend: bmiTrend),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(50),
-            border: Border.all(color: AppColors.borderLight),
-          ),
-          child: Text(
-            '${sorted.length} records',
-            style: const TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ),
+        chip(probTrend, 'Risk ${probTrend.type == _TrendType.improved ? "↓" : probTrend.type == _TrendType.worsened ? "↑" : "→"} ${probTrend.delta.abs().toStringAsFixed(1)}%'),
+        chip(bmiTrend, 'BMI ${bmiTrend.type == _TrendType.improved ? "↓" : bmiTrend.type == _TrendType.worsened ? "↑" : "→"} ${bmiTrend.delta.abs().toStringAsFixed(1)}'),
       ],
     );
   }
 
-  // ── Latest Assessment Detail Card ─────────────────────────────────────────
+  // ── Latest Detail Card ────────────────────────────────────────────────────
   Widget _buildLatestDetail(AssessmentUIModel latest) {
-    // final rColor = _riskColor(latest.riskLevel);
     final rBg = _riskBg(latest.riskLevel);
     final rText = _riskText(latest.riskLevel);
 
@@ -489,77 +467,43 @@ class _DashboardScreenState extends State<DashboardScreen>
         children: [
           Row(
             children: [
-              const Text(
-                'Latest Assessment',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimary,
-                ),
-              ),
+              const Text('Latest Assessment',
+                  style: TextStyle(fontFamily: 'Inter', fontSize: 15, fontWeight: FontWeight.w500, color: AppColors.textPrimary)),
               const Spacer(),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: rBg,
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                child: Text(
-                  latest.riskLevel,
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: rText,
-                  ),
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(color: rBg, borderRadius: BorderRadius.circular(50)),
+                child: Text(latest.riskLevel,
+                    style: TextStyle(fontFamily: 'Inter', fontSize: 11, fontWeight: FontWeight.w600, color: rText)),
               ),
             ],
           ),
           const SizedBox(height: 4),
-          Text(
-            _longDate(latest.createdAt),
-            style: const TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 12,
-              color: AppColors.textSecondary,
-            ),
-          ),
+          Text(_longDate(latest.createdAt),
+              style: const TextStyle(fontFamily: 'Inter', fontSize: 12, color: AppColors.textSecondary)),
           const SizedBox(height: 14),
           _DetailRow(label: 'Result', value: latest.predictionResult),
           _DetailRow(
             label: 'Risk Probability',
             value: '${_toPercent(latest.probability).toStringAsFixed(2)}%',
           ),
-          _DetailRow(
-            label: 'BMI',
-            value:
-                '${latest.bmi.toStringAsFixed(1)} — ${_bmiCategory(latest.bmi)}',
-          ),
+          _DetailRow(label: 'BMI', value: '${latest.bmi.toStringAsFixed(1)} — ${_bmiCategory(latest.bmi)}'),
+          _DetailRow(label: 'Blood Pressure', value: '${latest.systolicBP}/${latest.diastolicBP} mmHg'),
+          _DetailRow(label: 'Blood Sugar', value: '${latest.bloodSugar.toStringAsFixed(0)} mg/dL'),
+          _DetailRow(label: 'Cholesterol', value: '${latest.cholesterol.toStringAsFixed(0)} mg/dL'),
           if (latest.riskHint.isNotEmpty) ...[
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: rBg,
-                borderRadius: BorderRadius.circular(10),
-              ),
+              decoration: BoxDecoration(color: rBg, borderRadius: BorderRadius.circular(10)),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(Icons.lightbulb_outline_rounded, size: 16, color: rText),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(
-                      latest.riskHint,
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 13,
-                        color: rText,
-                      ),
-                    ),
+                    child: Text(latest.riskHint,
+                        style: TextStyle(fontFamily: 'Inter', fontSize: 13, color: rText)),
                   ),
                 ],
               ),
@@ -570,53 +514,29 @@ class _DashboardScreenState extends State<DashboardScreen>
     );
   }
 
-  // ── AI Insights — cross-assessment analytics ─────────────────────────────
+  // ── AI Insights ───────────────────────────────────────────────────────────
   Widget _buildAiInsights(List<AssessmentUIModel> sorted) {
-    // ── جمع الداتا من كل الفحوصات اللي عندها aiAnalysis ──────────────────
     final withAI = sorted.where((a) => a.aiAnalysis != null).toList();
     if (withAI.isEmpty) return const SizedBox.shrink();
 
-    // عدّ تكرار كل risk factor عبر كل الفحوصات
     final Map<String, int> rfCount = {};
     final Map<String, int> wsCount = {};
     final Map<String, int> recCount = {};
 
     for (final a in withAI) {
-      for (final f in a.aiAnalysis!.riskFactors) {
-        rfCount[f] = (rfCount[f] ?? 0) + 1;
-      }
-      for (final w in a.aiAnalysis!.warningSigns) {
-        wsCount[w] = (wsCount[w] ?? 0) + 1;
-      }
-      for (final r in a.aiAnalysis!.recommendations) {
-        recCount[r] = (recCount[r] ?? 0) + 1;
-      }
+      for (final f in a.aiAnalysis!.riskFactors) rfCount[f] = (rfCount[f] ?? 0) + 1;
+      for (final w in a.aiAnalysis!.warningSigns) wsCount[w] = (wsCount[w] ?? 0) + 1;
+      for (final r in a.aiAnalysis!.recommendations) recCount[r] = (recCount[r] ?? 0) + 1;
     }
 
-    // ترتيب تنازلي حسب التكرار
-    final topRiskFactors = (rfCount.entries.toList()
-          ..sort((a, b) => b.value.compareTo(a.value)))
-        .take(5)
-        .toList();
-    final topWarningSigns = (wsCount.entries.toList()
-          ..sort((a, b) => b.value.compareTo(a.value)))
-        .take(4)
-        .toList();
-    final topRecs = (recCount.entries.toList()
-          ..sort((a, b) => b.value.compareTo(a.value)))
-        .take(4)
-        .toList();
+    final topRiskFactors = (rfCount.entries.toList()..sort((a, b) => b.value.compareTo(a.value))).take(5).toList();
+    final topWarningSigns = (wsCount.entries.toList()..sort((a, b) => b.value.compareTo(a.value))).take(4).toList();
+    final topRecs = (recCount.entries.toList()..sort((a, b) => b.value.compareTo(a.value))).take(4).toList();
 
-    // مقارنة أول فحص vs آخر فحص
     final first = withAI.first.aiAnalysis!;
-    final last  = withAI.last.aiAnalysis!;
-    final newRisks = last.riskFactors
-        .where((r) => !first.riskFactors.contains(r))
-        .toList();
-    final resolvedRisks = first.riskFactors
-        .where((r) => !last.riskFactors.contains(r))
-        .toList();
-
+    final last = withAI.last.aiAnalysis!;
+    final newRisks = last.riskFactors.where((r) => !first.riskFactors.contains(r)).toList();
+    final resolvedRisks = first.riskFactors.where((r) => !last.riskFactors.contains(r)).toList();
     final totalAssessments = withAI.length;
 
     return Container(
@@ -629,16 +549,11 @@ class _DashboardScreenState extends State<DashboardScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
           Row(children: [
             Container(
               padding: const EdgeInsets.all(7),
-              decoration: BoxDecoration(
-                color: AppColors.primaryLight,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(Icons.insights_rounded,
-                  size: 16, color: AppColors.primary),
+              decoration: BoxDecoration(color: AppColors.primaryLight, borderRadius: BorderRadius.circular(8)),
+              child: const Icon(Icons.insights_rounded, size: 16, color: AppColors.primary),
             ),
             const SizedBox(width: 10),
             const Expanded(
@@ -646,44 +561,22 @@ class _DashboardScreenState extends State<DashboardScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('AI Health Insights',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      )),
+                      style: TextStyle(fontFamily: 'Inter', fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
                   Text('Based on all your assessments',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 11,
-                        color: AppColors.textSecondary,
-                      )),
+                      style: TextStyle(fontFamily: 'Inter', fontSize: 11, color: AppColors.textSecondary)),
                 ],
               ),
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColors.primaryLight,
-                borderRadius: BorderRadius.circular(50),
-              ),
+              decoration: BoxDecoration(color: AppColors.primaryLight, borderRadius: BorderRadius.circular(50)),
               child: Text('$totalAssessments assessments',
-                  style: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primary,
-                  )),
+                  style: const TextStyle(fontFamily: 'Inter', fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.primary)),
             ),
           ]),
           const SizedBox(height: 16),
-
-          // ── أكتر risk factors تكررت ─────────────────────────────────────
           if (topRiskFactors.isNotEmpty) ...[
-            _insightSectionTitle(
-                Icons.warning_amber_rounded,
-                const Color(0xFFE53935),
-                'Most Recurring Risk Factors'),
+            _insightSectionTitle(Icons.warning_amber_rounded, const Color(0xFFE53935), 'Most Recurring Risk Factors'),
             const SizedBox(height: 8),
             ...topRiskFactors.map((e) => _insightBarRow(
                   label: e.key,
@@ -695,282 +588,123 @@ class _DashboardScreenState extends State<DashboardScreen>
                           ? AppColors.riskMedium
                           : AppColors.riskLow,
                 )),
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
           ],
-
-          // ── Warning signs المتكررة ───────────────────────────────────────
           if (topWarningSigns.isNotEmpty) ...[
-            _insightSectionTitle(
-                Icons.notifications_active_outlined,
-                const Color(0xFFE65100),
-                'Persistent Warning Signs'),
+            _insightSectionTitle(Icons.notifications_active_outlined, const Color(0xFFE65100), 'Persistent Warning Signs'),
             const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFF8F0),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                children: topWarningSigns
-                    .map((e) => Padding(
-                          padding: const EdgeInsets.only(bottom: 5),
-                          child: Row(children: [
-                            const Icon(Icons.circle,
-                                size: 6, color: Color(0xFFE65100)),
-                            const SizedBox(width: 8),
-                            Expanded(
-                                child: Text(e.key,
-                                    style: const TextStyle(
-                                      fontFamily: 'Inter',
-                                      fontSize: 12,
-                                      color: Color(0xFFBF360C),
-                                      height: 1.3,
-                                    ))),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 7, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFFCCBC),
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              child: Text('${e.value}x',
-                                  style: const TextStyle(
-                                    fontFamily: 'Inter',
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w700,
-                                    color: Color(0xFFBF360C),
-                                  )),
-                            ),
-                          ]),
-                        ))
-                    .toList(),
-              ),
-            ),
-            const SizedBox(height: 14),
+            ...topWarningSigns.map((e) => _insightTagRow(label: e.key, count: e.value, color: const Color(0xFFE65100))),
+            const SizedBox(height: 12),
           ],
-
-          // ── مقارنة أول vs آخر فحص ───────────────────────────────────────
-          if (withAI.length >= 2) ...[
-            _insightSectionTitle(
-                Icons.compare_arrows_rounded,
-                AppColors.primary,
-                'First vs Latest Assessment'),
+          if (newRisks.isNotEmpty || resolvedRisks.isNotEmpty) ...[
+            _insightSectionTitle(Icons.compare_arrows_rounded, AppColors.primary, 'Progress: First vs Latest'),
             const SizedBox(height: 8),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (newRisks.isNotEmpty)
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFF3F3),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Row(children: [
-                            Icon(Icons.trending_up_rounded,
-                                size: 13, color: Color(0xFFE53935)),
-                            SizedBox(width: 5),
-                            Text('New Risks',
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFFE53935),
-                                )),
-                          ]),
-                          const SizedBox(height: 6),
-                          ...newRisks.map((r) => Padding(
-                                padding: const EdgeInsets.only(bottom: 3),
-                                child: Text('• $r',
-                                    style: const TextStyle(
-                                      fontFamily: 'Inter',
-                                      fontSize: 11,
-                                      color: Color(0xFFB71C1C),
-                                      height: 1.3,
-                                    )),
-                              )),
-                        ],
-                      ),
-                    ),
-                  ),
-                if (newRisks.isNotEmpty && resolvedRisks.isNotEmpty)
-                  const SizedBox(width: 10),
                 if (resolvedRisks.isNotEmpty)
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF1FFF3),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                      decoration: BoxDecoration(color: const Color(0xFFF1FFF3), borderRadius: BorderRadius.circular(8)),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Row(children: [
-                            Icon(Icons.trending_down_rounded,
-                                size: 13, color: Color(0xFF2E7D32)),
-                            SizedBox(width: 5),
-                            Text('Resolved',
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF2E7D32),
-                                )),
-                          ]),
+                          const Text('Resolved', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF2E7D32))),
                           const SizedBox(height: 6),
                           ...resolvedRisks.map((r) => Padding(
                                 padding: const EdgeInsets.only(bottom: 3),
-                                child: Text('• $r',
-                                    style: const TextStyle(
-                                      fontFamily: 'Inter',
-                                      fontSize: 11,
-                                      color: Color(0xFF1B5E20),
-                                      height: 1.3,
-                                    )),
+                                child: Text('• $r', style: const TextStyle(fontSize: 11, color: Color(0xFF1B5E20))),
                               )),
                         ],
                       ),
                     ),
                   ),
-                if (newRisks.isEmpty && resolvedRisks.isEmpty)
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryLight,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Text(
-                      'Risk factors are consistent across assessments.',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
+                if (newRisks.isNotEmpty && resolvedRisks.isNotEmpty) const SizedBox(width: 8),
+                if (newRisks.isNotEmpty)
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(color: const Color(0xFFFFF3F3), borderRadius: BorderRadius.circular(8)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('New Risks', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFFB71C1C))),
+                          const SizedBox(height: 6),
+                          ...newRisks.map((r) => Padding(
+                                padding: const EdgeInsets.only(bottom: 3),
+                                child: Text('• $r', style: const TextStyle(fontSize: 11, color: Color(0xFFB71C1C))),
+                              )),
+                        ],
                       ),
                     ),
                   ),
               ],
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
           ],
-
-          // ── Top Recommendations ──────────────────────────────────────────
           if (topRecs.isNotEmpty) ...[
-            _insightSectionTitle(
-                Icons.medical_services_outlined,
-                AppColors.primary,
-                'Most Recommended Actions'),
+            _insightSectionTitle(Icons.medical_services_outlined, AppColors.primary, 'Most Recommended Actions'),
             const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.primaryLight,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                children: topRecs
-                    .asMap()
-                    .entries
-                    .map((e) => Padding(
-                          padding: const EdgeInsets.only(bottom: 6),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 18,
-                                height: 18,
-                                decoration: BoxDecoration(
-                                  color: AppColors.primary,
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: Center(
-                                  child: Text('${e.key + 1}',
-                                      style: const TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.white,
-                                      )),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(e.value.key,
-                                    style: const TextStyle(
-                                      fontFamily: 'Inter',
-                                      fontSize: 12,
-                                      color: AppColors.textPrimary,
-                                      height: 1.4,
-                                    )),
-                              ),
-                            ],
-                          ),
-                        ))
-                    .toList(),
-              ),
-            ),
+            ...topRecs.asMap().entries.map((e) => Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 18,
+                        height: 18,
+                        decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(9)),
+                        child: Center(
+                          child: Text('${e.key + 1}',
+                              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white)),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(e.value.key,
+                            style: const TextStyle(fontFamily: 'Inter', fontSize: 12, color: AppColors.textPrimary)),
+                      ),
+                    ],
+                  ),
+                )),
           ],
-        SizedBox(height: 20),
         ],
       ),
     );
   }
 
   Widget _insightSectionTitle(IconData icon, Color color, String title) {
-    return Row(children: [
-      Icon(icon, size: 14, color: color),
-      const SizedBox(width: 6),
-      Text(title,
-          style: TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: color,
-          )),
-    ]);
+    return Row(
+      children: [
+        Icon(icon, size: 14, color: color),
+        const SizedBox(width: 6),
+        Text(title,
+            style: TextStyle(fontFamily: 'Inter', fontSize: 13, fontWeight: FontWeight.w600, color: color)),
+      ],
+    );
   }
 
-  Widget _insightBarRow({
-    required String label,
-    required int count,
-    required int total,
-    required Color color,
-  }) {
-    final pct = total > 0 ? count / total : 0.0;
+  Widget _insightBarRow({required String label, required int count, required int total, required Color color}) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 7),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(children: [
-            Expanded(
-              child: Text(label,
-                  style: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 12,
-                    color: AppColors.textPrimary,
-                  )),
-            ),
-            Text('$count/$total',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: color,
-                )),
-          ]),
+          Row(
+            children: [
+              Expanded(child: Text(label, style: const TextStyle(fontFamily: 'Inter', fontSize: 12, color: AppColors.textPrimary))),
+              Text('$count/$total', style: TextStyle(fontFamily: 'Inter', fontSize: 11, fontWeight: FontWeight.w600, color: color)),
+            ],
+          ),
           const SizedBox(height: 4),
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
-              value: pct,
-              minHeight: 6,
+              value: count / total,
+              minHeight: 5,
               backgroundColor: color.withOpacity(0.15),
-              valueColor: AlwaysStoppedAnimation<Color>(color),
+              valueColor: AlwaysStoppedAnimation(color),
             ),
           ),
         ],
@@ -978,88 +712,364 @@ class _DashboardScreenState extends State<DashboardScreen>
     );
   }
 
-  // ── Empty State ───────────────────────────────────────────────────────────
-  Widget _buildEmpty() {
-    return const Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+  Widget _insightTagRow({required String label, required int count, required Color color}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
         children: [
-          Icon(Icons.health_and_safety_outlined,
-              size: 56, color: AppColors.textHint),
-          SizedBox(height: 12),
-          Text(
-            'No assessments yet',
-            style: TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          SizedBox(height: 6),
-          Text(
-            'Complete an assessment to see your\nhealth progress over time',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 13,
-              color: AppColors.textSecondary,
-            ),
+          Icon(Icons.circle, size: 6, color: color),
+          const SizedBox(width: 8),
+          Expanded(child: Text(label, style: const TextStyle(fontFamily: 'Inter', fontSize: 12, color: AppColors.textPrimary))),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+            decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+            child: Text('${count}x', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color)),
           ),
         ],
       ),
     );
-  }
-
-  // ── Helpers ───────────────────────────────────────────────────────────────
-  String _shortDate(String iso) {
-    try {
-      return iso.length >= 10 ? iso.substring(5, 10) : iso;
-    } catch (_) {
-      return iso;
-    }
-  }
-
-  String _longDate(String iso) {
-    try {
-      if (iso.length < 10) return iso;
-      final dt = DateTime.parse(iso);
-      final months = [
-        '',
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec'
-      ];
-      return '${months[dt.month]} ${dt.day}, ${dt.year}';
-    } catch (_) {
-      return iso;
-    }
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  REUSABLE WIDGETS
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Blood Pressure Chart ──────────────────────────────────────────────────────
 
-// ── Section Header ────────────────────────────────────────────────────────────
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({
-    required this.title,
-    required this.subtitle,
-    required this.iconColor,
+class _BloodPressureChart extends StatelessWidget {
+  final List<AssessmentUIModel> sorted;
+  const _BloodPressureChart({required this.sorted});
+
+  String _shortDate(String iso) {
+    try {
+      final d = DateTime.parse(iso);
+      return '${d.month}/${d.day}';
+    } catch (_) {
+      return iso.length >= 5 ? iso.substring(5, 10) : iso;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final withBP = sorted.where((a) => a.systolicBP > 0 && a.diastolicBP > 0).toList();
+  
+  if (withBP.isEmpty) return const SizedBox.shrink(); // مفيش data خالص
+
+  final systolicSpots = withBP.asMap().entries
+      .map((e) => FlSpot(e.key.toDouble(), e.value.systolicBP.toDouble()))
+      .toList();
+  final diastolicSpots = withBP.asMap().entries
+      .map((e) => FlSpot(e.key.toDouble(), e.value.diastolicBP.toDouble()))
+      .toList();
+
+  final allVals = withBP.expand((a) => [a.systolicBP.toDouble(), a.diastolicBP.toDouble()]).toList();
+  final minVal = allVals.reduce((a, b) => a < b ? a : b);
+  final maxVal = allVals.reduce((a, b) => a > b ? a : b);
+  
+  // ✅ minY و maxY بناءً على الـ data الفعلية
+  final minY = (minVal - 15).clamp(0.0, 60.0);
+  final maxY = maxVal + 20;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.borderLight),
+      ),
+      padding: const EdgeInsets.fromLTRB(12, 16, 16, 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Legend
+          Row(
+            children: [
+              _LegendDot(color: const Color(0xFFEF4444), label: 'Systolic'),
+              const SizedBox(width: 16),
+              _LegendDot(color: const Color(0xFF3B82F6), label: 'Diastolic'),
+              const Spacer(),
+              // Normal reference badge
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFDCFCE7),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Text('Normal: <120/80',
+                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF15803D))),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 170,
+            child: LineChart(
+              LineChartData(
+                minY: minY,
+                maxY: maxY,
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  getDrawingHorizontalLine: (_) => FlLine(color: AppColors.borderLight, strokeWidth: 1),
+                ),
+                borderData: FlBorderData(show: false),
+                titlesData: FlTitlesData(
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 32,
+                      getTitlesWidget: (val, _) => Text(
+                        val.toInt().toString(),
+                        style: const TextStyle(fontFamily: 'Inter', fontSize: 10, color: AppColors.textSecondary),
+                      ),
+                    ),
+                  ),
+                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 22,
+                      getTitlesWidget: (val, _) {
+                        final idx = val.toInt();
+                        if (idx < 0 || idx >= withBP.length) return const SizedBox.shrink();
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          
+                          child: Text(_shortDate(withBP[idx].createdAt),
+                              style: const TextStyle(fontFamily: 'Inter', fontSize: 10, color: AppColors.textSecondary)),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                // Reference lines
+                extraLinesData: ExtraLinesData(
+                  horizontalLines: [
+                    HorizontalLine(y: 120, color: const Color(0xFFEF4444).withOpacity(0.4), strokeWidth: 1,
+                        dashArray: [4, 4],
+                        label: HorizontalLineLabel(show: true, alignment: Alignment.topRight,
+                            labelResolver: (_) => '120',
+                            style: const TextStyle(fontSize: 9, color: Color(0xFFEF4444)))),
+                    HorizontalLine(y: 80, color: const Color(0xFF3B82F6).withOpacity(0.4), strokeWidth: 1,
+                        dashArray: [4, 4],
+                        label: HorizontalLineLabel(show: true, alignment: Alignment.topRight,
+                            labelResolver: (_) => '80',
+                            style: const TextStyle(fontSize: 9, color: Color(0xFF3B82F6)))),
+                  ],
+                ),
+                lineBarsData: [
+                  // Systolic
+                  LineChartBarData(
+                    spots: systolicSpots,
+                    isCurved: true,
+                    curveSmoothness: 0.3,
+                    color: const Color(0xFFEF4444),
+                    barWidth: 2.5,
+                    isStrokeCapRound: true,
+                    dotData: FlDotData(
+                      show: true,
+                      getDotPainter: (_, __, ___, ____) => FlDotCirclePainter(
+                        radius: 4,
+                        color: Colors.white,
+                        strokeWidth: 2.5,
+                        strokeColor: const Color(0xFFEF4444),
+                      ),
+                    ),
+                    belowBarData: BarAreaData(
+                      show: true,
+                      gradient: LinearGradient(
+                        colors: [const Color(0xFFEF4444).withOpacity(0.12), const Color(0xFFEF4444).withOpacity(0.0)],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                  ),
+                  // Diastolic
+                  LineChartBarData(
+                    spots: diastolicSpots,
+                    isCurved: true,
+                    curveSmoothness: 0.3,
+                    color: const Color(0xFF3B82F6),
+                    barWidth: 2.5,
+                    isStrokeCapRound: true,
+                    dotData: FlDotData(
+                      show: true,
+                      getDotPainter: (_, __, ___, ____) => FlDotCirclePainter(
+                        radius: 4,
+                        color: Colors.white,
+                        strokeWidth: 2.5,
+                        strokeColor: const Color(0xFF3B82F6),
+                      ),
+                    ),
+                    belowBarData: BarAreaData(
+                      show: true,
+                      gradient: LinearGradient(
+                        colors: [const Color(0xFF3B82F6).withOpacity(0.08), const Color(0xFF3B82F6).withOpacity(0.0)],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              duration: const Duration(milliseconds: 800),
+              curve: Curves.easeInOut,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LegendDot extends StatelessWidget {
+  final Color color;
+  final String label;
+  const _LegendDot({required this.color, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(width: 10, height: 10, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+        const SizedBox(width: 5),
+        Text(label, style: const TextStyle(fontFamily: 'Inter', fontSize: 11, color: AppColors.textSecondary)),
+      ],
+    );
+  }
+}
+
+// ─── Lab Values Row (Cholesterol + Blood Sugar) ───────────────────────────────
+
+class _LabValuesRow extends StatelessWidget {
+  final AssessmentUIModel latest;
+  const _LabValuesRow({required this.latest});
+
+  _LabStatus _cholStatus(double v) {
+    if (v < 200) return _LabStatus.normal;
+    if (v < 240) return _LabStatus.borderline;
+    return _LabStatus.high;
+  }
+
+  _LabStatus _sugarStatus(double v) {
+    if (v < 100) return _LabStatus.normal;
+    if (v < 126) return _LabStatus.borderline;
+    return _LabStatus.high;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cholSt = _cholStatus(latest.cholesterol);
+    final sugSt = _sugarStatus(latest.bloodSugar);
+
+    return Row(
+      children: [
+        Expanded(child: _LabTile(
+          icon: Icons.science_outlined,
+          label: 'Cholesterol',
+          value: '${latest.cholesterol.toStringAsFixed(0)} mg/dL',
+          reference: '< 200 normal',
+          status: cholSt,
+        )),
+        const SizedBox(width: 10),
+        Expanded(child: _LabTile(
+          icon: Icons.bloodtype_outlined,
+          label: 'Blood Sugar',
+          value: '${latest.bloodSugar.toStringAsFixed(0)} mg/dL',
+          reference: '< 100 normal',
+          status: sugSt,
+        )),
+      ],
+    );
+  }
+}
+
+enum _LabStatus { normal, borderline, high }
+
+extension _LabStatusExt on _LabStatus {
+  Color get color => switch (this) {
+        _LabStatus.normal => const Color(0xFF2E7D32),
+        _LabStatus.borderline => const Color(0xFFF57C00),
+        _LabStatus.high => const Color(0xFFC62828),
+      };
+  Color get bg => switch (this) {
+        _LabStatus.normal => const Color(0xFFF1FFF3),
+        _LabStatus.borderline => const Color(0xFFFFF8E1),
+        _LabStatus.high => const Color(0xFFFFEBEE),
+      };
+  String get label => switch (this) {
+        _LabStatus.normal => 'Normal',
+        _LabStatus.borderline => 'Borderline',
+        _LabStatus.high => 'High',
+      };
+}
+
+class _LabTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final String reference;
+  final _LabStatus status;
+
+  const _LabTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.reference,
+    required this.status,
   });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: status.bg,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: status.color.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 15, color: status.color),
+              const SizedBox(width: 6),
+              Text(label, style: TextStyle(fontFamily: 'Inter', fontSize: 12, fontWeight: FontWeight.w500, color: status.color)),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(value,
+              style: TextStyle(fontFamily: 'Inter', fontSize: 18, fontWeight: FontWeight.bold, color: status.color)),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: status.color.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(status.label,
+                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: status.color)),
+              ),
+              const Spacer(),
+              Text(reference,
+                  style: const TextStyle(fontFamily: 'Inter', fontSize: 10, color: AppColors.textSecondary)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Section Header ───────────────────────────────────────────────────────────
+
+class _SectionHeader extends StatelessWidget {
   final String title;
   final String subtitle;
   final Color iconColor;
+
+  const _SectionHeader({required this.title, required this.subtitle, required this.iconColor});
 
   @override
   Widget build(BuildContext context) {
@@ -1067,26 +1077,25 @@ class _SectionHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title,
-            style: const TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
-              color: AppColors.textPrimary,
-            )),
+            style: const TextStyle(fontFamily: 'Inter', fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
         const SizedBox(height: 2),
         Text(subtitle,
-            style: const TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 12,
-              color: AppColors.textSecondary,
-            )),
+            style: const TextStyle(fontFamily: 'Inter', fontSize: 12, color: AppColors.textSecondary)),
       ],
     );
   }
 }
 
-// ── Summary Card ──────────────────────────────────────────────────────────────
+// ─── Summary Card ─────────────────────────────────────────────────────────────
+
 class _SummaryCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+  final Color bg;
+  final String? subtitle;
+
   const _SummaryCard({
     required this.icon,
     required this.label,
@@ -1095,164 +1104,48 @@ class _SummaryCard extends StatelessWidget {
     required this.bg,
     this.subtitle,
   });
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color color;
-  final Color bg;
-  final String? subtitle;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-      decoration: BoxDecoration(
-        color: AppColors.cardBackground,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.borderLight),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.06),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(14)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              color: bg,
-              borderRadius: BorderRadius.circular(9),
-            ),
-            child: Icon(icon, size: 16, color: color),
-          ),
-          const SizedBox(height: 10),
-          Text(value,
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: color,
-              )),
-          if (subtitle != null)
-            Text(subtitle!,
-                style: const TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 9,
-                  color: AppColors.textSecondary,
-                )),
-          const SizedBox(height: 3),
-          Text(label,
-              style: const TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 11,
-                color: AppColors.textSecondary,
-              )),
+          Icon(icon, size: 18, color: color),
+          const SizedBox(height: 8),
+          Text(value, style: TextStyle(fontFamily: 'Inter', fontSize: 18, fontWeight: FontWeight.bold, color: color)),
+          if (subtitle != null) ...[
+            const SizedBox(height: 2),
+            Text(subtitle!, style: TextStyle(fontFamily: 'Inter', fontSize: 10, color: color.withOpacity(0.7))),
+          ],
+          const SizedBox(height: 2),
+          Text(label, style: const TextStyle(fontFamily: 'Inter', fontSize: 11, color: AppColors.textSecondary)),
         ],
       ),
     );
   }
 }
 
-// ── Trend Chip ────────────────────────────────────────────────────────────────
-class _TrendChip extends StatelessWidget {
-  const _TrendChip({required this.label, required this.trend});
-  final String label;
-  final _TrendData trend;
+// ─── Line Chart Card (reusable) ───────────────────────────────────────────────
 
-  @override
-  Widget build(BuildContext context) {
-    final (Color bg, Color fg, IconData icon, String text) =
-        switch (trend.type) {
-      _TrendType.improved => (
-          AppColors.riskLowBg,
-          AppColors.riskLowText,
-          Icons.trending_down_rounded,
-          '${trend.delta.abs().toStringAsFixed(1)} ↓',
-        ),
-      _TrendType.worsened => (
-          AppColors.riskHighBg,
-          AppColors.riskHighText,
-          Icons.trending_up_rounded,
-          '+${trend.delta.abs().toStringAsFixed(1)} ↑',
-        ),
-      _TrendType.stable => (
-          AppColors.surface,
-          AppColors.textSecondary,
-          Icons.remove_rounded,
-          'Stable',
-        ),
-    };
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(50),
-        border: Border.all(color: fg.withOpacity(0.2)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 13, color: fg),
-          const SizedBox(width: 5),
-          Text(
-            '$label: $text',
-            style: TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: fg,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ── Animated Line Chart Card ──────────────────────────────────────────────────
 class _ReferenceLine {
-  const _ReferenceLine({
-    required this.y,
-    required this.label,
-    required this.color,
-  });
   final double y;
   final String label;
   final Color color;
+  const _ReferenceLine({required this.y, required this.label, required this.color});
 }
 
 class _HighlightRange {
-  const _HighlightRange({
-    required this.minY,
-    required this.maxY,
-    required this.color,
-    required this.label,
-  });
   final double minY;
   final double maxY;
   final Color color;
   final String label;
+  const _HighlightRange({required this.minY, required this.maxY, required this.color, required this.label});
 }
 
-class _LineChartCard extends StatefulWidget {
-  const _LineChartCard({
-    required this.spots,
-    required this.labels,
-    required this.lineColor,
-    required this.unit,
-    required this.minY,
-    required this.maxY,
-    required this.referenceLines,
-    required this.tooltipSuffix,
-    this.highlightRange,
-  });
-
+class _LineChartCard extends StatelessWidget {
   final List<FlSpot> spots;
   final List<String> labels;
   final Color lineColor;
@@ -1263,292 +1156,150 @@ class _LineChartCard extends StatefulWidget {
   final String tooltipSuffix;
   final _HighlightRange? highlightRange;
 
-  @override
-  State<_LineChartCard> createState() => _LineChartCardState();
-}
-
-class _LineChartCardState extends State<_LineChartCard>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 900));
-    _ctrl.forward();
-  }
-
-  @override
-  void didUpdateWidget(_LineChartCard old) {
-    super.didUpdateWidget(old);
-    if (old.spots.length != widget.spots.length) {
-      _ctrl.reset();
-      _ctrl.forward();
-    }
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
+  const _LineChartCard({
+    required this.spots,
+    required this.labels,
+    required this.lineColor,
+    required this.unit,
+    required this.minY,
+    required this.maxY,
+    this.referenceLines = const [],
+    this.tooltipSuffix = '',
+    this.highlightRange,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // Reference lines كـ ExtraLinesData
-    final horizontalLines = widget.referenceLines
-        .map((r) => HorizontalLine(
-              y: r.y,
-              color: r.color.withOpacity(0.6),
-              strokeWidth: 1,
-              dashArray: [6, 4],
-              label: HorizontalLineLabel(
-                show: true,
-                alignment: Alignment.topRight,
-                labelResolver: (_) => r.label,
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 9,
-                  color: r.color,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ))
-        .toList();
-
-    // Highlight range (الـ healthy zone في BMI)
-    // List<BetweenBarsData> between = [];
-    // if (widget.highlightRange != null) {
-    //   // نضيف سطرين invisible للـ healthy range
-    //   // (مستخدمين RangeAnnotation بدلاً منها)
-    // }
-
     return Container(
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.borderLight),
-        boxShadow: [
-          BoxShadow(
-            color: widget.lineColor.withOpacity(0.06),
-            blurRadius: 14,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
-      padding: const EdgeInsets.fromLTRB(8, 16, 16, 12),
+      padding: const EdgeInsets.fromLTRB(12, 16, 16, 12),
       child: Column(
         children: [
-          // Healthy range legend
-          if (widget.highlightRange != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8, left: 8),
-              child: Row(
-                children: [
-                  Container(
-                    width: 20,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: widget.highlightRange!.color.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(2),
-                      border: Border.all(
-                          color: widget.highlightRange!.color.withOpacity(0.5)),
+          SizedBox(
+            height: 170,
+            child: LineChart(
+              LineChartData(
+                minY: minY,
+                maxY: maxY,
+                clipData: const FlClipData.all(),
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  getDrawingHorizontalLine: (_) => FlLine(color: AppColors.borderLight, strokeWidth: 1),
+                ),
+                borderData: FlBorderData(show: false),
+                extraLinesData: ExtraLinesData(
+                  horizontalLines: referenceLines.map((r) => HorizontalLine(
+                    y: r.y,
+                    color: r.color.withOpacity(0.5),
+                    strokeWidth: 1,
+                    dashArray: [4, 4],
+                    label: HorizontalLineLabel(
+                      show: true,
+                      alignment: Alignment.topRight,
+                      labelResolver: (_) => r.label,
+                      style: TextStyle(fontSize: 9, color: r.color, fontFamily: 'Inter'),
+                    ),
+                  )).toList(),
+                ),
+                rangeAnnotations: highlightRange != null
+                    ? RangeAnnotations(
+                        horizontalRangeAnnotations: [
+                          HorizontalRangeAnnotation(
+                            y1: highlightRange!.minY,
+                            y2: highlightRange!.maxY,
+                            color: highlightRange!.color.withOpacity(0.07),
+                          ),
+                        ],
+                      )
+                    : null,
+                titlesData: FlTitlesData(
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 36,
+                      getTitlesWidget: (val, _) => Text(
+                        '${val.toInt()}$unit',
+                        style: const TextStyle(fontFamily: 'Inter', fontSize: 10, color: AppColors.textSecondary),
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 6),
-                  Text(
-                    widget.highlightRange!.label,
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 10,
-                      color: widget.highlightRange!.color,
-                      fontWeight: FontWeight.w600,
+                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 22,
+                      getTitlesWidget: (val, _) {
+                        final idx = val.toInt();
+                        if (idx < 0 || idx >= labels.length) return const SizedBox.shrink();
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: RichText(
+                            text: TextSpan(
+                              style: TextStyle(fontFamily: 'Inter', fontSize: 10, color: lineColor),
+                              children: [
+                                TextSpan(
+                                  text: labels[idx],
+                                  style: const TextStyle(fontFamily: 'Inter', fontSize: 11, fontWeight: FontWeight.w400, color: AppColors.textSecondary),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: spots,
+                    isCurved: true,
+                    curveSmoothness: 0.3,
+                    color: lineColor,
+                    barWidth: 2.5,
+                    isStrokeCapRound: true,
+                    dotData: FlDotData(
+                      show: true,
+                      getDotPainter: (spot, _, __, ___) {
+                        Color dotColor = lineColor;
+                        if (tooltipSuffix == '%') {
+                          final v = spot.y;
+                          if (v < 20) dotColor = AppColors.riskLow;
+                          else if (v < 50) dotColor = AppColors.riskMedium;
+                          else dotColor = AppColors.riskHigh;
+                        } else {
+                          final v = spot.y;
+                          if (v >= 18.5 && v < 25) dotColor = AppColors.riskLow;
+                          else if (v < 30) dotColor = AppColors.riskMedium;
+                          else dotColor = AppColors.riskHigh;
+                        }
+                        return FlDotCirclePainter(
+                          radius: 4.5,
+                          color: Colors.white,
+                          strokeWidth: 2.5,
+                          strokeColor: dotColor,
+                        );
+                      },
+                    ),
+                    belowBarData: BarAreaData(
+                      show: true,
+                      gradient: LinearGradient(
+                        colors: [lineColor.withOpacity(0.15), lineColor.withOpacity(0.0)],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
                     ),
                   ),
                 ],
               ),
+              duration: const Duration(milliseconds: 800),
+              curve: Curves.easeInOut,
             ),
-
-          SizedBox(
-            height: 200,
-            child: widget.spots.isEmpty
-                ? const Center(
-                    child: Text('Not enough data',
-                        style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 13,
-                            color: AppColors.textHint)))
-                : LineChart(
-                    LineChartData(
-                      minY: widget.minY,
-                      maxY: widget.maxY,
-                      clipData: const FlClipData.all(),
-                      gridData: FlGridData(
-                        show: true,
-                        drawVerticalLine: false,
-                        getDrawingHorizontalLine: (_) => const FlLine(
-                          color: AppColors.borderLight,
-                          strokeWidth: 1,
-                          dashArray: [4, 4],
-                        ),
-                      ),
-                      borderData: FlBorderData(show: false),
-                      extraLinesData:
-                          ExtraLinesData(horizontalLines: horizontalLines),
-                      // Highlight healthy BMI range
-                      rangeAnnotations: widget.highlightRange != null
-                          ? RangeAnnotations(
-                              horizontalRangeAnnotations: [
-                                HorizontalRangeAnnotation(
-                                  y1: widget.highlightRange!.minY,
-                                  y2: widget.highlightRange!.maxY,
-                                  color: widget.highlightRange!.color
-                                      .withOpacity(0.08),
-                                ),
-                              ],
-                            )
-                          : null,
-                      titlesData: FlTitlesData(
-                        leftTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            reservedSize: 46,
-                            getTitlesWidget: (val, _) => Text(
-                              '${val.toStringAsFixed(0)}${widget.unit}',
-                              style: const TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 9,
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                          ),
-                        ),
-                        bottomTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            reservedSize: 32, // ← زود المساحة
-                            interval: widget.spots.length > 6
-                                ? (widget.spots.length / 4).ceilToDouble()
-                                : 1,
-                            getTitlesWidget: (val, meta) {
-                              final i = val.toInt();
-                              if (i < 0 || i >= widget.labels.length) {
-                                return const SizedBox();
-                              }
-                              return SideTitleWidget(
-                                axisSide: meta.axisSide,
-                                space: 6,
-                                child: Transform.rotate(
-                                  angle: -0.5, // ← ميل خفيف
-                                  child: Text(
-                                    widget.labels[i],
-                                    style: const TextStyle(
-                                      fontFamily: 'Inter',
-                                      fontSize: 9,
-                                      color: AppColors.textSecondary,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        rightTitles: const AxisTitles(
-                            sideTitles: SideTitles(showTitles: false)),
-                        topTitles: const AxisTitles(
-                            sideTitles: SideTitles(showTitles: false)),
-                      ),
-                      lineTouchData: LineTouchData(
-                        touchTooltipData: LineTouchTooltipData(
-                          tooltipRoundedRadius: 8,
-                          getTooltipColor: (_) => AppColors.surface,
-                          tooltipBorder:
-                              const BorderSide(color: AppColors.borderLight),
-                          getTooltipItems: (spots) => spots.map((s) {
-                            final i = s.x.toInt();
-                            final date = (i >= 0 && i < widget.labels.length)
-                                ? widget.labels[i]
-                                : '';
-                            return LineTooltipItem(
-                              '${s.y.toStringAsFixed(1)}${widget.tooltipSuffix}\n',
-                              TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                color: widget.lineColor,
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: date,
-                                  style: const TextStyle(
-                                    fontFamily: 'Inter',
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w400,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                ),
-                              ],
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                      lineBarsData: [
-                        LineChartBarData(
-                          spots: widget.spots,
-                          isCurved: true,
-                          curveSmoothness: 0.3,
-                          color: widget.lineColor,
-                          barWidth: 2.5,
-                          isStrokeCapRound: true,
-                          dotData: FlDotData(
-                            show: true,
-                            getDotPainter: (spot, _, __, ___) {
-                              // لون النقطة بناءً على القيمة
-                              Color dotColor = widget.lineColor;
-                              if (widget.tooltipSuffix == '%') {
-                                final v = spot.y;
-                                if (v < 20)
-                                  dotColor = AppColors.riskLow;
-                                else if (v < 50)
-                                  dotColor = AppColors.riskMedium;
-                                else
-                                  dotColor = AppColors.riskHigh;
-                              } else {
-                                // BMI
-                                final v = spot.y;
-                                if (v >= 18.5 && v < 25)
-                                  dotColor = AppColors.riskLow;
-                                else if (v < 30)
-                                  dotColor = AppColors.riskMedium;
-                                else
-                                  dotColor = AppColors.riskHigh;
-                              }
-                              return FlDotCirclePainter(
-                                radius: 4.5,
-                                color: Colors.white,
-                                strokeWidth: 2.5,
-                                strokeColor: dotColor,
-                              );
-                            },
-                          ),
-                          belowBarData: BarAreaData(
-                            show: true,
-                            gradient: LinearGradient(
-                              colors: [
-                                widget.lineColor.withOpacity(0.15),
-                                widget.lineColor.withOpacity(0.0),
-                              ],
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    duration: const Duration(milliseconds: 800),
-                    curve: Curves.easeInOut,
-                  ),
           ),
         ],
       ),
@@ -1556,7 +1307,8 @@ class _LineChartCardState extends State<_LineChartCard>
   }
 }
 
-// ── BMI Info Panel ────────────────────────────────────────────────────────────
+// ─── BMI Info Panel ───────────────────────────────────────────────────────────
+
 class _BmiInfoPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -1570,50 +1322,18 @@ class _BmiInfoPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'BMI Guidelines (WHO)',
-            style: TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-          ),
+          const Text('BMI Guidelines (WHO)',
+              style: TextStyle(fontFamily: 'Inter', fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
           const SizedBox(height: 10),
-          _BmiRow(
-              range: '< 18.5',
-              label: 'Underweight',
-              color: AppColors.riskMedium,
-              icon: Icons.arrow_downward_rounded),
-          _BmiRow(
-              range: '18.5 – 24.9',
-              label: 'Normal ✅',
-              color: AppColors.riskLow,
-              icon: Icons.check_circle_outline_rounded),
-          _BmiRow(
-              range: '25 – 29.9',
-              label: 'Overweight',
-              color: AppColors.riskMedium,
-              icon: Icons.warning_amber_rounded),
-          _BmiRow(
-              range: '30 – 34.9',
-              label: 'Obese Class I',
-              color: AppColors.riskHigh,
-              icon: Icons.error_outline_rounded),
-          _BmiRow(
-              range: '≥ 35',
-              label: 'Obese Class II+',
-              color: AppColors.riskHigh,
-              icon: Icons.dangerous_outlined),
+          _BmiRow(range: '< 18.5', label: 'Underweight', color: AppColors.riskMedium, icon: Icons.arrow_downward_rounded),
+          _BmiRow(range: '18.5 – 24.9', label: 'Normal ✅', color: AppColors.riskLow, icon: Icons.check_circle_outline_rounded),
+          _BmiRow(range: '25 – 29.9', label: 'Overweight', color: AppColors.riskMedium, icon: Icons.warning_amber_rounded),
+          _BmiRow(range: '30 – 34.9', label: 'Obese Class I', color: AppColors.riskHigh, icon: Icons.error_outline_rounded),
+          _BmiRow(range: '≥ 35', label: 'Obese Class II+', color: AppColors.riskHigh, icon: Icons.dangerous_outlined),
           const SizedBox(height: 8),
           const Text(
-            'BMI = weight(kg) ÷ height²(m)\nA BMI between 18.5–24.9 indicates a healthy weight. Values outside this range are associated with increased risk of heart disease, diabetes, and other conditions.',
-            style: TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 11,
-              color: AppColors.textSecondary,
-              height: 1.5,
-            ),
+            'BMI = weight(kg) ÷ height²(m)\nA BMI between 18.5–24.9 indicates a healthy weight.',
+            style: TextStyle(fontFamily: 'Inter', fontSize: 11, color: AppColors.textSecondary, height: 1.5),
           ),
         ],
       ),
@@ -1622,12 +1342,7 @@ class _BmiInfoPanel extends StatelessWidget {
 }
 
 class _BmiRow extends StatelessWidget {
-  const _BmiRow({
-    required this.range,
-    required this.label,
-    required this.color,
-    required this.icon,
-  });
+  const _BmiRow({required this.range, required this.label, required this.color, required this.icon});
   final String range;
   final String label;
   final Color color;
@@ -1641,30 +1356,16 @@ class _BmiRow extends StatelessWidget {
         children: [
           Icon(icon, size: 14, color: color),
           const SizedBox(width: 8),
-          SizedBox(
-            width: 90,
-            child: Text(range,
-                style: const TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                )),
-          ),
-          Text(label,
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 12,
-                color: color,
-                fontWeight: FontWeight.w500,
-              )),
+          SizedBox(width: 90, child: Text(range, style: const TextStyle(fontFamily: 'Inter', fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textPrimary))),
+          Text(label, style: TextStyle(fontFamily: 'Inter', fontSize: 12, color: color, fontWeight: FontWeight.w500)),
         ],
       ),
     );
   }
 }
 
-// ── Detail Row ────────────────────────────────────────────────────────────────
+// ─── Detail Row ───────────────────────────────────────────────────────────────
+
 class _DetailRow extends StatelessWidget {
   const _DetailRow({required this.label, required this.value});
   final String label;
@@ -1676,20 +1377,9 @@ class _DetailRow extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         children: [
-          Text(label,
-              style: const TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 13,
-                color: AppColors.textSecondary,
-              )),
+          Text(label, style: const TextStyle(fontFamily: 'Inter', fontSize: 13, color: AppColors.textSecondary)),
           const Spacer(),
-          Text(value,
-              style: const TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              )),
+          Text(value, style: const TextStyle(fontFamily: 'Inter', fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
         ],
       ),
     );

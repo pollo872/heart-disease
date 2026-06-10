@@ -90,6 +90,10 @@ class AssessmentModel {
   final String riskLevel;
   final String createdAt;
   final double bmi;
+  final int systolicBP;
+  final int diastolicBP;
+  final double bloodSugar;
+  final double cholesterol;
   final AiAnalysis? aiAnalysis;
 
   AssessmentModel({
@@ -99,6 +103,10 @@ class AssessmentModel {
     required this.riskLevel,
     required this.createdAt,
     required this.bmi,
+    this.systolicBP = 0,
+    this.diastolicBP = 0,
+    this.bloodSugar = 0,
+    this.cholesterol = 0,
     this.aiAnalysis,
   });
 
@@ -110,6 +118,10 @@ class AssessmentModel {
       riskLevel: json['riskLevel'],
       createdAt: json['createdAt'],
       bmi: (json['BMI'] as num).toDouble(),
+      systolicBP: (json['SystolicBP'] as num?)?.toInt() ?? 0,
+      diastolicBP: (json['DiastolicBP'] as num?)?.toInt() ?? 0,
+      bloodSugar: (json['BloodSugar'] as num?)?.toDouble() ?? 0.0,
+      cholesterol: (json['Cholesterol'] as num?)?.toDouble() ?? 0.0,
       aiAnalysis: json['aiAnalysis'] != null
           ? AiAnalysis.fromMongoJson(json['aiAnalysis'])
           : null,

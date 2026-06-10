@@ -73,7 +73,11 @@ class AssessmentUIModel {
   final String riskMessage;
   final Color riskColor;
   final Color riskBadgeColor;
-  final double bmi;
+  final double bmi; 
+  final int systolicBP;
+  final int diastolicBP;
+  final double bloodSugar; 
+  final double cholesterol; 
   final AiAnalysisUI? aiAnalysis; // ← الجديد
 
   AssessmentUIModel({
@@ -87,6 +91,10 @@ class AssessmentUIModel {
     required this.riskColor,
     required this.riskBadgeColor,
     required this.bmi,
+    required this.systolicBP,
+    required this.diastolicBP,
+    required this.bloodSugar,
+    required this.cholesterol,
     this.aiAnalysis, // ← الجديد
   });
 }

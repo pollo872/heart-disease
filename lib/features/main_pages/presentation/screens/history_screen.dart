@@ -78,7 +78,7 @@ class _HistoryContentState extends State<_HistoryContent> {
           // ── Content ──────────────────────────────────────────────────────
           Expanded(
             child: _showDashboard
-                ? DashboardScreen(assessments: assessments)
+                ? DashboardScreen(assessments: assessments,userName: "${widget.state.patient.firstName} ${widget.state.patient.lastName}")
                 : _HistoryList(
                     state: widget.state,
                     hasAssessment: hasAssessment,

@@ -162,6 +162,10 @@ AssessmentUIModel mapAssessment(assessment) {
     riskColor: riskColor,
     riskBadgeColor: riskBadgeColor,
     bmi: assessment.bmi,
+    systolicBP: assessment.systolicBP,
+    diastolicBP: assessment.diastolicBP,
+    bloodSugar: assessment.bloodSugar,
+    cholesterol: assessment.cholesterol,
     aiAnalysis: assessment.aiAnalysis != null
         ? AiAnalysisUI(
             summary: assessment.aiAnalysis!.summary,

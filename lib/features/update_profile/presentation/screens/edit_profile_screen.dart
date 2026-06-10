@@ -31,7 +31,8 @@ class _EditProfileSheetContent extends StatefulWidget {
   const _EditProfileSheetContent({required this.patient});
 
   @override
-  State<_EditProfileSheetContent> createState() => _EditProfileSheetContentState();
+  State<_EditProfileSheetContent> createState() =>
+      _EditProfileSheetContentState();
 }
 
 class _EditProfileSheetContentState extends State<_EditProfileSheetContent> {
@@ -43,9 +44,10 @@ class _EditProfileSheetContentState extends State<_EditProfileSheetContent> {
   @override
   void initState() {
     super.initState();
-    _firstNameController = TextEditingController(text: widget.patient.firstName);
-    _lastNameController  = TextEditingController(text: widget.patient.lastName);
-    _emailController     = TextEditingController(text: widget.patient.email);
+    _firstNameController =
+        TextEditingController(text: widget.patient.firstName);
+    _lastNameController = TextEditingController(text: widget.patient.lastName);
+    _emailController = TextEditingController(text: widget.patient.email);
   }
 
   @override
@@ -63,6 +65,7 @@ class _EditProfileSheetContentState extends State<_EditProfileSheetContent> {
     return BlocListener<UpdateProfileCubit, UpdateProfileState>(
       listener: (context, state) {
         if (state is UpdateProfileSuccess) {
+          context.read<MainBloc>().invalidateCache();
           context.read<MainBloc>().add(GetProfileEvent());
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Profile updated successfully")),
@@ -104,7 +107,7 @@ class _EditProfileSheetContentState extends State<_EditProfileSheetContent> {
                 ),
 
                 // ── Title ────────────────────────────────────────
-                 Text(
+                Text(
                   'Edit Profile'.tr(),
                   style: TextStyle(
                     fontSize: 16,
@@ -128,6 +131,7 @@ class _EditProfileSheetContentState extends State<_EditProfileSheetContent> {
                     ),
                   ),
                 ),
+
                 ///image picker////////////////
                 // Positioned(
                 //   bottom: 0,
@@ -180,7 +184,8 @@ class _EditProfileSheetContentState extends State<_EditProfileSheetContent> {
                       children: [
                         Expanded(
                           child: OutlinedButton(
-                            onPressed: isLoading ? null : () => Navigator.pop(context),
+                            onPressed:
+                                isLoading ? null : () => Navigator.pop(context),
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
@@ -188,7 +193,7 @@ class _EditProfileSheetContentState extends State<_EditProfileSheetContent> {
                               ),
                               side: BorderSide(color: Colors.grey.shade300),
                             ),
-                            child:  Text('Cancel'.tr(),
+                            child: Text('Cancel'.tr(),
                                 style: TextStyle(color: Colors.black87)),
                           ),
                         ),
@@ -202,8 +207,10 @@ class _EditProfileSheetContentState extends State<_EditProfileSheetContent> {
                                     if (_formKey.currentState!.validate()) {
                                       cubit.updateProfile(
                                         UpdateProfileModel(
-                                          firstName: _firstNameController.text.trim(),
-                                          lastName: _lastNameController.text.trim(),
+                                          firstName:
+                                              _firstNameController.text.trim(),
+                                          lastName:
+                                              _lastNameController.text.trim(),
                                           email: _emailController.text.trim(),
                                         ),
                                       );
@@ -218,11 +225,12 @@ class _EditProfileSheetContentState extends State<_EditProfileSheetContent> {
                             ),
                             child: isLoading
                                 ? const SizedBox(
-                                    height: 18, width: 18,
+                                    height: 18,
+                                    width: 18,
                                     child: CircularProgressIndicator(
                                         color: Colors.white, strokeWidth: 2),
                                   )
-                                :  Text('Save Changes'.tr(),
+                                : Text('Save Changes'.tr(),
                                     style: TextStyle(color: Colors.white)),
                           ),
                         ),

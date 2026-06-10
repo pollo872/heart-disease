@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/manager/cubit.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/widgets/drop_down.dart';
+import 'package:heart_disease/features/submit_assessment/presentation/widgets/text_field.dart';
 import 'package:heart_disease/shared/widgets/base_button.dart';
 
 class Step1 extends StatefulWidget {
@@ -18,15 +19,10 @@ class _Step1State extends State<Step1> {
   String? race;
   int? height;
   int? weight;
-  final TextEditingController _systolicCtrl = TextEditingController();
-  final TextEditingController _diastolicCtrl = TextEditingController();
+
 
   @override
-  void dispose() {
-    _systolicCtrl.dispose();
-    _diastolicCtrl.dispose();
-    super.dispose();
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +47,7 @@ class _Step1State extends State<Step1> {
               ),
             ),
             Text(
-              'Step 1 of 3'.tr(),
+              'Step 1 of 4'.tr(),
               style: TextStyle(color: Colors.grey, fontSize: 11),
             ),
           ],
@@ -59,10 +55,10 @@ class _Step1State extends State<Step1> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(4),
           child: LinearProgressIndicator(
-            value: 1 / 3,
+            value: 1 / 4,
             backgroundColor: Colors.grey[200],
             color: const Color(0xFF1E63F3),
-            minHeight: 3,
+            minHeight: 4,
           ),
         ),
       ),
@@ -83,7 +79,7 @@ class _Step1State extends State<Step1> {
             ),
             const SizedBox(height: 4),
              Text(
-              'Please provide your basic information and vital signs'.tr(),
+              'Please provide your basic information'.tr(),
               style: TextStyle(fontSize: 13, color: Colors.grey),
             ),
             const SizedBox(height: 20),
@@ -137,7 +133,7 @@ class _Step1State extends State<Step1> {
             // Height field
             _buildLabel('Height (cm)'),
             const SizedBox(height: 6),
-            _buildTextField(
+            buildTextField(
               hint: '170',
               keyboardType: TextInputType.number,
               onChanged: (v) => height = int.tryParse(v),
@@ -147,7 +143,7 @@ class _Step1State extends State<Step1> {
             // Weight field
             _buildLabel('Weight (kg)'),
             const SizedBox(height: 6),
-            _buildTextField(
+            buildTextField(
               hint: '70',
               keyboardType: TextInputType.number,
               onChanged: (v) => weight = int.tryParse(v),
@@ -287,37 +283,7 @@ class _Step1State extends State<Step1> {
             fontSize: 13, fontWeight: FontWeight.w500, color: Colors.black87),
       );
 
-  Widget _buildTextField({
-    required String hint,
-    TextInputType keyboardType = TextInputType.text,
-    required Function(String) onChanged,
-  }) {
-    return TextField(
-      keyboardType: keyboardType,
-      onChanged: onChanged,
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: const TextStyle(color: Colors.black38),
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey.shade200),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey.shade200),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Color(0xFF1E63F3), width: 1.5),
-        ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      ),
-    );
-  }
-
+ 
   // Widget _buildDropdown<T>({
   //   required String hint,
   //   required List<T> items,

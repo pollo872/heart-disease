@@ -49,33 +49,59 @@ class AssessmentCubit extends Cubit<AssessmentState> {
     required String alcohol,
     required String physicalActivity,
     required String difficultyWalking,
+    required int sleepTime ,
+    required int coffeeIntake ,
+
   }) {
     model.smoking = smoking;
     model.alcohol = alcohol;
     model.physicalActivity = physicalActivity;
     model.difficultyWalking = difficultyWalking;
+    model.sleepTime  = sleepTime ;
+    model.caffeineIntake = coffeeIntake ;
+
   }
+
+  void healthMeasurements({
+    required int systolicBP,
+    required int diastolicBP,
+    required double bloodSugar,
+    required double cholesterol,
+  }) {
+    model.systolicBP = systolicBP;
+    model.diastolicBP = diastolicBP;
+    model.bloodSugar = bloodSugar;
+    model.cholesterol = cholesterol;
+  }
+
+
   void medicalHistory({
     required String diabetic,
     required String generalHealth ,
     required String asthma,
-    required String stroke,
+    required String brainStroke,
     required String kidneyDisease,
-    required String skinCancer,
+    required String cancerHistory,
+    required String chronicHypertension,
+    required String liverDisease,
+    required String immunologicalDiseases,
+    required String myocardialInfarctionInHeart,
     required int physicalHealthDays,
     required int mentalHealthDays ,
-    required int sleepTime ,
 
   }) {
     model.diabetic = diabetic;
     model.generalHealth = generalHealth ;
     model.asthma = asthma;
-    model.stroke = stroke;
+    model.brainstroke = brainStroke;
     model.kidneyDisease = kidneyDisease;
-    model.skinCancer = skinCancer;
+    model.cancerHistory = cancerHistory;
+    model.chronicHypertension = chronicHypertension;
+    model.liverDisease = liverDisease;
+    model.immunologicalDiseases = immunologicalDiseases;
+    model.myocardialInfarctionInHeart = myocardialInfarctionInHeart;
     model.physicalHealthDays = physicalHealthDays;
     model.mentalHealthDays  = mentalHealthDays ;
-    model.sleepTime  = sleepTime ;
   }
 
   /// 🫀 MEDICAL

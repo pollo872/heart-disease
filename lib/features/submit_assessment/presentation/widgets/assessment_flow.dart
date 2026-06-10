@@ -11,6 +11,7 @@ import 'package:heart_disease/features/submit_assessment/presentation/screens/la
 import 'package:heart_disease/features/submit_assessment/presentation/screens/last_step1_screen.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/screens/last_step2_screen.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/screens/last_step3_screen.dart';
+import 'package:heart_disease/features/submit_assessment/presentation/screens/last_step4_screen.dart';
 
 class AssessmentFlow extends StatelessWidget {
   const AssessmentFlow({super.key});
@@ -57,6 +58,8 @@ class AssessmentFlow extends StatelessWidget {
             case 2:
               return Step3();
             case 3:
+              return Step4();
+            case 4:
               return ReviewScreen();
             default:
               return Step1();
