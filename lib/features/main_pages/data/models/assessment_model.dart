@@ -88,6 +88,9 @@ class AssessmentModel {
   final String predictionResult;
   final double probability;
   final String riskLevel;
+  final String dPLevel;
+  final String sugerLevel;
+  final String cholesterolLevel;
   final String createdAt;
   final double bmi;
   final int systolicBP;
@@ -101,6 +104,9 @@ class AssessmentModel {
     required this.predictionResult,
     required this.probability,
     required this.riskLevel,
+    required this.sugerLevel,
+    required this.cholesterolLevel,
+    required this.dPLevel,
     required this.createdAt,
     required this.bmi,
     this.systolicBP = 0,
@@ -116,6 +122,9 @@ class AssessmentModel {
       predictionResult: json['predictionResult'],
       probability: (json['probability'] as num).toDouble(),
       riskLevel: json['riskLevel'],
+      sugerLevel: json['sugerLevel'],
+      cholesterolLevel: json['cholesterolLevel'],
+      dPLevel: json['dPLevel'],
       createdAt: json['createdAt'],
       bmi: (json['BMI'] as num).toDouble(),
       systolicBP: (json['SystolicBP'] as num?)?.toInt() ?? 0,

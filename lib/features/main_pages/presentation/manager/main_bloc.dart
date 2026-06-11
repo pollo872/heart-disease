@@ -90,27 +90,27 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
   // ✅ Helper: جيب الداتا وخزنها في الـ cache
   Future<void> _fetchAndCache(Emitter<MainState> emit) async {
-  try {
-    // ✅ call واحد بس
-    final profileData = await mainRepo.getFullProfile();
-    
-    final assessmentsUI = profileData.allAssessments
-        .map((e) => mapAssessment(e))
-        .toList();
+    try {
+      // ✅ call واحد بس
+      final profileData = await mainRepo.getFullProfile();
 
-    final newState = ProfileSuccessState(
-      patient: profileData.patient,
-      assessment: profileData.latestAssessment,
-      assessments: assessmentsUI,
-    );
+      final assessmentsUI =
+          profileData.allAssessments.map((e) => mapAssessment(e)).toList();
 
-    _cachedState = newState;
-    _lastFetchTime = DateTime.now();
-    emit(newState);
-  } catch (e) {
-    emit(ProfileErrorState(e.toString()));
+      final newState = ProfileSuccessState(
+        patient: profileData.patient,
+        assessment: profileData.latestAssessment,
+        assessments: assessmentsUI,
+      );
+
+      _cachedState = newState;
+      _lastFetchTime = DateTime.now();
+      emit(newState);
+    } catch (e) {
+      emit(ProfileErrorState(e.toString()));
+    }
   }
-}
+
   // ✅ لما المستخدم يعمل assessment جديد، استدعي دي عشان تمسح الـ cache
   void invalidateCache() {
     _cachedState = null;
@@ -123,7 +123,13 @@ AssessmentUIModel mapAssessment(assessment) {
   String riskHint = "";
   String riskMessage = "";
   Color riskColor = Colors.grey;
+  // Color dpColor = Colors.grey;
+  // Color sugerColor = Colors.grey;
+  // Color cholesterolColor = Colors.grey;
   Color riskBadgeColor = Colors.grey.withOpacity(.15);
+  // Color dpBgColor = Colors.grey.withOpacity(.15);
+  // Color sugerBgColor = Colors.grey.withOpacity(.15);
+  // Color cholesterolBgColor = Colors.grey.withOpacity(.15);
 
   switch (assessment.riskLevel.toLowerCase()) {
     case "low":
@@ -150,16 +156,73 @@ AssessmentUIModel mapAssessment(assessment) {
       riskBadgeColor = Colors.red.withOpacity(.15);
       break;
   }
+  // switch (assessment.dpLevel.toLowerCase()) {
+  //   case "normal":
+  //     dpColor = Colors.green;
+  //     dpBgColor = Colors.green.withOpacity(.15);
+  //     break;
+
+  //   case "elevated":
+  //     dpColor = Colors.orange;
+  //     dpBgColor = Colors.orange.withOpacity(.15);
+  //     break;
+
+  //   case "high":
+  //     dpColor = Colors.red;
+  //     dpBgColor = Colors.red.withOpacity(.15);
+  //     break;
+  // }
+  // switch (assessment.sugerLevel.toLowerCase()) {
+  //   case "normal":
+  //     sugerColor = Colors.green;
+  //     sugerBgColor = Colors.green.withOpacity(.15);
+  //     break;
+
+  //   case "elevated":
+  //     sugerColor = Colors.orange;
+  //     sugerBgColor = Colors.orange.withOpacity(.15);
+  //     break;
+
+  //   case "high":
+  //     sugerColor = Colors.red;
+  //     sugerBgColor = Colors.red.withOpacity(.15);
+  //     break;
+  // }
+  // switch (assessment.cholesterolLevel.toLowerCase()) {
+  //   case "normal":
+  //     cholesterolColor = Colors.green;
+  //     cholesterolBgColor = Colors.green.withOpacity(.15);
+  //     break;
+
+  //   case "elevated":
+  //     cholesterolColor = Colors.orange;
+  //     cholesterolBgColor = Colors.orange.withOpacity(.15);
+  //     break;
+
+  //   case "high":
+  //     cholesterolColor = Colors.red;
+  //     cholesterolBgColor = Colors.red.withOpacity(.15);
+  //     break;
+  // }
 
   return AssessmentUIModel(
     predictionResult: assessment.predictionResult,
     riskLevel: assessment.riskLevel,
+    sugerLevel: assessment.sugerLevel,
+    cholesterolLevel: assessment.cholesterolLevel,
+    dPLevel: assessment.dPLevel,
     probability: "${(assessment.probability * 100).toStringAsFixed(2)}",
     createdAt: assessment.createdAt,
     riskTitle: riskTitle,
     riskHint: riskHint,
     riskMessage: riskMessage,
     riskColor: riskColor,
+    // dpColor: dpColor,
+    // dpBgColor: dpBgColor,
+    // sugerColor: sugerColor,
+    // sugerBgColor: sugerBgColor,
+    // cholesterolColor: cholesterolColor,
+    // cholesterolBgColor: cholesterolBgColor,
     riskBadgeColor: riskBadgeColor,
     bmi: assessment.bmi,
     systolicBP: assessment.systolicBP,

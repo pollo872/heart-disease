@@ -66,12 +66,21 @@ class AiAnalysisUI {
 class AssessmentUIModel {
   final String predictionResult;
   final String riskLevel;
+  final String sugerLevel;
+  final String cholesterolLevel;
+  final String dPLevel;
   final String probability;
   final String createdAt;
   final String riskTitle;
   final String riskHint;
   final String riskMessage;
   final Color riskColor;
+  // final Color dpColor;
+  // final Color dpBgColor;
+  // final Color sugerColor;
+  // final Color sugerBgColor;
+  // final Color cholesterolColor;
+  // final Color cholesterolBgColor;
   final Color riskBadgeColor;
   final double bmi; 
   final int systolicBP;
@@ -83,12 +92,21 @@ class AssessmentUIModel {
   AssessmentUIModel({
     required this.predictionResult,
     required this.riskLevel,
+    required this.sugerLevel,
+    required this.cholesterolLevel,
+    required this.dPLevel,
     required this.probability,
     required this.createdAt,
     required this.riskTitle,
     required this.riskHint,
     required this.riskMessage,
     required this.riskColor,
+    // required this.dpColor,
+    // required this.dpBgColor,
+    // required this.sugerColor,
+    // required this.sugerBgColor,
+    // required this.cholesterolColor,
+    // required this.cholesterolBgColor,
     required this.riskBadgeColor,
     required this.bmi,
     required this.systolicBP,

@@ -42,39 +42,48 @@ class ReviewScreen extends StatelessWidget {
             _SectionCard(
               icon: Icons.person_outline,
               iconColor: const Color(0xFF1E63F3),
-              title: 'Demographics & Vitals',
+              title: 'Demographics',
               child: Column(
                 children: [
                   Row(
                     children: [
-                      _InfoTile(label: 'Age', value: model.age ?? '—'),
-                      _InfoTile(label: 'Sex', value: 'sex.${model.sex}'.tr()),
+                      Expanded(child: _InfoTile(label: 'Age', value: model.age ?? '—')),
+                      Expanded(child: _InfoTile(label: 'Sex', value: 'sex.${model.sex}'.tr())),
                     ],
                   ),
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      _InfoTile(
-                          label: 'Weight',
-                          value: model.weight != null
-                              ? '${model.weight} kg'
-                              : '—'),
-                      _InfoTile(
-                          label: 'Height',
-                          value: model.height != null
-                              ? '${model.height} cm'
-                              : '—'),
+                      Expanded(
+                        child: _InfoTile(
+                            label: 'Weight',
+                            value: model.weight != null
+                                ? '${model.weight} kg'
+                                : '—'),
+                      ),
+                      Expanded(
+                        child: _InfoTile(
+                            label: 'Height',
+                            value: model.height != null
+                                ? '${model.height} cm'
+                                : '—'),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      _InfoTile(label: 'Race', value: 'race.${model.race}'.tr()),
-                      _InfoTile(
-                          label: 'BMI',
-                          value: model.bmi != null
-                              ? model.bmi!.toStringAsFixed(1)
-                              : '—'),
+                      Expanded(
+                        child: _InfoTile(
+                            label: 'Race', value: 'race.${model.race}'.tr()),
+                      ),
+                      Expanded(
+                        child: _InfoTile(
+                            label: 'BMI',
+                            value: model.bmi != null
+                                ? model.bmi!.toStringAsFixed(1)
+                                : '—'),
+                      ),
                     ],
                   ),
                 ],
@@ -85,20 +94,57 @@ class ReviewScreen extends StatelessWidget {
             // ── Lifestyle & Habits ─────────────────────────────
             _SectionCard(
               icon: Icons.bolt_outlined,
-              iconColor: Colors.amber,
+              iconColor: const Color(0xFF009689),
               title: 'Lifestyle & Habits',
               child: Column(
                 children: [
                   _LabelValue(
                       label: 'Smoking Status', value: 'YesNo.${model.smoking}'),
                   _LabelValue(
-                      label: 'Drinking Alcohol', value: 'YesNo.${model.alcohol}'),
+                      label: 'Drinking Alcohol',
+                      value: 'YesNo.${model.alcohol}'),
                   _LabelValue(
                       label: 'Physical activity',
                       value: 'YesNo.${model.physicalActivity}'),
                   _LabelValue(
                       label: 'Difficulty walking',
                       value: 'YesNo.${model.difficultyWalking}'),
+                  _InfoTile(
+                      label: 'Sleep Time',
+                      value: model.sleepTime != null
+                          ? '${model.sleepTime} hours'
+                          : '—'),
+                  _InfoTile(
+                      label: 'Caffeine Intake',
+                      value: model.caffeineIntake != null
+                          ? '${model.caffeineIntake} cups per day'
+                          : '—'),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            _SectionCard(
+              icon: Icons.analytics_outlined,
+              iconColor: Colors.amber,
+              title: 'Vital Signs & Labs',
+              child: Column(
+                children: [
+                  _InfoTile(
+                      label: 'Blood Pressure',
+                      value:
+                          model.systolicBP != null && model.diastolicBP != null
+                              ? '${model.systolicBP}/${model.diastolicBP} mmHg'
+                              : '—'),
+                  _InfoTile(
+                      label: 'Blood Sugar',
+                      value: model.bloodSugar != null
+                          ? '${model.bloodSugar} mg/dL'
+                          : '—'),
+                  _InfoTile(
+                      label: 'Cholesterol In Blood',
+                      value: model.cholesterol != null
+                          ? '${model.cholesterol} mg/dL'
+                          : '—'),
                 ],
               ),
             ),
@@ -110,36 +156,72 @@ class ReviewScreen extends StatelessWidget {
               iconColor: Colors.redAccent,
               title: 'Medical History',
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   Text(
-                    'Past Heart Conditions'.tr(),
-                    style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w500),
-                  ),
-                  const SizedBox(height: 6),
-                  Wrap(
-                    spacing: 6,
-                    runSpacing: 6,
+                  Row(
                     children: [
-                      _Chip(label: 'heart attack'),
-                      _Chip(label: 'heart failure'),
+                      Expanded(
+                        child: _LabelValue(
+                            label: 'Diabetic', value: 'YesNo.${model.diabetic}'),
+                      ),
+                      Expanded(
+                        child: _LabelValue(
+                            label: 'Chronic Hypertension',
+                            value: 'YesNo.${model.chronicHypertension}'),
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 10),
-                   Text(
-                    'Family History'.tr(),
-                    style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w500),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _LabelValue(
+                            label: 'Liver Disease',
+                            value: 'YesNo.${model.liverDisease}'),
+                      ),
+                      Expanded(
+                        child: _LabelValue(
+                            label: 'Kidney Disease',
+                            value: 'YesNo.${model.kidneyDisease}'),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 4),
-                   Text(
-                    'None reported'.tr(),
-                    style: TextStyle(fontSize: 14, color: Colors.black87),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _LabelValue(
+                            label: 'Asthma', value: 'YesNo.${model.asthma}'),
+                      ),
+                      Expanded(
+                        child: _LabelValue(
+                            label: 'Immunological diseases',
+                            value: 'YesNo.${model.immunologicalDiseases}'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _LabelValue(
+                            label: 'Stroke', value: 'YesNo.${model.brainstroke}'),
+                      ),
+                      Expanded(
+                        child: _LabelValue(
+                            label: 'Heart Attack',
+                            value: 'YesNo.${model.myocardialInfarctionInHeart}'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _LabelValue(
+                            label: 'Cancer History',
+                            value: 'YesNo.${model.cancerHistory}'),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -163,7 +245,7 @@ class ReviewScreen extends StatelessWidget {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children:  [
+                      children: [
                         Text(
                           'Ready to Submit'.tr(),
                           style: TextStyle(
@@ -267,24 +349,41 @@ class _InfoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label.tr(),
-              style: const TextStyle(fontSize: 11, color: Colors.grey)),
-          const SizedBox(height: 2),
-          Text(value,
-              style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black87)),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label.tr(),
+            style: const TextStyle(fontSize: 11, color: Colors.grey)),
+        const SizedBox(height: 2),
+        Text(value,
+            style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87)),
+      ],
     );
   }
 }
 
+// class _ExpandedInfoTile extends StatelessWidget {
+//   final String label;
+//   final String value;
+
+//   const _ExpandedInfoTile({
+//     required this.label,
+//     required this.value,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Expanded(
+//       child: _InfoTile(
+//         label: label,
+//         value: value,
+//       ),
+//     );
+//   }
+// }
 class _LabelValue extends StatelessWidget {
   final String label;
   final String value;
@@ -298,7 +397,8 @@ class _LabelValue extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label.tr(), style: const TextStyle(fontSize: 11, color: Colors.grey)),
+          Text(label.tr(),
+              style: const TextStyle(fontSize: 11, color: Colors.grey)),
           const SizedBox(height: 2),
           Text(value.tr(),
               style: const TextStyle(
@@ -311,26 +411,26 @@ class _LabelValue extends StatelessWidget {
   }
 }
 
-class _Chip extends StatelessWidget {
-  final String label;
-  const _Chip({required this.label});
+// class _Chip extends StatelessWidget {
+//   final String label;
+//   const _Chip({required this.label});
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFECEC),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        label.tr(),
-        style: const TextStyle(
-          fontSize: 12,
-          color: Color(0xFFD32F2F),
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+//       decoration: BoxDecoration(
+//         color: const Color(0xFFFFECEC),
+//         borderRadius: BorderRadius.circular(20),
+//       ),
+//       child: Text(
+//         label.tr(),
+//         style: const TextStyle(
+//           fontSize: 12,
+//           color: Color(0xFFD32F2F),
+//           fontWeight: FontWeight.w500,
+//         ),
+//       ),
+//     );
+//   }
+// }

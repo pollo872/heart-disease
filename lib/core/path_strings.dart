@@ -4,6 +4,7 @@ class PathStrings {
   static const String articlesIconPath = 'assets/icons/articles.png';
   static const String chatIconPath = 'assets/icons/chat.png';
   static const String profileIconPath = 'assets/icons/profile.png';
+  static const String doctorIconPath = 'assets/icons/doctors.png';
   static const String newAssessmentIconPath =
       'assets/icons/new_assessment_icon.png';
   static const String viewHistoryIconPath =

@@ -330,6 +330,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                       _buildAiInsights(sorted),
                       const SizedBox(height: 24),
                     ],
+                    const SizedBox(height: 30),
                   ],
                 ),
               ),
@@ -943,22 +944,22 @@ class _LabValuesRow extends StatelessWidget {
   final AssessmentUIModel latest;
   const _LabValuesRow({required this.latest});
 
-  _LabStatus _cholStatus(double v) {
-    if (v < 200) return _LabStatus.normal;
-    if (v < 240) return _LabStatus.borderline;
+  _LabStatus _cholStatus() {
+    if (latest.cholesterolLevel == 'Normal') return _LabStatus.normal;
+    if (latest.cholesterolLevel == 'Elevated') return _LabStatus.borderline;
     return _LabStatus.high;
   }
 
-  _LabStatus _sugarStatus(double v) {
-    if (v < 100) return _LabStatus.normal;
-    if (v < 126) return _LabStatus.borderline;
+  _LabStatus _sugarStatus() {
+    if (latest.sugerLevel == 'Normal') return _LabStatus.normal;
+    if (latest.sugerLevel == 'Elevated') return _LabStatus.borderline;
     return _LabStatus.high;
   }
 
   @override
   Widget build(BuildContext context) {
-    final cholSt = _cholStatus(latest.cholesterol);
-    final sugSt = _sugarStatus(latest.bloodSugar);
+    final cholSt = _cholStatus();
+    final sugSt = _sugarStatus();
 
     return Row(
       children: [

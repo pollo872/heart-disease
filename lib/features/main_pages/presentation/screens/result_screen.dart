@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:heart_disease/core/path_strings.dart';
 import 'package:heart_disease/features/main_pages/data/data_source/get_profile_remote_data_source.dart';
 import 'package:heart_disease/features/main_pages/data/models/assessment_ui_model.dart';
 import 'package:heart_disease/features/main_pages/data/repository/main_repo.dart';
@@ -8,8 +9,9 @@ import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc
 import 'package:heart_disease/features/main_pages/presentation/manager/main_event.dart';
 import 'package:heart_disease/features/main_pages/presentation/screens/main_screen.dart';
 import 'package:heart_disease/features/main_pages/presentation/widgets/find_doctor.dart';
-import 'package:heart_disease/res/app_colors.dart';
 import 'dart:math' as math;
+
+import 'package:heart_disease/theme/app_theme.dart';
 
 class ResultScreen extends StatelessWidget {
   final double score;
@@ -196,8 +198,12 @@ class ResultScreen extends StatelessWidget {
                           horizontal: 20, vertical: 15),
                       child: Row(
                         children: [
-                          const Icon(Icons.medical_services_outlined,
-                              color: Colors.white, size: 20),
+                          Image.asset(
+                            PathStrings.doctorIconPath,
+                            width: 20,
+                            height: 20,
+                            color: Colors.white,
+                          ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
@@ -282,39 +288,47 @@ class _VitalsCard extends StatelessWidget {
   final AssessmentUIModel assessment;
   const _VitalsCard({required this.assessment});
 
-  _VitalStatus _bpStatus(int systolic, int diastolic) {
+  _VitalStatus _bpStatus() {
     // Normal: systolic < 120 AND diastolic < 80
-    if (systolic < 120 && diastolic < 80) return _VitalStatus.normal;
+    if (assessment.dPLevel == "Normal") return _VitalStatus.normal;
 
     // Elevated: systolic 120–129 AND diastolic < 80
-    if (systolic <= 129 && diastolic < 80) return _VitalStatus.elevated;
+    if (assessment.dPLevel == "Elevated") return _VitalStatus.elevated;
 
     // High Stage 1: systolic 130–139 OR diastolic 80–89
-    if (systolic <= 139 || diastolic <= 89) return _VitalStatus.high;
+    if (assessment.dPLevel == "High") return _VitalStatus.high;
 
     // High Stage 2: systolic >= 140 OR diastolic >= 90
     return _VitalStatus.high;
   }
 
-  _VitalStatus _sugarStatus(double sugar) {
-    if (sugar == 0) return _VitalStatus.normal; // no data
-    if (sugar < 100) return _VitalStatus.normal;
-    if (sugar <= 125) return _VitalStatus.elevated; // pre-diabetic
+  _VitalStatus _sugarStatus() {
+    if (assessment.sugerLevel == "Normal") return _VitalStatus.normal;
+
+    // Elevated: systolic 120–129 AND diastolic < 80
+    if (assessment.sugerLevel == "Elevated") return _VitalStatus.elevated;
+
+    // High Stage 1: systolic 130–139 OR diastolic 80–89
+    if (assessment.sugerLevel == "High") return _VitalStatus.high;
     return _VitalStatus.high; // diabetic range
   }
 
-  _VitalStatus _cholesterolStatus(double cholesterol) {
-    if (cholesterol == 0) return _VitalStatus.normal; // no data
-    if (cholesterol < 200) return _VitalStatus.normal;
-    if (cholesterol <= 239) return _VitalStatus.elevated; // borderline
+  _VitalStatus _cholesterolStatus() {
+    if (assessment.cholesterolLevel == "Normal") return _VitalStatus.normal;
+
+    // Elevated: systolic 120–129 AND diastolic < 80
+    if (assessment.cholesterolLevel == "Elevated") return _VitalStatus.elevated;
+
+    // High Stage 1: systolic 130–139 OR diastolic 80–89
+    if (assessment.cholesterolLevel == "High") return _VitalStatus.high; // borderline
     return _VitalStatus.high; // high
   }
 
   @override
   Widget build(BuildContext context) {
-    final bpStatus = _bpStatus(assessment.systolicBP, assessment.diastolicBP);
-    final sugarStatus = _sugarStatus(assessment.bloodSugar);
-    final cholStatus = _cholesterolStatus(assessment.cholesterol);
+    final bpStatus = _bpStatus();
+    final sugarStatus = _sugarStatus();
+    final cholStatus = _cholesterolStatus();
 
     return Container(
       width: double.infinity,
@@ -393,7 +407,7 @@ enum _VitalStatus { normal, elevated, high }
 
 extension _VitalStatusExt on _VitalStatus {
   Color get color => switch (this) {
-        _VitalStatus.normal => const Color(0xFF2E7D32),
+        _VitalStatus.normal => AppColors.textGreen,
         _VitalStatus.elevated => const Color(0xFFF57C00),
         _VitalStatus.high => const Color(0xFFC62828),
       };
