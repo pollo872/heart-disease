@@ -1,7 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:heart_disease/core/path_strings.dart';
-import 'package:heart_disease/res/app_colors.dart';
+import 'package:heart_disease/theme/app_theme.dart';
+
 
 class AppBottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -42,7 +43,7 @@ class AppBottomNavBar extends StatelessWidget {
       // margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.backGround,
+        color: AppColors.background,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.12),
@@ -78,17 +79,14 @@ class AppBottomNavBar extends StatelessWidget {
               iconPath,
               width: 22,
               height: 22,
-              color: isSelected ? AppColors.primary : AppColors.mainGreyIcons,
+              color: isSelected ? AppColors.primary : AppColors.iconGray,
             ),
             const SizedBox(height: 4),
             AnimatedCrossFade(
               firstChild: Text(
                 title,
-                style: TextStyle(
-                  color:
-                      isSelected ? AppColors.primary : AppColors.mainGreyIcons,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
+                style: AppTextStyles.subTitle.copyWith(
+                  color:  AppColors.primary ,
                 ),
               ),
               secondChild: const SizedBox.shrink(),

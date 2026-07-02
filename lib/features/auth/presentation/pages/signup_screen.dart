@@ -38,20 +38,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
               key: _formKey,
               child: BlocConsumer<AuthCubit, AuthState>(
                   listener: (context, state) {
-                if (state is AuthSuccess) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LoginScreen()),
-                  );
-                }
+                    if (state is AuthSuccess) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      );
+                    }
 
-                if (state is AuthError) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(state.message)),
-                  );
-                }
-              }, builder: _content
-              ),
+                    if (state is AuthError) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.message)),
+                      );
+                    }
+                  },
+                  builder: _content),
             ),
           ),
         ),
@@ -60,93 +60,114 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _content(context, state) {
-              return Column(
-                children: [
-                  const SizedBox(height: 40),
-  
-                  LogoWidget(),
-  
-                  const SizedBox(height: 30),
-  
-                  /// CARD
-                  _body(state, context)
-                
-                ],
-              );
-            }
+    return Column(
+      children: [
+        const SizedBox(height: 40),
+
+        LogoWidget(),
+
+        const SizedBox(height: 30),
+
+        /// CARD
+        _body(state, context)
+      ],
+    );
+  }
 
   Container _body(AuthState state, BuildContext context) {
     return Container(
-                    width: 350,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: AppColors.backGround,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                         Text(
-                          "createAccount".tr(),
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 6),
-                         Text(
-                          "signUpForYourHeartHealth".tr(),
-                          style: TextStyle(color: Colors.grey, fontSize: 13),
-                        ),
-                        const SizedBox(height: 20),
-                        AnyFormFeild(
-                          formTitle: "FirstName",
-                          keyboardType: TextInputType.name,
-                          controller: firstNameController,
-                          validator: (value) =>
-                              value!.isEmpty ? "nameRequired".tr() : null,
-                        ),
-                        const SizedBox(height: 16),
-                        AnyFormFeild(
-                          formTitle: "LastName",
-                          keyboardType: TextInputType.name,
-                          controller: lastNameController,
-                          validator: (value) =>
-                              value!.isEmpty ? "nameRequired".tr() : null,
-                        ),
-                        const SizedBox(height: 16),
-                        AnyFormFeild(
-                          formTitle: "Email",
-                          keyboardType: TextInputType.emailAddress,
-                          controller: emailController,
-                          validator: (value) =>
-                              value!.isEmpty ? "emailRequired".tr() : null,
-                        ),
-                        const SizedBox(height: 16),
-                        PasswordFormFeild(
-                          formTitle: "Password",
-                          controller: passwordController,
-                          validator: (value) =>
-                              value!.length < 6 ? "minimumLength".tr() : null,
-                        ),
-                        const SizedBox(height: 16),
-                        PasswordFormFeild(
-                          formTitle: "confirmPassword",
-                          controller: confirmPasswordController,
-                          validator: (value) {
-                            if (value != passwordController.text) {
-                              return "passwordsDoNotMatch".tr();
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 12),
-                        _checkBox(),
-                        const SizedBox(height: 20),
-                        _createAccountBtn(state, context),
-                        const SizedBox(height: 16),
-                        signInNavigationBtn(),
-                      ],
-                    ),
-                  );
+      width: 350,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.backGround,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "createAccount".tr(),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            "signUpForYourHeartHealth".tr(),
+            style: TextStyle(color: Colors.grey, fontSize: 13),
+          ),
+          const SizedBox(height: 20),
+          AnyFormFeild(
+            formTitle: "FirstName",
+            keyboardType: TextInputType.name,
+            controller: firstNameController,
+            validator: (value) => value!.isEmpty ? "nameRequired".tr() : null,
+          ),
+          const SizedBox(height: 16),
+          AnyFormFeild(
+            formTitle: "LastName",
+            keyboardType: TextInputType.name,
+            controller: lastNameController,
+            validator: (value) => value!.isEmpty ? "nameRequired".tr() : null,
+          ),
+          const SizedBox(height: 16),
+          AnyFormFeild(
+            formTitle: "Email",
+            keyboardType: TextInputType.emailAddress,
+            controller: emailController,
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return tr("emailRequired");
+              }
+
+              final emailRegex = RegExp(
+                r'^[a-zA-Z0-9.!#$%&*+/=?^_`{|}~-]+@[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)+$',
+              );
+
+              if (!emailRegex.hasMatch(value.trim())) {
+                return "please enter a valid email";
+              }
+
+              return null;
+            },
+          ),
+
+          const SizedBox(height: 16),
+
+          /// PASSWORD
+          PasswordFormFeild(
+            formTitle: "Password",
+            controller: passwordController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return tr("passwordRequired");
+              }
+
+              if (value.length < 8) {
+                return "password is too short";
+              }
+
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          PasswordFormFeild(
+            formTitle: "confirmPassword",
+            controller: confirmPasswordController,
+            validator: (value) {
+              if (value != passwordController.text) {
+                return "passwordsDoNotMatch".tr();
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 12),
+          _checkBox(),
+          const SizedBox(height: 20),
+          _createAccountBtn(state, context),
+          const SizedBox(height: 16),
+          signInNavigationBtn(),
+        ],
+      ),
+    );
   }
 
   Row _checkBox() {
@@ -158,7 +179,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             setState(() => agree = v!);
           },
         ),
-         Expanded(
+        Expanded(
           child: Text(
             "agreeTerms".tr(),
             style: TextStyle(fontSize: 12),

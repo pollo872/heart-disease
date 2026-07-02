@@ -52,9 +52,31 @@ class HistoryCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Text(
-                    DateFormat('MMMM d, y').format(DateTime.parse(createdAt)),
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        DateFormat('MMMM d, y')
+                            .format(DateTime.parse(createdAt)),
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Image.asset(
+                            assessment.riskIconPath,
+                            width: 16,
+                            height: 16,
+                            color: assessment.riskColor,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            assessment.riskHint,
+                            style: AppTextStyles.subTitle,
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
                 Container(
@@ -66,17 +88,11 @@ class HistoryCard extends StatelessWidget {
                   ),
                   child: Text(
                     assessment.riskTitle,
-                    style: TextStyle(color: assessment.riskColor, fontSize: 11),
+                    style: AppTextStyles.subTitle
+                        .copyWith(color: assessment.riskColor, fontSize: 12),
                   ),
                 ),
               ],
-            ),
-
-            const SizedBox(height: 8),
-
-            Text(
-              assessment.riskHint,
-              style: TextStyle(color: assessment.riskColor),
             ),
 
             const SizedBox(height: 12),
@@ -118,7 +134,8 @@ class HistoryCard extends StatelessWidget {
               ),
               child: Text(
                 assessment.riskMessage,
-                style: const TextStyle(fontSize: 12),
+                style:
+                    AppTextStyles.subTitle.copyWith(color: AppColors.textBlue),
               ),
             ),
 
@@ -145,11 +162,16 @@ class MetricItem extends StatelessWidget {
     return Column(
       children: [
         Text(title.tr(),
-            style: const TextStyle(color: Colors.grey, fontSize: 11)),
+            style: const TextStyle(
+                color: AppColors.textLatestGray,
+                fontSize: 14,
+                fontWeight: FontWeight.w400)),
         const SizedBox(height: 4),
         Text(value,
             style: TextStyle(
-                fontWeight: FontWeight.w600, color: AppColors.textGreen)),
+                fontWeight: FontWeight.w700,
+                color: AppColors.textGreen,
+                fontSize: 16)),
       ],
     );
   }

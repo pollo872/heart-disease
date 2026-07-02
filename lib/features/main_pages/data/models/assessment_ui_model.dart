@@ -74,6 +74,7 @@ class AssessmentUIModel {
   final String riskTitle;
   final String riskHint;
   final String riskMessage;
+  final String riskIconPath;
   final Color riskColor;
   // final Color dpColor;
   // final Color dpBgColor;
@@ -101,6 +102,7 @@ class AssessmentUIModel {
     required this.riskHint,
     required this.riskMessage,
     required this.riskColor,
+    required this.riskIconPath,
     // required this.dpColor,
     // required this.dpBgColor,
     // required this.sugerColor,

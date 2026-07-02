@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:heart_disease/core/utils/error_message_handler.dart';
 import 'package:heart_disease/features/main_pages/data/models/assessment_ui_model.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
 import 'package:heart_disease/features/submit_assessment/data/models/assessment_model1.dart';
@@ -119,7 +120,7 @@ class AssessmentCubit extends Cubit<AssessmentState> {
   // AssessmentUIModel? assessmentUI;
 
   result.fold(
-    (failure) => emit(AssessmentError(failure.message)),
+    (failure) => emit(AssessmentError(ErrorMessageHandler.getMessage(failure))),
     (assessmentModel) {
       final assessmentUI = mapAssessment(assessmentModel); // map الداتا الجاية من السيرفر
       emit(AssessmentSuccess(assessmentUI));

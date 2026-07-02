@@ -25,4 +25,14 @@ class PatientModel {
       // phone: json['phone'],
     );
   }
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'firstName': firstName,
+      'lastName': lastName,
+      'email': email,
+      'createdAt': createdAt,
+      // 'phone': phone,
+    };
+  }
 }

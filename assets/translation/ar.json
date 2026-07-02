@@ -46,7 +46,7 @@
     "LowRiskTitle": "خطر منخفض",
     "MediumRiskTitle": "خطر متوسط",
     "HighRiskTitle": "خطر مرتفع",
-    "LowRiskHint": "ليس في خطر",
+    "LowRiskHint": "مستقر",
     "MediumRiskHint": "يحتاج إلى اهتمام",
     "HighRiskHint": "يحتاج إلى طبيب",
     "LowRiskMessage": "تشير نتائجك إلى خطر منخفض للإصابة بأمراض القلب. حافظ على عاداتك الصحية والفحوصات الدورية مع مقدم الرعاية الصحية الخاص بك.",

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class YesNoSelector extends StatefulWidget {
@@ -65,7 +66,7 @@ class _YesNoSelectorState extends State<YesNoSelector> {
                     : null,
               ),
               const SizedBox(width: 6),
-              Text(option),
+              Text('YesNo.$option'.tr()),
               const SizedBox(width: 20),
             ],
           ),

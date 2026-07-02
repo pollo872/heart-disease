@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:heart_disease/core/utils/error_message_handler.dart';
 import 'package:heart_disease/features/auth/domain/use_cases/check_login_usecase.dart';
 import 'package:heart_disease/features/auth/domain/use_cases/login_usecase.dart';
 import 'package:heart_disease/features/auth/domain/use_cases/logout_usecase.dart';
@@ -26,7 +27,7 @@ class AuthCubit extends Cubit<AuthState> {
         user: result.user,
       ));
     } catch (e) {
-      emit(AuthError(e.toString()));
+      emit(AuthError(ErrorMessageHandler.getMessage(e)));
     }
   }
 
@@ -48,7 +49,7 @@ class AuthCubit extends Cubit<AuthState> {
     } catch (e) {
       
 
-      emit(AuthError(e.toString()));
+      emit(AuthError(ErrorMessageHandler.getMessage(e)));
     }
   }
 

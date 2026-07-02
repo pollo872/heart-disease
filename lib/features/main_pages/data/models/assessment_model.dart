@@ -65,8 +65,6 @@ class AiAnalysis {
 
   // من MongoDB — بيحفظ camelCase، فنقرأ الاتنين
   factory AiAnalysis.fromMongoJson(Map<String, dynamic> json) {
-    print("aiAnalysis keys: ${json.keys}"); // ✅ هتشوف الـ keys الحقيقية
-    print("summary: ${json['summary']}");
     return AiAnalysis(
       summary: json['summary'] ?? '',
       riskFactors:
@@ -80,6 +78,20 @@ class AiAnalysis {
           json['warningSigns'] ?? json['warning_signs'] ?? []),
       followUp: json['followUp'] ?? json['follow_up'] ?? '',
     );
+  }
+
+  // ✅ للـ persistence (SharedPreferences). بيخرج camelCase عشان يتقرا
+  // تاني بـ fromMongoJson من غير أي مشاكل.
+  Map<String, dynamic> toJson() {
+    return {
+      'summary': summary,
+      'riskFactors': riskFactors,
+      'positiveFactors': positiveFactors,
+      'recommendations': recommendations,
+      'lifestyleTips': lifestyleTips,
+      'warningSigns': warningSigns,
+      'followUp': followUp,
+    };
   }
 }
 
@@ -135,5 +147,27 @@ class AssessmentModel {
           ? AiAnalysis.fromMongoJson(json['aiAnalysis'])
           : null,
     );
+  }
+
+  // ✅ للـ persistence (SharedPreferences). بيستخدم نفس أسماء الـ keys
+  // اللي بيتوقعها fromJson بالظبط، عشان أي داتا نحفظها تقدر تتقرا
+  // تاني بنفس الـ factory من غير أي تعديل إضافي.
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'predictionResult': predictionResult,
+      'probability': probability,
+      'riskLevel': riskLevel,
+      'sugerLevel': sugerLevel,
+      'cholesterolLevel': cholesterolLevel,
+      'dPLevel': dPLevel,
+      'createdAt': createdAt,
+      'BMI': bmi,
+      'SystolicBP': systolicBP,
+      'DiastolicBP': diastolicBP,
+      'BloodSugar': bloodSugar,
+      'Cholesterol': cholesterol,
+      'aiAnalysis': aiAnalysis?.toJson(),
+    };
   }
 }

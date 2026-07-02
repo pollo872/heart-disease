@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_event.dart';
+import 'package:heart_disease/theme/app_theme.dart';
 
 class WelcomeHeader extends StatelessWidget {
   final String userName;
@@ -20,17 +21,10 @@ class WelcomeHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: hasAssessment ? 150 : 100,
+      height: hasAssessment ? 150 : 110,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xff1E63F3),
-            Color(0xff2F7BFF),
-          ],
-        ),
+      decoration: BoxDecoration(
+        gradient: AppGradiant.gradiant1,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(24),
           bottomRight: Radius.circular(24),
@@ -47,18 +41,14 @@ class WelcomeHeader extends StatelessWidget {
               children: [
                 Text(
                   "welcomeBack".tr(),
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
-                  ),
+                  style: AppTextStyles.subTitle.copyWith(color: Colors.white),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   userName,
-                  style: const TextStyle(
+                  style: AppTextStyles.subTitle.copyWith(
                     color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 24,
                   ),
                 ),
               ],

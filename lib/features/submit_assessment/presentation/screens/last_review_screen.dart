@@ -97,6 +97,7 @@ class ReviewScreen extends StatelessWidget {
               iconColor: const Color(0xFF009689),
               title: 'Lifestyle & Habits',
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _LabelValue(
                       label: 'Smoking Status', value: 'YesNo.${model.smoking}'),
@@ -128,6 +129,7 @@ class ReviewScreen extends StatelessWidget {
               iconColor: Colors.amber,
               title: 'Vital Signs & Labs',
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _InfoTile(
                       label: 'Blood Pressure',
@@ -349,18 +351,21 @@ class _InfoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label.tr(),
-            style: const TextStyle(fontSize: 11, color: Colors.grey)),
-        const SizedBox(height: 2),
-        Text(value,
-            style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black87)),
-      ],
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label.tr(),
+              style: const TextStyle(fontSize: 11, color: Colors.grey)),
+          const SizedBox(height: 2),
+          Text(value,
+              style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87)),
+        ],
+      ),
     );
   }
 }

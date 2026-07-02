@@ -46,7 +46,7 @@
     "LowRiskTitle": "Low Risk",
     "MediumRiskTitle": "Moderate Risk",
     "HighRiskTitle": "High Risk",
-    "LowRiskHint": "Not At Risk",
+    "LowRiskHint": "Stable",
     "MediumRiskHint": "Needs Attention",
     "HighRiskHint": "Need Doctor",
     "LowRiskMessage": "Your results indicate a low risk of heart disease. Maintain your healthy habits and regular check-ups with your healthcare provider.",

@@ -110,9 +110,18 @@ class _LoginScreenState extends State<LoginScreen> {
             keyboardType: TextInputType.emailAddress,
             controller: emailController,
             validator: (value) {
-              if (value == null || value.isEmpty) {
+              if (value == null || value.trim().isEmpty) {
                 return tr("emailRequired");
               }
+
+              final emailRegex = RegExp(
+                r'^[a-zA-Z0-9.!#$%&*+/=?^_`{|}~-]+@[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)+$',
+              );
+
+              if (!emailRegex.hasMatch(value.trim())) {
+                return "please enter a valid email";
+              }
+
               return null;
             },
           ),
@@ -127,6 +136,11 @@ class _LoginScreenState extends State<LoginScreen> {
               if (value == null || value.isEmpty) {
                 return tr("passwordRequired");
               }
+
+              if (value.length < 8) {
+                return "password is too short";
+              }
+
               return null;
             },
           ),

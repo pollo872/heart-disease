@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:heart_disease/core/utils/error_message_handler.dart';
 import 'package:heart_disease/features/chat/data/models/chat_message_model.dart';
 import 'package:heart_disease/features/chat/data/repo/chat_repository.dart';
 import 'chat_state.dart';
@@ -74,11 +75,11 @@ class ChatCubit extends Cubit<ChatState> {
 
   void _handleError(Object e, List<ChatMessageModel> messages) {
     final errorMsg = ChatMessageModel.fromApi(
-      e.toString().replaceFirst('Exception: ', ''),
+      ErrorMessageHandler.getMessage(e).replaceFirst('Exception: ', ''),
     );
     emit(ChatError(
       messages: [...messages, errorMsg],
-      errorMessage: e.toString().replaceFirst('Exception: ', ''),
+      errorMessage: ErrorMessageHandler.getMessage(e).replaceFirst('Exception: ', ''),
     ));
   }
 

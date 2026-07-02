@@ -36,7 +36,8 @@ class _DashboardScreenState extends State<DashboardScreen>
   @override
   void initState() {
     super.initState();
-    _animCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 600));
+    _animCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 600));
     _fadeAnim = CurvedAnimation(parent: _animCtrl, curve: Curves.easeOut);
     _animCtrl.forward();
   }
@@ -98,9 +99,13 @@ class _DashboardScreenState extends State<DashboardScreen>
   }) {
     if (sorted.length < 2) return _TrendData(type: _TrendType.stable, delta: 0);
     final delta = fn(sorted.last) - fn(sorted.first);
-    if (delta.abs() < 0.1) return _TrendData(type: _TrendType.stable, delta: delta);
+    if (delta.abs() < 0.1) {
+      return _TrendData(type: _TrendType.stable, delta: delta);
+    }
     final improved = lowerIsBetter ? delta < 0 : delta > 0;
-    return _TrendData(type: improved ? _TrendType.improved : _TrendType.worsened, delta: delta);
+    return _TrendData(
+        type: improved ? _TrendType.improved : _TrendType.worsened,
+        delta: delta);
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -116,7 +121,20 @@ class _DashboardScreenState extends State<DashboardScreen>
   String _longDate(String iso) {
     try {
       final d = DateTime.parse(iso);
-      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
+      ];
       return '${months[d.month - 1]} ${d.day}, ${d.year}';
     } catch (_) {
       return iso;
@@ -126,7 +144,8 @@ class _DashboardScreenState extends State<DashboardScreen>
   // ── PDF Capture ───────────────────────────────────────────────────────────
   Future<Uint8List?> _capture(GlobalKey key) async {
     try {
-      final boundary = key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      final boundary =
+          key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
       if (boundary == null) return null;
       final image = await boundary.toImage(pixelRatio: 2.5);
       final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
@@ -178,7 +197,8 @@ class _DashboardScreenState extends State<DashboardScreen>
                       child: GestureDetector(
                         onTap: _exportPdf,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 7),
                           decoration: BoxDecoration(
                             color: AppColors.primaryLight,
                             borderRadius: BorderRadius.circular(8),
@@ -186,7 +206,8 @@ class _DashboardScreenState extends State<DashboardScreen>
                           child: const Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.picture_as_pdf_rounded, size: 15, color: AppColors.primary),
+                              Icon(Icons.picture_as_pdf_rounded,
+                                  size: 15, color: AppColors.primary),
                               SizedBox(width: 5),
                               Text('Export PDF',
                                   style: TextStyle(
@@ -220,18 +241,31 @@ class _DashboardScreenState extends State<DashboardScreen>
                     RepaintBoundary(
                       key: _probabilityChartKey,
                       child: _LineChartCard(
-                        spots: sorted.asMap().entries
-                            .map((e) => FlSpot(e.key.toDouble(), _toPercent(e.value.probability)))
+                        spots: sorted
+                            .asMap()
+                            .entries
+                            .map((e) => FlSpot(e.key.toDouble(),
+                                _toPercent(e.value.probability)))
                             .toList(),
-                        labels: sorted.map((a) => _shortDate(a.createdAt)).toList(),
+                        labels:
+                            sorted.map((a) => _shortDate(a.createdAt)).toList(),
                         lineColor: AppColors.primary,
                         unit: '%',
                         minY: 0,
                         maxY: 100,
                         referenceLines: const [
-                          _ReferenceLine(y: 20, label: 'Low Risk', color: Color(0xFF22C55E)),
-                          _ReferenceLine(y: 50, label: 'Medium Risk', color: Color(0xFFF59E0B)),
-                          _ReferenceLine(y: 75, label: 'High Risk', color: Color(0xFFEF4444)),
+                          _ReferenceLine(
+                              y: 20,
+                              label: 'Low Risk',
+                              color: Color(0xFF22C55E)),
+                          _ReferenceLine(
+                              y: 50,
+                              label: 'Medium Risk',
+                              color: Color(0xFFF59E0B)),
+                          _ReferenceLine(
+                              y: 75,
+                              label: 'High Risk',
+                              color: Color(0xFFEF4444)),
                         ],
                         tooltipSuffix: '%',
                       ),
@@ -249,7 +283,8 @@ class _DashboardScreenState extends State<DashboardScreen>
                           ),
                         ),
                         GestureDetector(
-                          onTap: () => setState(() => _showBmiInfo = !_showBmiInfo),
+                          onTap: () =>
+                              setState(() => _showBmiInfo = !_showBmiInfo),
                           child: Container(
                             padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
@@ -258,7 +293,9 @@ class _DashboardScreenState extends State<DashboardScreen>
                               border: Border.all(color: AppColors.borderLight),
                             ),
                             child: Icon(
-                              _showBmiInfo ? Icons.info_rounded : Icons.info_outline_rounded,
+                              _showBmiInfo
+                                  ? Icons.info_rounded
+                                  : Icons.info_outline_rounded,
                               size: 18,
                               color: AppColors.primary,
                             ),
@@ -274,18 +311,33 @@ class _DashboardScreenState extends State<DashboardScreen>
                     RepaintBoundary(
                       key: _bmiChartKey,
                       child: _LineChartCard(
-                        spots: sorted.asMap().entries
+                        spots: sorted
+                            .asMap()
+                            .entries
                             .map((e) => FlSpot(e.key.toDouble(), e.value.bmi))
                             .toList(),
-                        labels: sorted.map((a) => _shortDate(a.createdAt)).toList(),
+                        labels:
+                            sorted.map((a) => _shortDate(a.createdAt)).toList(),
                         lineColor: AppColors.riskMedium,
                         unit: '',
                         minY: 10,
-                        maxY: sorted.map((a) => a.bmi).reduce((a, b) => a > b ? a : b) + 10,
+                        maxY: sorted
+                                .map((a) => a.bmi)
+                                .reduce((a, b) => a > b ? a : b) +
+                            10,
                         referenceLines: const [
-                          _ReferenceLine(y: 18.5, label: '< 18.5 Underweight', color: Color(0xFFF59E0B)),
-                          _ReferenceLine(y: 25, label: '25 Overweight', color: Color(0xFFF59E0B)),
-                          _ReferenceLine(y: 30, label: '30 Obese I', color: Color(0xFFEF4444)),
+                          _ReferenceLine(
+                              y: 18.5,
+                              label: '< 18.5 Underweight',
+                              color: Color(0xFFF59E0B)),
+                          _ReferenceLine(
+                              y: 25,
+                              label: '25 Overweight',
+                              color: Color(0xFFF59E0B)),
+                          _ReferenceLine(
+                              y: 30,
+                              label: '30 Obese I',
+                              color: Color(0xFFEF4444)),
                         ],
                         tooltipSuffix: ' BMI',
                         highlightRange: const _HighlightRange(
@@ -344,21 +396,29 @@ class _DashboardScreenState extends State<DashboardScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.bar_chart_rounded, size: 64, color: AppColors.textSecondary.withOpacity(0.4)),
+          Icon(Icons.bar_chart_rounded,
+              size: 64, color: AppColors.textSecondary.withOpacity(0.4)),
           const SizedBox(height: 16),
           const Text('No assessments yet',
-              style: TextStyle(fontFamily: 'Inter', fontSize: 16, color: AppColors.textSecondary)),
+              style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 16,
+                  color: AppColors.textSecondary)),
           const SizedBox(height: 8),
           const Text('Complete your first assessment to see your dashboard',
               textAlign: TextAlign.center,
-              style: TextStyle(fontFamily: 'Inter', fontSize: 13, color: AppColors.textSecondary)),
+              style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                  color: AppColors.textSecondary)),
         ],
       ),
     );
   }
 
   // ── Summary Row ───────────────────────────────────────────────────────────
-  Widget _buildSummaryRow(AssessmentUIModel latest, List<AssessmentUIModel> sorted) {
+  Widget _buildSummaryRow(
+      AssessmentUIModel latest, List<AssessmentUIModel> sorted) {
     final percent = _toPercent(latest.probability);
     final rColor = _riskColor(latest.riskLevel);
     final rBg = _riskBg(latest.riskLevel);
@@ -435,7 +495,9 @@ class _DashboardScreenState extends State<DashboardScreen>
           children: [
             Icon(icon, size: 14, color: color),
             const SizedBox(width: 5),
-            Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color)),
+            Text(label,
+                style: TextStyle(
+                    fontSize: 11, fontWeight: FontWeight.w600, color: color)),
           ],
         ),
       );
@@ -445,8 +507,12 @@ class _DashboardScreenState extends State<DashboardScreen>
       spacing: 8,
       runSpacing: 8,
       children: [
-        chip(probTrend, 'Risk ${probTrend.type == _TrendType.improved ? "↓" : probTrend.type == _TrendType.worsened ? "↑" : "→"} ${probTrend.delta.abs().toStringAsFixed(1)}%'),
-        chip(bmiTrend, 'BMI ${bmiTrend.type == _TrendType.improved ? "↓" : bmiTrend.type == _TrendType.worsened ? "↑" : "→"} ${bmiTrend.delta.abs().toStringAsFixed(1)}'),
+        chip(
+            probTrend,
+            'Risk ${probTrend.type == _TrendType.improved ? "↓" : probTrend.type == _TrendType.worsened ? "↑" : "→"} ${probTrend.delta.abs().toStringAsFixed(1)}%'),
+        chip(
+            bmiTrend,
+            'BMI ${bmiTrend.type == _TrendType.improved ? "↓" : bmiTrend.type == _TrendType.worsened ? "↑" : "→"} ${bmiTrend.delta.abs().toStringAsFixed(1)}'),
       ],
     );
   }
@@ -469,34 +535,57 @@ class _DashboardScreenState extends State<DashboardScreen>
           Row(
             children: [
               const Text('Latest Assessment',
-                  style: TextStyle(fontFamily: 'Inter', fontSize: 15, fontWeight: FontWeight.w500, color: AppColors.textPrimary)),
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textPrimary)),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(color: rBg, borderRadius: BorderRadius.circular(50)),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                    color: rBg, borderRadius: BorderRadius.circular(50)),
                 child: Text(latest.riskLevel,
-                    style: TextStyle(fontFamily: 'Inter', fontSize: 11, fontWeight: FontWeight.w600, color: rText)),
+                    style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: rText)),
               ),
             ],
           ),
           const SizedBox(height: 4),
           Text(_longDate(latest.createdAt),
-              style: const TextStyle(fontFamily: 'Inter', fontSize: 12, color: AppColors.textSecondary)),
+              style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 12,
+                  color: AppColors.textSecondary)),
           const SizedBox(height: 14),
           _DetailRow(label: 'Result', value: latest.predictionResult),
           _DetailRow(
             label: 'Risk Probability',
             value: '${_toPercent(latest.probability).toStringAsFixed(2)}%',
           ),
-          _DetailRow(label: 'BMI', value: '${latest.bmi.toStringAsFixed(1)} — ${_bmiCategory(latest.bmi)}'),
-          _DetailRow(label: 'Blood Pressure', value: '${latest.systolicBP}/${latest.diastolicBP} mmHg'),
-          _DetailRow(label: 'Blood Sugar', value: '${latest.bloodSugar.toStringAsFixed(0)} mg/dL'),
-          _DetailRow(label: 'Cholesterol', value: '${latest.cholesterol.toStringAsFixed(0)} mg/dL'),
+          _DetailRow(
+              label: 'BMI',
+              value:
+                  '${latest.bmi.toStringAsFixed(1)} — ${_bmiCategory(latest.bmi)}'),
+          _DetailRow(
+              label: 'Blood Pressure',
+              value: '${latest.systolicBP}/${latest.diastolicBP} mmHg'),
+          _DetailRow(
+              label: 'Blood Sugar',
+              value: '${latest.bloodSugar.toStringAsFixed(0)} mg/dL'),
+          _DetailRow(
+              label: 'Cholesterol',
+              value: '${latest.cholesterol.toStringAsFixed(0)} mg/dL'),
           if (latest.riskHint.isNotEmpty) ...[
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: rBg, borderRadius: BorderRadius.circular(10)),
+              decoration: BoxDecoration(
+                  color: rBg, borderRadius: BorderRadius.circular(10)),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -504,7 +593,8 @@ class _DashboardScreenState extends State<DashboardScreen>
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(latest.riskHint,
-                        style: TextStyle(fontFamily: 'Inter', fontSize: 13, color: rText)),
+                        style: TextStyle(
+                            fontFamily: 'Inter', fontSize: 13, color: rText)),
                   ),
                 ],
               ),
@@ -525,19 +615,49 @@ class _DashboardScreenState extends State<DashboardScreen>
     final Map<String, int> recCount = {};
 
     for (final a in withAI) {
-      for (final f in a.aiAnalysis!.riskFactors) rfCount[f] = (rfCount[f] ?? 0) + 1;
-      for (final w in a.aiAnalysis!.warningSigns) wsCount[w] = (wsCount[w] ?? 0) + 1;
-      for (final r in a.aiAnalysis!.recommendations) recCount[r] = (recCount[r] ?? 0) + 1;
+      for (final f in a.aiAnalysis!.riskFactors) {
+        rfCount[f.toLowerCase().trim()] =
+            (rfCount[f.toLowerCase().trim()] ?? 0) + 1;
+      }
+
+      for (final w in a.aiAnalysis!.warningSigns) {
+        wsCount[w.toLowerCase().trim()] =
+            (wsCount[w.toLowerCase().trim()] ?? 0) + 1;
+      }
+
+      for (final r in a.aiAnalysis!.recommendations) {
+        recCount[r.toLowerCase().trim()] =
+            (recCount[r.toLowerCase().trim()] ?? 0) + 1;
+      }
     }
 
-    final topRiskFactors = (rfCount.entries.toList()..sort((a, b) => b.value.compareTo(a.value))).take(5).toList();
-    final topWarningSigns = (wsCount.entries.toList()..sort((a, b) => b.value.compareTo(a.value))).take(4).toList();
-    final topRecs = (recCount.entries.toList()..sort((a, b) => b.value.compareTo(a.value))).take(4).toList();
+    final topRiskFactors = (rfCount.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value)))
+        .take(5)
+        .toList();
+    final topWarningSigns = (wsCount.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value)))
+        .take(4)
+        .toList();
+    final topRecs = (recCount.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value)))
+        .take(4)
+        .toList();
 
     final first = withAI.first.aiAnalysis!;
     final last = withAI.last.aiAnalysis!;
-    final newRisks = last.riskFactors.where((r) => !first.riskFactors.contains(r)).toList();
-    final resolvedRisks = first.riskFactors.where((r) => !last.riskFactors.contains(r)).toList();
+    final lastNormalized =
+        last.riskFactors.map((r) => r.toLowerCase().trim()).toSet();
+    final firstNormalized =
+        first.riskFactors.map((r) => r.toLowerCase().trim()).toSet();
+
+    final newRisks = last.riskFactors
+        .where((r) => !firstNormalized.contains(r.toLowerCase().trim()))
+        .toList();
+
+    final resolvedRisks = first.riskFactors
+        .where((r) => !lastNormalized.contains(r.toLowerCase().trim()))
+        .toList();
     final totalAssessments = withAI.length;
 
     return Container(
@@ -553,8 +673,11 @@ class _DashboardScreenState extends State<DashboardScreen>
           Row(children: [
             Container(
               padding: const EdgeInsets.all(7),
-              decoration: BoxDecoration(color: AppColors.primaryLight, borderRadius: BorderRadius.circular(8)),
-              child: const Icon(Icons.insights_rounded, size: 16, color: AppColors.primary),
+              decoration: BoxDecoration(
+                  color: AppColors.primaryLight,
+                  borderRadius: BorderRadius.circular(8)),
+              child: const Icon(Icons.insights_rounded,
+                  size: 16, color: AppColors.primary),
             ),
             const SizedBox(width: 10),
             const Expanded(
@@ -562,22 +685,36 @@ class _DashboardScreenState extends State<DashboardScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('AI Health Insights',
-                      style: TextStyle(fontFamily: 'Inter', fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+                      style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary)),
                   Text('Based on all your assessments',
-                      style: TextStyle(fontFamily: 'Inter', fontSize: 11, color: AppColors.textSecondary)),
+                      style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 11,
+                          color: AppColors.textSecondary)),
                 ],
               ),
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-              decoration: BoxDecoration(color: AppColors.primaryLight, borderRadius: BorderRadius.circular(50)),
+              decoration: BoxDecoration(
+                  color: AppColors.primaryLight,
+                  borderRadius: BorderRadius.circular(50)),
               child: Text('$totalAssessments assessments',
-                  style: const TextStyle(fontFamily: 'Inter', fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.primary)),
+                  style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary)),
             ),
           ]),
           const SizedBox(height: 16),
           if (topRiskFactors.isNotEmpty) ...[
-            _insightSectionTitle(Icons.warning_amber_rounded, const Color(0xFFE53935), 'Most Recurring Risk Factors'),
+            _insightSectionTitle(Icons.warning_amber_rounded,
+                const Color(0xFFE53935), 'Most Recurring Risk Factors'),
             const SizedBox(height: 8),
             ...topRiskFactors.map((e) => _insightBarRow(
                   label: e.key,
@@ -592,13 +729,16 @@ class _DashboardScreenState extends State<DashboardScreen>
             const SizedBox(height: 12),
           ],
           if (topWarningSigns.isNotEmpty) ...[
-            _insightSectionTitle(Icons.notifications_active_outlined, const Color(0xFFE65100), 'Persistent Warning Signs'),
+            _insightSectionTitle(Icons.notifications_active_outlined,
+                const Color(0xFFE65100), 'Persistent Warning Signs'),
             const SizedBox(height: 8),
-            ...topWarningSigns.map((e) => _insightTagRow(label: e.key, count: e.value, color: const Color(0xFFE65100))),
+            ...topWarningSigns.map((e) => _insightTagRow(
+                label: e.key, count: e.value, color: const Color(0xFFE65100))),
             const SizedBox(height: 12),
           ],
           if (newRisks.isNotEmpty || resolvedRisks.isNotEmpty) ...[
-            _insightSectionTitle(Icons.compare_arrows_rounded, AppColors.primary, 'Progress: First vs Latest'),
+            _insightSectionTitle(Icons.compare_arrows_rounded,
+                AppColors.primary, 'Progress: First vs Latest'),
             const SizedBox(height: 8),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -607,34 +747,53 @@ class _DashboardScreenState extends State<DashboardScreen>
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(color: const Color(0xFFF1FFF3), borderRadius: BorderRadius.circular(8)),
+                      decoration: BoxDecoration(
+                          color: const Color(0xFFF1FFF3),
+                          borderRadius: BorderRadius.circular(8)),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Resolved', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF2E7D32))),
+                          const Text('Resolved',
+                              style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF2E7D32))),
                           const SizedBox(height: 6),
                           ...resolvedRisks.map((r) => Padding(
                                 padding: const EdgeInsets.only(bottom: 3),
-                                child: Text('• $r', style: const TextStyle(fontSize: 11, color: Color(0xFF1B5E20))),
+                                child: Text('• $r',
+                                    style: const TextStyle(
+                                        fontSize: 11,
+                                        color: Color(0xFF1B5E20))),
                               )),
                         ],
                       ),
                     ),
                   ),
-                if (newRisks.isNotEmpty && resolvedRisks.isNotEmpty) const SizedBox(width: 8),
+                if (newRisks.isNotEmpty && resolvedRisks.isNotEmpty)
+                  const SizedBox(width: 8),
                 if (newRisks.isNotEmpty)
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(color: const Color(0xFFFFF3F3), borderRadius: BorderRadius.circular(8)),
+                      decoration: BoxDecoration(
+                          color: const Color(0xFFFFF3F3),
+                          borderRadius: BorderRadius.circular(8)),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('New Risks', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFFB71C1C))),
+                          const Text('New Risks',
+                              style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFFB71C1C))),
                           const SizedBox(height: 6),
                           ...newRisks.map((r) => Padding(
                                 padding: const EdgeInsets.only(bottom: 3),
-                                child: Text('• $r', style: const TextStyle(fontSize: 11, color: Color(0xFFB71C1C))),
+                                child: Text('• $r',
+                                    style: const TextStyle(
+                                        fontSize: 11,
+                                        color: Color(0xFFB71C1C))),
                               )),
                         ],
                       ),
@@ -645,7 +804,8 @@ class _DashboardScreenState extends State<DashboardScreen>
             const SizedBox(height: 12),
           ],
           if (topRecs.isNotEmpty) ...[
-            _insightSectionTitle(Icons.medical_services_outlined, AppColors.primary, 'Most Recommended Actions'),
+            _insightSectionTitle(Icons.medical_services_outlined,
+                AppColors.primary, 'Most Recommended Actions'),
             const SizedBox(height: 8),
             ...topRecs.asMap().entries.map((e) => Padding(
                   padding: const EdgeInsets.only(bottom: 6),
@@ -655,16 +815,24 @@ class _DashboardScreenState extends State<DashboardScreen>
                       Container(
                         width: 18,
                         height: 18,
-                        decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(9)),
+                        decoration: BoxDecoration(
+                            color: AppColors.primary,
+                            borderRadius: BorderRadius.circular(9)),
                         child: Center(
                           child: Text('${e.key + 1}',
-                              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white)),
+                              style: const TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
                         ),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(e.value.key,
-                            style: const TextStyle(fontFamily: 'Inter', fontSize: 12, color: AppColors.textPrimary)),
+                            style: const TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 12,
+                                color: AppColors.textPrimary)),
                       ),
                     ],
                   ),
@@ -681,12 +849,20 @@ class _DashboardScreenState extends State<DashboardScreen>
         Icon(icon, size: 14, color: color),
         const SizedBox(width: 6),
         Text(title,
-            style: TextStyle(fontFamily: 'Inter', fontSize: 13, fontWeight: FontWeight.w600, color: color)),
+            style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: color)),
       ],
     );
   }
 
-  Widget _insightBarRow({required String label, required int count, required int total, required Color color}) {
+  Widget _insightBarRow(
+      {required String label,
+      required int count,
+      required int total,
+      required Color color}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Column(
@@ -694,8 +870,18 @@ class _DashboardScreenState extends State<DashboardScreen>
         children: [
           Row(
             children: [
-              Expanded(child: Text(label, style: const TextStyle(fontFamily: 'Inter', fontSize: 12, color: AppColors.textPrimary))),
-              Text('$count/$total', style: TextStyle(fontFamily: 'Inter', fontSize: 11, fontWeight: FontWeight.w600, color: color)),
+              Expanded(
+                  child: Text(label,
+                      style: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 12,
+                          color: AppColors.textPrimary))),
+              Text('$count/$total',
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: color)),
             ],
           ),
           const SizedBox(height: 4),
@@ -713,18 +899,28 @@ class _DashboardScreenState extends State<DashboardScreen>
     );
   }
 
-  Widget _insightTagRow({required String label, required int count, required Color color}) {
+  Widget _insightTagRow(
+      {required String label, required int count, required Color color}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Row(
         children: [
           Icon(Icons.circle, size: 6, color: color),
           const SizedBox(width: 8),
-          Expanded(child: Text(label, style: const TextStyle(fontFamily: 'Inter', fontSize: 12, color: AppColors.textPrimary))),
+          Expanded(
+              child: Text(label,
+                  style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 12,
+                      color: AppColors.textPrimary))),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-            decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-            child: Text('${count}x', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color)),
+            decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10)),
+            child: Text('${count}x',
+                style: TextStyle(
+                    fontSize: 11, fontWeight: FontWeight.w600, color: color)),
           ),
         ],
       ),
@@ -749,24 +945,31 @@ class _BloodPressureChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final withBP = sorted.where((a) => a.systolicBP > 0 && a.diastolicBP > 0).toList();
-  
-  if (withBP.isEmpty) return const SizedBox.shrink(); // مفيش data خالص
+    final withBP =
+        sorted.where((a) => a.systolicBP > 0 && a.diastolicBP > 0).toList();
 
-  final systolicSpots = withBP.asMap().entries
-      .map((e) => FlSpot(e.key.toDouble(), e.value.systolicBP.toDouble()))
-      .toList();
-  final diastolicSpots = withBP.asMap().entries
-      .map((e) => FlSpot(e.key.toDouble(), e.value.diastolicBP.toDouble()))
-      .toList();
+    if (withBP.isEmpty) return const SizedBox.shrink(); // مفيش data خالص
 
-  final allVals = withBP.expand((a) => [a.systolicBP.toDouble(), a.diastolicBP.toDouble()]).toList();
-  final minVal = allVals.reduce((a, b) => a < b ? a : b);
-  final maxVal = allVals.reduce((a, b) => a > b ? a : b);
-  
-  // ✅ minY و maxY بناءً على الـ data الفعلية
-  final minY = (minVal - 15).clamp(0.0, 60.0);
-  final maxY = maxVal + 20;
+    final systolicSpots = withBP
+        .asMap()
+        .entries
+        .map((e) => FlSpot(e.key.toDouble(), e.value.systolicBP.toDouble()))
+        .toList();
+    final diastolicSpots = withBP
+        .asMap()
+        .entries
+        .map((e) => FlSpot(e.key.toDouble(), e.value.diastolicBP.toDouble()))
+        .toList();
+
+    final allVals = withBP
+        .expand((a) => [a.systolicBP.toDouble(), a.diastolicBP.toDouble()])
+        .toList();
+    final minVal = allVals.reduce((a, b) => a < b ? a : b);
+    final maxVal = allVals.reduce((a, b) => a > b ? a : b);
+
+    // ✅ minY و maxY بناءً على الـ data الفعلية
+    final minY = (minVal - 15).clamp(0.0, 60.0);
+    final maxY = maxVal + 20;
 
     return Container(
       decoration: BoxDecoration(
@@ -793,7 +996,10 @@ class _BloodPressureChart extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Text('Normal: <120/80',
-                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF15803D))),
+                    style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF15803D))),
               ),
             ],
           ),
@@ -807,7 +1013,8 @@ class _BloodPressureChart extends StatelessWidget {
                 gridData: FlGridData(
                   show: true,
                   drawVerticalLine: false,
-                  getDrawingHorizontalLine: (_) => FlLine(color: AppColors.borderLight, strokeWidth: 1),
+                  getDrawingHorizontalLine: (_) =>
+                      FlLine(color: AppColors.borderLight, strokeWidth: 1),
                 ),
                 borderData: FlBorderData(show: false),
                 titlesData: FlTitlesData(
@@ -817,24 +1024,33 @@ class _BloodPressureChart extends StatelessWidget {
                       reservedSize: 32,
                       getTitlesWidget: (val, _) => Text(
                         val.toInt().toString(),
-                        style: const TextStyle(fontFamily: 'Inter', fontSize: 10, color: AppColors.textSecondary),
+                        style: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 10,
+                            color: AppColors.textSecondary),
                       ),
                     ),
                   ),
-                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
                       reservedSize: 22,
                       getTitlesWidget: (val, _) {
                         final idx = val.toInt();
-                        if (idx < 0 || idx >= withBP.length) return const SizedBox.shrink();
+                        if (idx < 0 || idx >= withBP.length) {
+                          return const SizedBox.shrink();
+                        }
                         return Padding(
                           padding: const EdgeInsets.only(top: 4),
-                          
                           child: Text(_shortDate(withBP[idx].createdAt),
-                              style: const TextStyle(fontFamily: 'Inter', fontSize: 10, color: AppColors.textSecondary)),
+                              style: const TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 10,
+                                  color: AppColors.textSecondary)),
                         );
                       },
                     ),
@@ -843,16 +1059,28 @@ class _BloodPressureChart extends StatelessWidget {
                 // Reference lines
                 extraLinesData: ExtraLinesData(
                   horizontalLines: [
-                    HorizontalLine(y: 120, color: const Color(0xFFEF4444).withOpacity(0.4), strokeWidth: 1,
+                    HorizontalLine(
+                        y: 120,
+                        color: const Color(0xFFEF4444).withOpacity(0.4),
+                        strokeWidth: 1,
                         dashArray: [4, 4],
-                        label: HorizontalLineLabel(show: true, alignment: Alignment.topRight,
+                        label: HorizontalLineLabel(
+                            show: true,
+                            alignment: Alignment.topRight,
                             labelResolver: (_) => '120',
-                            style: const TextStyle(fontSize: 9, color: Color(0xFFEF4444)))),
-                    HorizontalLine(y: 80, color: const Color(0xFF3B82F6).withOpacity(0.4), strokeWidth: 1,
+                            style: const TextStyle(
+                                fontSize: 9, color: Color(0xFFEF4444)))),
+                    HorizontalLine(
+                        y: 80,
+                        color: const Color(0xFF3B82F6).withOpacity(0.4),
+                        strokeWidth: 1,
                         dashArray: [4, 4],
-                        label: HorizontalLineLabel(show: true, alignment: Alignment.topRight,
+                        label: HorizontalLineLabel(
+                            show: true,
+                            alignment: Alignment.topRight,
                             labelResolver: (_) => '80',
-                            style: const TextStyle(fontSize: 9, color: Color(0xFF3B82F6)))),
+                            style: const TextStyle(
+                                fontSize: 9, color: Color(0xFF3B82F6)))),
                   ],
                 ),
                 lineBarsData: [
@@ -876,7 +1104,10 @@ class _BloodPressureChart extends StatelessWidget {
                     belowBarData: BarAreaData(
                       show: true,
                       gradient: LinearGradient(
-                        colors: [const Color(0xFFEF4444).withOpacity(0.12), const Color(0xFFEF4444).withOpacity(0.0)],
+                        colors: [
+                          const Color(0xFFEF4444).withOpacity(0.12),
+                          const Color(0xFFEF4444).withOpacity(0.0)
+                        ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                       ),
@@ -902,7 +1133,10 @@ class _BloodPressureChart extends StatelessWidget {
                     belowBarData: BarAreaData(
                       show: true,
                       gradient: LinearGradient(
-                        colors: [const Color(0xFF3B82F6).withOpacity(0.08), const Color(0xFF3B82F6).withOpacity(0.0)],
+                        colors: [
+                          const Color(0xFF3B82F6).withOpacity(0.08),
+                          const Color(0xFF3B82F6).withOpacity(0.0)
+                        ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                       ),
@@ -930,9 +1164,16 @@ class _LegendDot extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(width: 10, height: 10, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+        Container(
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
         const SizedBox(width: 5),
-        Text(label, style: const TextStyle(fontFamily: 'Inter', fontSize: 11, color: AppColors.textSecondary)),
+        Text(label,
+            style: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 11,
+                color: AppColors.textSecondary)),
       ],
     );
   }
@@ -963,7 +1204,8 @@ class _LabValuesRow extends StatelessWidget {
 
     return Row(
       children: [
-        Expanded(child: _LabTile(
+        Expanded(
+            child: _LabTile(
           icon: Icons.science_outlined,
           label: 'Cholesterol',
           value: '${latest.cholesterol.toStringAsFixed(0)} mg/dL',
@@ -971,7 +1213,8 @@ class _LabValuesRow extends StatelessWidget {
           status: cholSt,
         )),
         const SizedBox(width: 10),
-        Expanded(child: _LabTile(
+        Expanded(
+            child: _LabTile(
           icon: Icons.bloodtype_outlined,
           label: 'Blood Sugar',
           value: '${latest.bloodSugar.toStringAsFixed(0)} mg/dL',
@@ -1034,12 +1277,21 @@ class _LabTile extends StatelessWidget {
             children: [
               Icon(icon, size: 15, color: status.color),
               const SizedBox(width: 6),
-              Text(label, style: TextStyle(fontFamily: 'Inter', fontSize: 12, fontWeight: FontWeight.w500, color: status.color)),
+              Text(label,
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: status.color)),
             ],
           ),
           const SizedBox(height: 8),
           Text(value,
-              style: TextStyle(fontFamily: 'Inter', fontSize: 18, fontWeight: FontWeight.bold, color: status.color)),
+              style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: status.color)),
           const SizedBox(height: 6),
           Row(
             children: [
@@ -1050,11 +1302,17 @@ class _LabTile extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(status.label,
-                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: status.color)),
+                    style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: status.color)),
               ),
               const Spacer(),
               Text(reference,
-                  style: const TextStyle(fontFamily: 'Inter', fontSize: 10, color: AppColors.textSecondary)),
+                  style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 10,
+                      color: AppColors.textSecondary)),
             ],
           ),
         ],
@@ -1070,7 +1328,8 @@ class _SectionHeader extends StatelessWidget {
   final String subtitle;
   final Color iconColor;
 
-  const _SectionHeader({required this.title, required this.subtitle, required this.iconColor});
+  const _SectionHeader(
+      {required this.title, required this.subtitle, required this.iconColor});
 
   @override
   Widget build(BuildContext context) {
@@ -1078,10 +1337,17 @@ class _SectionHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title,
-            style: const TextStyle(fontFamily: 'Inter', fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+            style: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary)),
         const SizedBox(height: 2),
         Text(subtitle,
-            style: const TextStyle(fontFamily: 'Inter', fontSize: 12, color: AppColors.textSecondary)),
+            style: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 12,
+                color: AppColors.textSecondary)),
       ],
     );
   }
@@ -1110,19 +1376,33 @@ class _SummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(14)),
+      decoration:
+          BoxDecoration(color: bg, borderRadius: BorderRadius.circular(14)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, size: 18, color: color),
           const SizedBox(height: 8),
-          Text(value, style: TextStyle(fontFamily: 'Inter', fontSize: 18, fontWeight: FontWeight.bold, color: color)),
+          Text(value,
+              style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: color)),
           if (subtitle != null) ...[
             const SizedBox(height: 2),
-            Text(subtitle!, style: TextStyle(fontFamily: 'Inter', fontSize: 10, color: color.withOpacity(0.7))),
+            Text(subtitle!,
+                style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 10,
+                    color: color.withOpacity(0.7))),
           ],
           const SizedBox(height: 2),
-          Text(label, style: const TextStyle(fontFamily: 'Inter', fontSize: 11, color: AppColors.textSecondary)),
+          Text(label,
+              style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 11,
+                  color: AppColors.textSecondary)),
         ],
       ),
     );
@@ -1135,7 +1415,8 @@ class _ReferenceLine {
   final double y;
   final String label;
   final Color color;
-  const _ReferenceLine({required this.y, required this.label, required this.color});
+  const _ReferenceLine(
+      {required this.y, required this.label, required this.color});
 }
 
 class _HighlightRange {
@@ -1143,7 +1424,11 @@ class _HighlightRange {
   final double maxY;
   final Color color;
   final String label;
-  const _HighlightRange({required this.minY, required this.maxY, required this.color, required this.label});
+  const _HighlightRange(
+      {required this.minY,
+      required this.maxY,
+      required this.color,
+      required this.label});
 }
 
 class _LineChartCard extends StatelessWidget {
@@ -1190,22 +1475,28 @@ class _LineChartCard extends StatelessWidget {
                 gridData: FlGridData(
                   show: true,
                   drawVerticalLine: false,
-                  getDrawingHorizontalLine: (_) => FlLine(color: AppColors.borderLight, strokeWidth: 1),
+                  getDrawingHorizontalLine: (_) =>
+                      FlLine(color: AppColors.borderLight, strokeWidth: 1),
                 ),
                 borderData: FlBorderData(show: false),
                 extraLinesData: ExtraLinesData(
-                  horizontalLines: referenceLines.map((r) => HorizontalLine(
-                    y: r.y,
-                    color: r.color.withOpacity(0.5),
-                    strokeWidth: 1,
-                    dashArray: [4, 4],
-                    label: HorizontalLineLabel(
-                      show: true,
-                      alignment: Alignment.topRight,
-                      labelResolver: (_) => r.label,
-                      style: TextStyle(fontSize: 9, color: r.color, fontFamily: 'Inter'),
-                    ),
-                  )).toList(),
+                  horizontalLines: referenceLines
+                      .map((r) => HorizontalLine(
+                            y: r.y,
+                            color: r.color.withOpacity(0.5),
+                            strokeWidth: 1,
+                            dashArray: [4, 4],
+                            label: HorizontalLineLabel(
+                              show: true,
+                              alignment: Alignment.topRight,
+                              labelResolver: (_) => r.label,
+                              style: TextStyle(
+                                  fontSize: 9,
+                                  color: r.color,
+                                  fontFamily: 'Inter'),
+                            ),
+                          ))
+                      .toList(),
                 ),
                 rangeAnnotations: highlightRange != null
                     ? RangeAnnotations(
@@ -1225,28 +1516,42 @@ class _LineChartCard extends StatelessWidget {
                       reservedSize: 36,
                       getTitlesWidget: (val, _) => Text(
                         '${val.toInt()}$unit',
-                        style: const TextStyle(fontFamily: 'Inter', fontSize: 10, color: AppColors.textSecondary),
+                        style: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 10,
+                            color: AppColors.textSecondary),
                       ),
                     ),
                   ),
-                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
                       reservedSize: 22,
                       getTitlesWidget: (val, _) {
                         final idx = val.toInt();
-                        if (idx < 0 || idx >= labels.length) return const SizedBox.shrink();
+                        if (idx < 0 || idx >= labels.length) {
+                          return const SizedBox.shrink();
+                        }
                         return Padding(
                           padding: const EdgeInsets.only(top: 4),
                           child: RichText(
                             text: TextSpan(
-                              style: TextStyle(fontFamily: 'Inter', fontSize: 10, color: lineColor),
+                              style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 10,
+                                  color: lineColor),
                               children: [
                                 TextSpan(
                                   text: labels[idx],
-                                  style: const TextStyle(fontFamily: 'Inter', fontSize: 11, fontWeight: FontWeight.w400, color: AppColors.textSecondary),
+                                  style: const TextStyle(
+                                      fontFamily: 'Inter',
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w400,
+                                      color: AppColors.textSecondary),
                                 ),
                               ],
                             ),
@@ -1270,14 +1575,20 @@ class _LineChartCard extends StatelessWidget {
                         Color dotColor = lineColor;
                         if (tooltipSuffix == '%') {
                           final v = spot.y;
-                          if (v < 20) dotColor = AppColors.riskLow;
-                          else if (v < 50) dotColor = AppColors.riskMedium;
-                          else dotColor = AppColors.riskHigh;
+                          if (v < 20) {
+                            dotColor = AppColors.riskLow;
+                          } else if (v < 50)
+                            dotColor = AppColors.riskMedium;
+                          else
+                            dotColor = AppColors.riskHigh;
                         } else {
                           final v = spot.y;
-                          if (v >= 18.5 && v < 25) dotColor = AppColors.riskLow;
-                          else if (v < 30) dotColor = AppColors.riskMedium;
-                          else dotColor = AppColors.riskHigh;
+                          if (v >= 18.5 && v < 25) {
+                            dotColor = AppColors.riskLow;
+                          } else if (v < 30)
+                            dotColor = AppColors.riskMedium;
+                          else
+                            dotColor = AppColors.riskHigh;
                         }
                         return FlDotCirclePainter(
                           radius: 4.5,
@@ -1290,7 +1601,10 @@ class _LineChartCard extends StatelessWidget {
                     belowBarData: BarAreaData(
                       show: true,
                       gradient: LinearGradient(
-                        colors: [lineColor.withOpacity(0.15), lineColor.withOpacity(0.0)],
+                        colors: [
+                          lineColor.withOpacity(0.15),
+                          lineColor.withOpacity(0.0)
+                        ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                       ),
@@ -1324,17 +1638,45 @@ class _BmiInfoPanel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('BMI Guidelines (WHO)',
-              style: TextStyle(fontFamily: 'Inter', fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+              style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary)),
           const SizedBox(height: 10),
-          _BmiRow(range: '< 18.5', label: 'Underweight', color: AppColors.riskMedium, icon: Icons.arrow_downward_rounded),
-          _BmiRow(range: '18.5 – 24.9', label: 'Normal ✅', color: AppColors.riskLow, icon: Icons.check_circle_outline_rounded),
-          _BmiRow(range: '25 – 29.9', label: 'Overweight', color: AppColors.riskMedium, icon: Icons.warning_amber_rounded),
-          _BmiRow(range: '30 – 34.9', label: 'Obese Class I', color: AppColors.riskHigh, icon: Icons.error_outline_rounded),
-          _BmiRow(range: '≥ 35', label: 'Obese Class II+', color: AppColors.riskHigh, icon: Icons.dangerous_outlined),
+          _BmiRow(
+              range: '< 18.5',
+              label: 'Underweight',
+              color: AppColors.riskMedium,
+              icon: Icons.arrow_downward_rounded),
+          _BmiRow(
+              range: '18.5 – 24.9',
+              label: 'Normal ✅',
+              color: AppColors.riskLow,
+              icon: Icons.check_circle_outline_rounded),
+          _BmiRow(
+              range: '25 – 29.9',
+              label: 'Overweight',
+              color: AppColors.riskMedium,
+              icon: Icons.warning_amber_rounded),
+          _BmiRow(
+              range: '30 – 34.9',
+              label: 'Obese Class I',
+              color: AppColors.riskHigh,
+              icon: Icons.error_outline_rounded),
+          _BmiRow(
+              range: '≥ 35',
+              label: 'Obese Class II+',
+              color: AppColors.riskHigh,
+              icon: Icons.dangerous_outlined),
           const SizedBox(height: 8),
           const Text(
             'BMI = weight(kg) ÷ height²(m)\nA BMI between 18.5–24.9 indicates a healthy weight.',
-            style: TextStyle(fontFamily: 'Inter', fontSize: 11, color: AppColors.textSecondary, height: 1.5),
+            style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 11,
+                color: AppColors.textSecondary,
+                height: 1.5),
           ),
         ],
       ),
@@ -1343,7 +1685,11 @@ class _BmiInfoPanel extends StatelessWidget {
 }
 
 class _BmiRow extends StatelessWidget {
-  const _BmiRow({required this.range, required this.label, required this.color, required this.icon});
+  const _BmiRow(
+      {required this.range,
+      required this.label,
+      required this.color,
+      required this.icon});
   final String range;
   final String label;
   final Color color;
@@ -1357,8 +1703,20 @@ class _BmiRow extends StatelessWidget {
         children: [
           Icon(icon, size: 14, color: color),
           const SizedBox(width: 8),
-          SizedBox(width: 90, child: Text(range, style: const TextStyle(fontFamily: 'Inter', fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textPrimary))),
-          Text(label, style: TextStyle(fontFamily: 'Inter', fontSize: 12, color: color, fontWeight: FontWeight.w500)),
+          SizedBox(
+              width: 90,
+              child: Text(range,
+                  style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary))),
+          Text(label,
+              style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 12,
+                  color: color,
+                  fontWeight: FontWeight.w500)),
         ],
       ),
     );
@@ -1378,9 +1736,18 @@ class _DetailRow extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         children: [
-          Text(label, style: const TextStyle(fontFamily: 'Inter', fontSize: 13, color: AppColors.textSecondary)),
+          Text(label,
+              style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                  color: AppColors.textSecondary)),
           const Spacer(),
-          Text(value, style: const TextStyle(fontFamily: 'Inter', fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+          Text(value,
+              style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary)),
         ],
       ),
     );

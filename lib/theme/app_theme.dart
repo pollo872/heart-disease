@@ -9,20 +9,25 @@ class AppColors {
   AppColors._();
 
   // --- Primary ---
-  static const Color primary = Color(0xFF2563EB);
-  static const Color primaryDark = Color(0xFF1D4ED8);
+  static const Color primary = Color(0xFF155EFC);
+  static const Color primaryDark = Color(0xFF1447E6);
   static const Color primaryLight = Color(0xFFEFF6FF);
 
   // --- Background & Surface ---
   static const Color background = Color(0xFFFFFFFF);
   static const Color surface = Color(0xFFF8FAFC);
   static const Color cardBackground = Color(0xFFFFFFFF);
-  static const Color textGreen = Color(0xFF0B4F4A);
 
   // --- Text ---
   static const Color textPrimary = Color(0xFF1E293B);
+  static const Color textPrimaryGray = Color(0xFF666666);
+  static const Color textLatestGray = Color(0xFF999999);
   static const Color textSecondary = Color(0xFF64748B);
   static const Color textHint = Color(0xFF94A3B8);
+  static const Color textGreen = Color(0xFF0B4F4A);
+  static const Color textBlue = Color(0xFF012165);
+  static const Color textBlack = Color(0xFF011032);
+
 
   // --- Border ---
   static const Color border = Color(0xFFCBD5E1);
@@ -47,14 +52,21 @@ class AppColors {
   static const Color iconBlue = Color(0xFFEFF6FF);
   static const Color iconGreen = Color(0xFFEAF3DE);
   static const Color iconPurple = Color(0xFFEEEDFE);
+  static const Color iconGray = Color(0xFFB3B3B3);
 }
 
 // ============================================================
+class AppGradiant {
+  static final gradiant1 = LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [AppColors.primary, AppColors.primaryDark]);
+}
 
 class AppTextStyles {
   AppTextStyles._();
 
-  static const String _fontFamily = 'Inter'; // أو بدّله بـ اسم الخط اللي حاطّه
+  static const String _fontFamily = 'Arial'; // أو بدّله بـ اسم الخط اللي حاطّه
 
   // Page title — 22px / w500
   static const TextStyle pageTitle = TextStyle(
@@ -68,16 +80,16 @@ class AppTextStyles {
   static const TextStyle heading = TextStyle(
     fontFamily: _fontFamily,
     fontSize: 18,
-    fontWeight: FontWeight.w500,
-    color: AppColors.textPrimary,
+    fontWeight: FontWeight.w400,
+    color: AppColors.textBlack,
   );
 
   // Card title — 15px / w500
-  static const TextStyle cardTitle = TextStyle(
+  static const TextStyle subTitle = TextStyle(
     fontFamily: _fontFamily,
-    fontSize: 15,
-    fontWeight: FontWeight.w500,
-    color: AppColors.textPrimary,
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    color: AppColors.textPrimaryGray,
   );
 
   // Body — 14px / w400
@@ -245,43 +257,43 @@ ThemeData buildAppTheme() {
 //  Risk Badge Widget — جاهز للاستخدام مباشرة
 // ============================================================
 
-enum RiskLevel { low, medium, high }
+// enum RiskLevel { low, medium, high }
 
-class RiskBadge extends StatelessWidget {
-  final RiskLevel level;
+// class RiskBadge extends StatelessWidget {
+//   final RiskLevel level;
 
-  const RiskBadge({super.key, required this.level});
+//   const RiskBadge({super.key, required this.level});
 
-  @override
-  Widget build(BuildContext context) {
-    final (label, bg, fg) = switch (level) {
-      RiskLevel.low => ('Low Risk', AppColors.riskLowBg, AppColors.riskLowText),
-      RiskLevel.medium => (
-          'Medium Risk',
-          AppColors.riskMediumBg,
-          AppColors.riskMediumText
-        ),
-      RiskLevel.high => (
-          'High Risk',
-          AppColors.riskHighBg,
-          AppColors.riskHighText
-        ),
-    };
+//   @override
+//   Widget build(BuildContext context) {
+//     final (label, bg, fg) = switch (level) {
+//       RiskLevel.low => ('Low Risk', AppColors.riskLowBg, AppColors.riskLowText),
+//       RiskLevel.medium => (
+//           'Medium Risk',
+//           AppColors.riskMediumBg,
+//           AppColors.riskMediumText
+//         ),
+//       RiskLevel.high => (
+//           'High Risk',
+//           AppColors.riskHighBg,
+//           AppColors.riskHighText
+//         ),
+//     };
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: AppRadius.radiusPill,
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: fg,
-        ),
-      ),
-    );
-  }
-}
+//     return Container(
+//       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+//       decoration: BoxDecoration(
+//         color: bg,
+//         borderRadius: AppRadius.radiusPill,
+//       ),
+//       child: Text(
+//         label,
+//         style: TextStyle(
+//           fontSize: 12,
+//           fontWeight: FontWeight.w500,
+//           color: fg,
+//         ),
+//       ),
+//     );
+//   }
+// }

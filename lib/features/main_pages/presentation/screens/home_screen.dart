@@ -173,18 +173,18 @@ class _BodySection extends StatelessWidget {
         children: [
           SizedBox(height: hasAssessment ? 120 : 40),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 30),
 
           Text(
             "quickActions".tr(),
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+            style: AppTextStyles.subTitle.copyWith(color: AppColors.textBlack),
           ),
 
           const SizedBox(height: 12),
 
           _QuickActionTile(
             icon: PathStrings.newAssessmentIconPath,
-            color: Colors.blue,
+            color: Color(0xFF155EFC),
             title: "NewAssessment",
             subtitle: "takeAssessment",
             onPressed: () async {
@@ -201,7 +201,7 @@ class _BodySection extends StatelessWidget {
 
           _QuickActionTile(
             icon: PathStrings.viewHistoryIconPath,
-            color: Colors.teal,
+            color: Color(0xFF009689),
             title: "ViewHistory",
             subtitle: "SeePastAssessments",
             onPressed: () {
@@ -213,7 +213,7 @@ class _BodySection extends StatelessWidget {
 
           _QuickActionTile(
               icon: PathStrings.findDoctorIconPath,
-              color: Colors.purple,
+              color: Color(0xFF9810FA),
               title: "FindDoctors",
               subtitle: "ConnectWithCardiologists",
               onPressed: findDoctor),
@@ -299,9 +299,9 @@ class _LatestAssessmentCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text("LatestAssessment".tr(),
-                  style: const TextStyle(color: Colors.grey)),
+                  style:  AppTextStyles.subTitle),
               CircleAvatar(
-                backgroundColor: Colors.red.withOpacity(0.1),
+                backgroundColor: Color(0xFFE7000B).withOpacity(0.24),
                 child: const Icon(Icons.favorite, color: Colors.red),
               )
             ],
@@ -310,7 +310,7 @@ class _LatestAssessmentCard extends StatelessWidget {
           Text(
             DateFormat('MMMM d, y').format(DateTime.parse(createdAt)),
             style: const TextStyle(
-                fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textGreen),
+                fontSize: 20, fontWeight: FontWeight.w400, color: AppColors.textGreen),
           ),
           const SizedBox(height: 16),
           Row(
@@ -380,16 +380,16 @@ class _QuickActionTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(title.tr(),
-                      style: const TextStyle(fontWeight: FontWeight.w500)),
+                      style: AppTextStyles.heading),
                   const SizedBox(height: 4),
                   Text(
                     subtitle.tr(),
-                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                    style: AppTextStyles.subTitle,
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+            const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.textPrimaryGray),
           ],
         ),
       ),

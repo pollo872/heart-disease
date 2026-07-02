@@ -11,4 +11,6 @@ class PathStrings {
       'assets/icons/view_history_icon.png';
   static const String findDoctorIconPath = 'assets/icons/find_doctor_icon.png';
   static const String historyCardIconPath = 'assets/icons/history_card_icon.png';
+  static const String highRiskIconPath = 'assets/icons/need_attention_icon.png';
+  static const String stableRiskIconPath = 'assets/icons/stable_icon.png';
 }
