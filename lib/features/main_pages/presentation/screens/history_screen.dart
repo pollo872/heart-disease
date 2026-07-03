@@ -64,9 +64,7 @@ class _HistoryContentState extends State<_HistoryContent> {
       appBar: mainAppBar("History", context),
       body: Column(
         children: [
-          // ── زرار New Assessment ──────────────────────────────────────────
-
-          // ── Toggle ───────────────────────────────────────────────────────
+             
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: _ToggleBar(
@@ -170,8 +168,8 @@ class _ToggleItem extends StatelessWidget {
                 label,
                 style: TextStyle(
                   fontFamily: 'Inter',
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
                   color: selected ? Colors.white : AppColors.textSecondary,
                 ),
               ),

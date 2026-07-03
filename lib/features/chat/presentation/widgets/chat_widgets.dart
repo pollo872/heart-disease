@@ -4,7 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:heart_disease/features/chat/data/models/chat_message_model.dart';
-import 'package:heart_disease/res/app_colors.dart';
+import 'package:heart_disease/theme/app_theme.dart';
 import 'package:image_picker/image_picker.dart';
 
 // ─────────────────────────────────────────────────────────
@@ -110,7 +110,7 @@ class ChatBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _BotAvatar(),
           const SizedBox(width: 8),

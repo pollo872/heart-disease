@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:heart_disease/theme/app_theme.dart';
 
 // --- PasswordFormFeild ---
 class PasswordFormFeild extends StatefulWidget {
@@ -117,21 +118,22 @@ class _AnyFormFeildState extends State<AnyFormFeild> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: double.infinity, // Consider using double.infinity for responsiveness
+      width:
+          double.infinity, // Consider using double.infinity for responsiveness
       // height: 80, // Remove fixed height when using validators/error messages
       child: Column(
         children: [
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-             tr(widget.formTitle),
-              style: TextStyle(
-                color: Color(0xff626262),
+              tr(widget.formTitle),
+              style: AppTextStyles.heading.copyWith(
                 fontSize: 14,
-                fontWeight: FontWeight.w400,
               ),
             ),
           ),
+          const SizedBox(
+              height: 8), // Add spacing between title and TextFormField
           TextFormField(
             controller: widget.controller, // ATTACHED CONTROLLER
             validator: widget.validator, // ATTACHED VALIDATOR

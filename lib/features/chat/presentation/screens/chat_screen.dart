@@ -6,6 +6,8 @@ import 'package:heart_disease/features/chat/presentation/manager/chat_state.dart
 import 'package:heart_disease/features/chat/presentation/widgets/chat_widgets.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_event.dart';
+import 'package:heart_disease/features/main_pages/presentation/widgets/profile_image.dart';
+import 'package:heart_disease/theme/app_theme.dart';
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
@@ -128,40 +130,33 @@ class _ChatViewState extends State<_ChatView> {
       backgroundColor: Colors.white,
       scrolledUnderElevation: 0,
       elevation: 0.5,
+      leadingWidth: 50,
       leading: Padding(
         padding: const EdgeInsets.all(8.0),
         child: GestureDetector(
           onTap: () {
             context.read<MainBloc>().add(MainTabChangedEvent(4));
           },
-          child: CircleAvatar(
-            radius: 18,
-            backgroundColor: Colors.white,
-            child: CircleAvatar(
-              radius: 16,
-              backgroundImage:
-                  const AssetImage("assets/images/defualt_profile.png"),
-              onBackgroundImageError: (_, __) {},
-            ),
-          ),
+          child: ProfileImage(),
         ),
       ),
       title: const Text(
         'chat',
-        style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.w500),
+        style: AppTextStyles.pageTitle,
       ),
       centerTitle: true,
       actions: [
         IconButton(
-          icon:
-              const Icon(Icons.notifications_outlined, color: Colors.black),
+          icon: Icon(
+            Icons.notifications_none,
+            color: AppColors.pageTitle,
+            size: 25,
+          ),
+          tooltip: 'Notifications',
           onPressed: () {},
         ),
         IconButton(
-          icon: const Icon(Icons.refresh, color: Colors.grey),
+          icon: const Icon(Icons.refresh, color: AppColors.pageTitle),
           tooltip: 'New conversation',
           onPressed: () => context.read<ChatCubit>().resetChat(),
         ),

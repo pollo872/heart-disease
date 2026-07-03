@@ -27,6 +27,7 @@ class AppColors {
   static const Color textGreen = Color(0xFF0B4F4A);
   static const Color textBlue = Color(0xFF012165);
   static const Color textBlack = Color(0xFF011032);
+  static const Color pageTitle = Color(0xFF1A1A1A);
 
 
   // --- Border ---
@@ -61,6 +62,10 @@ class AppGradiant {
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
       colors: [AppColors.primary, AppColors.primaryDark]);
+  static final gradiant2 = LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [Color(0xFF2B7FFF), Color(0xFF00BBA7)]);
 }
 
 class AppTextStyles {
@@ -71,12 +76,12 @@ class AppTextStyles {
   // Page title — 22px / w500
   static const TextStyle pageTitle = TextStyle(
     fontFamily: _fontFamily,
-    fontSize: 22,
-    fontWeight: FontWeight.w500,
-    color: AppColors.textPrimary,
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    color: AppColors.pageTitle,
   );
 
-  // Section heading — 18px / w500
+  // Section heading — 18px / w400
   static const TextStyle heading = TextStyle(
     fontFamily: _fontFamily,
     fontSize: 18,

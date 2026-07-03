@@ -9,6 +9,7 @@ import 'package:heart_disease/features/main_pages/presentation/manager/main_stat
 import 'package:heart_disease/features/main_pages/presentation/widgets/loading.dart';
 import 'package:heart_disease/features/update_profile/presentation/screens/edit_profile_screen.dart';
 import 'package:heart_disease/shared/widgets/base_button.dart';
+import 'package:heart_disease/theme/app_theme.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -42,21 +43,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (state is ProfileSuccessState) {
           return Scaffold(
             backgroundColor: Colors.white,
-            appBar: AppBar(
-              elevation: 0,
-              backgroundColor: Colors.white,
-              // leading: IconButton(
-              //   color: Colors.blue,
-              //   onPressed: () {
-              //     Navigator.pop(context);
-              //   },
-              //   icon: Icon(Icons.arrow_back),
-              // ),
-              title: Text(
-                "profile".tr(),
-                style: TextStyle(color: Colors.blue),
-              ),
-            ),
+            // appBar: AppBar(
+            //   elevation: 0,
+            //   backgroundColor: Colors.white,
+            //   // leading: IconButton(
+            //   //   color: Colors.blue,
+            //   //   onPressed: () {
+            //   //     Navigator.pop(context);
+            //   //   },
+            //   //   icon: Icon(Icons.arrow_back),
+            //   // ),
+            //   title: Text(
+            //     "profile".tr(),
+            //     style: AppTextStyles.subTitle.copyWith(
+            //       color: AppColors.primary,
+            //     ),
+            //   ),
+            //   centerTitle: true,
+            // ),
             body: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -67,11 +71,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     decoration: _cardDecoration(),
                     child: Row(
                       children: [
-                        const CircleAvatar(
-                          radius: 28,
-                          backgroundColor: Color(0xff1E63F3),
-                          child:
-                              Icon(Icons.person, color: Colors.white, size: 30),
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: AppGradiant.gradiant2,
+                          ),
+                          height: 80,
+                          width: 80,
+                          child: Center(
+                            child: Text(
+                              '${state.patient.firstName[0]}${state.patient.lastName[0]}'
+                                  .toUpperCase(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 26,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
                         ),
                         const SizedBox(width: 12),
                         Column(
@@ -79,20 +96,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             Text(
                               "${state.patient.firstName} ${state.patient.lastName}",
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w600),
+                              style: AppTextStyles.heading
+                                  .copyWith(fontWeight: FontWeight.bold),
                             ),
                             SizedBox(height: 4),
                             Text(
                               state.patient.email,
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 12),
+                              style: AppTextStyles.subTitle,
                             ),
                             SizedBox(height: 2),
                             Text(
                               "${"Joined on".tr()} ${state.patient.createdAt.split('T')[0]}",
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 12),
+                              style: AppTextStyles.subTitle,
                             ),
                           ],
                         ),
@@ -108,7 +123,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     titleColor: Colors.white,
                     borderRadius: 10,
                     borderColor: Colors.transparent,
-                    backgroundColor: const Color(0xff1E63F3),
+                    backgroundColor: AppColors.primary,
                     onPressed: () {
                       // بدل Navigator.push استخدم showModalBottomSheet
                       showModalBottomSheet(
@@ -130,20 +145,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _SettingCard(
                     child: Row(
                       children: [
-                        _IconBox(icon: Icons.notifications, color: Colors.blue),
+                        _IconBox(
+                            icon: Icons.notifications,
+                            color: AppColors.primary),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Notifications".tr(),
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.w500)),
+                              Text(
+                                "Notifications".tr(),
+                                style: AppTextStyles.subTitle
+                                    .copyWith(color: AppColors.textBlack),
+                              ),
                               SizedBox(height: 4),
                               Text(
                                 "Health alerts & reminders".tr(),
-                                style:
-                                    TextStyle(color: Colors.grey, fontSize: 12),
+                                style: AppTextStyles.subTitle,
                               ),
                             ],
                           ),
@@ -160,7 +178,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 12),
                   _SettingTile(
                     icon: Icons.language,
-                    iconColor: Colors.purple,
+                    iconColor: Color(0xFF9810FA),
                     title: "Language",
                     subtitle: "LangIs",
                     onTap: () {
@@ -179,7 +197,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _SectionTitle(title: "Security & Privacy"),
                   _SettingTile(
                     icon: Icons.lock,
-                    iconColor: Colors.green,
+                    iconColor: Color(0xFF009689),
                     title: "Change Password",
                     subtitle: "Update security credentials",
                     onTap: () {},
@@ -187,7 +205,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 12),
                   _SettingTile(
                     icon: Icons.description,
-                    iconColor: Colors.grey,
+                    iconColor: Color(0xFF666666),
                     title: "Terms & Privacy",
                     subtitle: "Legal information",
                     onTap: () {},
@@ -198,9 +216,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   /// LOGOUT
                   _SettingTile(
                     icon: Icons.logout,
-                    iconColor: Colors.red,
+                    iconColor: Color(0xFFE7000B),
                     title: "Log Out",
-                    titleColor: Colors.red,
+                    titleColor: Color(0xFFE7000B),
                     onTap: () {
                       context.read<AuthCubit>().logout();
                       Navigator.pushReplacement(
@@ -245,10 +263,7 @@ class _SectionTitle extends StatelessWidget {
       alignment: Alignment.centerLeft,
       child: Text(
         title.tr(),
-        style: const TextStyle(
-          fontWeight: FontWeight.w600,
-          color: Colors.grey,
-        ),
+        style: AppTextStyles.subTitle.copyWith(color: AppColors.textBlack),
       ),
     );
   }
@@ -302,22 +317,21 @@ class _SettingTile extends StatelessWidget {
                 children: [
                   Text(
                     title.tr(),
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: titleColor ?? Colors.black,
-                    ),
+                    style: AppTextStyles.subTitle
+                        .copyWith(color: titleColor ?? AppColors.textBlack),
                   ),
                   if (subtitle != null) ...[
                     const SizedBox(height: 4),
                     Text(
                       subtitle!.tr(),
-                      style: const TextStyle(color: Colors.grey, fontSize: 12),
+                      style: AppTextStyles.subTitle,
                     ),
                   ]
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+            const Icon(Icons.arrow_forward_ios,
+                size: 14, color: Color(0xFFB3B3B3)),
           ],
         ),
       ),

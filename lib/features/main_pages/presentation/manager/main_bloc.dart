@@ -244,7 +244,6 @@
 //   );
 // }
 
-
 import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -337,14 +336,18 @@ class MainBloc extends Bloc<MainEvent, MainState> {
           (profileData.allAssessments.isNotEmpty &&
               _cachedState!.assessments.isNotEmpty &&
               profileData.allAssessments.first.createdAt !=
-                  _cachedState!.assessments.first.createdAt);
+                  _cachedState!.assessments.first.createdAt) ||
+          profileData.patient.firstName != _cachedState!.patient.firstName ||
+          profileData.patient.lastName != _cachedState!.patient.lastName ||
+          profileData.patient.email != _cachedState!.patient.email;
 
       if (hasNewData) {
         await _fetchAndCache(emit);
       }
     } catch (e) {
       // Silently fail — the old cache (in-memory or persisted) is still shown
-      debugPrint('Background refresh failed: ${ErrorMessageHandler.getMessage(e)}');
+      debugPrint(
+          'Background refresh failed: ${ErrorMessageHandler.getMessage(e)}');
     }
   }
 
@@ -378,7 +381,8 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       if (_cachedState == null) {
         emit(ProfileErrorState(ErrorMessageHandler.getMessage(e)));
       } else {
-        debugPrint('Fetch failed, keeping cached state: ${ErrorMessageHandler.getMessage(e)}');
+        debugPrint(
+            'Fetch failed, keeping cached state: ${ErrorMessageHandler.getMessage(e)}');
       }
     }
   }
@@ -396,7 +400,8 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       };
 
       await prefs.setString(_persistedProfileKey, jsonEncode(map));
-      await prefs.setString(_persistedTimeKey, DateTime.now().toIso8601String());
+      await prefs.setString(
+          _persistedTimeKey, DateTime.now().toIso8601String());
     } catch (e) {
       // Persistence failing shouldn't break the app, just log it
       debugPrint('Failed to persist profile cache: $e');
@@ -421,7 +426,8 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       final allAssessments =
           allRaw.map((item) => AssessmentModel.fromJson(item)).toList();
 
-      final assessmentsUI = allAssessments.map((e) => mapAssessment(e)).toList();
+      final assessmentsUI =
+          allAssessments.map((e) => mapAssessment(e)).toList();
 
       return ProfileSuccessState(
         patient: patient,
@@ -442,9 +448,12 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   }
 
   // ✅ Call this when the user creates a new assessment
-  void invalidateCache() {
+  Future<void> invalidateCache() async {
     _cachedState = null;
     _lastFetchTime = null;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_persistedProfileKey);
+    await prefs.remove(_persistedTimeKey);
   }
 }
 

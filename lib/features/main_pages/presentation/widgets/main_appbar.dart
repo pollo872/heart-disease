@@ -3,33 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_event.dart';
-import 'package:heart_disease/res/app_colors.dart';
+import 'package:heart_disease/features/main_pages/presentation/widgets/profile_image.dart';
+import 'package:heart_disease/theme/app_theme.dart';
 
 AppBar mainAppBar(String title, BuildContext context) {
   return AppBar(
     scrolledUnderElevation: 0,
-    leading: GestureDetector(
-      onTap: () {
-       context.read<MainBloc>().add(MainTabChangedEvent(4));
-      },
-      child: CircleAvatar(
-        radius: 18,
-        backgroundColor: Colors.white,
-        child: CircleAvatar(
-          radius: 16,
-          backgroundImage: AssetImage("assets/images/defualt_profile.png"),
-          onBackgroundImageError: (_, __) {},
-        ),
+    leadingWidth: 50,
+    leading: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: GestureDetector(
+        onTap: () {
+          context.read<MainBloc>().add(MainTabChangedEvent(4));
+        },
+        child: Center(child: ProfileImage()),
       ),
     ),
-   
     title: Text(
       title.tr(),
-      style: TextStyle(
-        color: AppColors.mainAppBarTitle,
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-      ),
+      style: AppTextStyles.pageTitle,
     ),
     actions: [
       Container(
@@ -44,9 +36,10 @@ AppBar mainAppBar(String title, BuildContext context) {
           padding: EdgeInsets.zero,
           icon: Icon(
             Icons.notifications_none,
-            color: AppColors.mainAppBarTitle,
+            color: AppColors.pageTitle,
             size: 25,
           ),
+          tooltip: 'Notifications',
           onPressed: () {
             // TODO: open notifications
           },

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:heart_disease/res/app_colors.dart';
+import 'package:heart_disease/theme/app_theme.dart';
 
 class LogoWidget extends StatelessWidget {
   const LogoWidget({super.key});
@@ -11,7 +11,7 @@ class LogoWidget extends StatelessWidget {
         CircleAvatar(
           radius: 28,
           backgroundColor: AppColors.primary,
-          child: Icon(Icons.favorite, color: AppColors.backGround),
+          child: Icon(Icons.favorite, color: AppColors.background),
         ),
         SizedBox(height: 8),
         Text(

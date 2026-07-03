@@ -10,9 +10,9 @@ import 'package:heart_disease/features/main_pages/data/repository/main_repo.dart
 import 'package:heart_disease/features/main_pages/presentation/manager/main_bloc.dart';
 import 'package:heart_disease/features/main_pages/presentation/manager/main_event.dart';
 import 'package:heart_disease/features/main_pages/presentation/screens/main_screen.dart';
-import 'package:heart_disease/res/app_colors.dart';
 import 'package:heart_disease/shared/widgets/base_button.dart';
 import 'package:heart_disease/shared/widgets/form_fields.dart';
+import 'package:heart_disease/theme/app_theme.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -30,7 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backGround,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -87,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
       width: 350,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.backGround,
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -160,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return BaseButton(
       buttonTitle:
           state is AuthLoading ? tr("signInLoadingTitle") : tr("signInTitle"),
-      titleColor: AppColors.textWhite,
+      titleColor: AppColors.background,
       borderRadius: 10,
       borderColor: Colors.transparent,
       backgroundColor: state is AuthLoading ? Colors.grey : AppColors.primary,

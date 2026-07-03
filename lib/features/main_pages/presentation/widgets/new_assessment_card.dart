@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:heart_disease/res/app_colors.dart';
 import 'package:heart_disease/shared/widgets/base_button.dart';
+import 'package:heart_disease/theme/app_theme.dart';
 
 class StartAssessmentCard extends StatelessWidget {
   final VoidCallback onPressed;
@@ -20,7 +20,7 @@ class StartAssessmentCard extends StatelessWidget {
         color: const Color(0xFFF1F4F9), // نفس الخلفية
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFF2F6BFF),
+          color: AppColors.primary,
           width: 1.5,
         ),
       ),
@@ -29,16 +29,16 @@ class StartAssessmentCard extends StatelessWidget {
         children: [
           /// 🔵 الدائرة اللي فيها +
           Container(
-            width: 60,
-            height: 60,
+            width: 64,
+            height: 64,
             decoration: const BoxDecoration(
-              color: Color(0xFF2F6BFF),
+              color: AppColors.primary,
               shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.add,
               color: Colors.white,
-              size: 30,
+              size: 36,
             ),
           ),
 
@@ -47,10 +47,9 @@ class StartAssessmentCard extends StatelessWidget {
           /// 📝 العنوان
            Text(
             "StartNewAssessment".tr(),
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF1C2A3A),
+            style: AppTextStyles.subTitle.copyWith(
+              color: AppColors.textBlue,
+              
             ),
           ),
 
@@ -60,17 +59,15 @@ class StartAssessmentCard extends StatelessWidget {
            Text(
             "CompleteEvaluation".tr(),
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey,
-              height: 1.4,
+            style: AppTextStyles.subTitle.copyWith(
+              fontSize: 14,
             ),
           ),
 
           const SizedBox(height: 20),
           BaseButton(
             buttonTitle: "BeginAssessment",
-            titleColor: AppColors.baseBtnColorWhite,
+            titleColor: AppColors.background,
             borderRadius: 10,
             borderColor: AppColors.primary,
             backgroundColor: AppColors.primary,

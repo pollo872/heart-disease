@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 
-import 'package:heart_disease/res/app_colors.dart';
+import 'package:heart_disease/theme/app_theme.dart';
 
 Widget commonBarWidget(
   BuildContext context,
@@ -22,7 +22,7 @@ Widget commonBarWidget(
         title,
         
         style: const TextStyle(
-          color: AppColors.mainTextDeepBlue ,
+          color: AppColors.textBlue ,
           fontSize: 24,
           fontWeight: FontWeight.bold,
         ),

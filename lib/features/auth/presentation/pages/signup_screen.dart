@@ -5,9 +5,9 @@ import 'package:heart_disease/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:heart_disease/features/auth/presentation/cubit/auth_state.dart';
 import 'package:heart_disease/features/auth/presentation/pages/login_screen.dart';
 import 'package:heart_disease/features/auth/presentation/widgets/logo.dart';
-import 'package:heart_disease/res/app_colors.dart';
 import 'package:heart_disease/shared/widgets/base_button.dart';
 import 'package:heart_disease/shared/widgets/form_fields.dart';
+import 'package:heart_disease/theme/app_theme.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -30,7 +30,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backGround,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -79,7 +79,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       width: 350,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.backGround,
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -194,7 +194,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       buttonTitle:
           state is AuthLoading ? "signUpLoadingTitle".tr() : "signUpTitle".tr(),
       backgroundColor: state is AuthLoading ? Colors.grey : AppColors.primary,
-      titleColor: AppColors.baseBtnColorWhite,
+      titleColor: AppColors.background,
       borderRadius: 10,
       borderColor: AppColors.primary,
       onPressed: state is AuthLoading

@@ -10,6 +10,7 @@ import 'package:heart_disease/features/update_profile/data/repositories/update_p
 import 'package:heart_disease/features/update_profile/presentation/manager/update_profile_cubit.dart';
 import 'package:heart_disease/features/update_profile/presentation/manager/update_profile_state.dart';
 import 'package:heart_disease/shared/widgets/form_fields.dart';
+import 'package:heart_disease/theme/app_theme.dart';
 
 class EditProfileSheet extends StatelessWidget {
   final PatientModel patient;
@@ -63,12 +64,13 @@ class _EditProfileSheetContentState extends State<_EditProfileSheetContent> {
     final cubit = context.read<UpdateProfileCubit>();
 
     return BlocListener<UpdateProfileCubit, UpdateProfileState>(
-      listener: (context, state) {
+      listener: (context, state) async{
         if (state is UpdateProfileSuccess) {
-          context.read<MainBloc>().invalidateCache();
+          await context.read<MainBloc>().invalidateCache();
+          if (!context.mounted) return;
           context.read<MainBloc>().add(GetProfileEvent());
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Profile updated successfully")),
+            const SnackBar(content: Text("Profile updated successfully"),backgroundColor: Colors.green,),
           );
           Navigator.pop(context);
         }
@@ -109,25 +111,27 @@ class _EditProfileSheetContentState extends State<_EditProfileSheetContent> {
                 // ── Title ────────────────────────────────────────
                 Text(
                   'Edit Profile'.tr(),
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
+                  style: AppTextStyles.pageTitle.copyWith(fontSize: 18),
                 ),
                 Divider(height: 24, color: Colors.grey.shade200),
 
                 // ── Avatar ──────────────────────────────────────
-                CircleAvatar(
-                  radius: 40,
-                  backgroundColor: const Color(0xFF1E63F3),
-                  child: Text(
-                    '${widget.patient.firstName[0]}${widget.patient.lastName[0]}'
-                        .toUpperCase(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 26,
-                      fontWeight: FontWeight.w600,
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: AppGradiant.gradiant2,
+                  ),
+                  height: 88,
+                  width: 88,
+                  child: Center(
+                    child: Text(
+                      '${widget.patient.firstName[0]}${widget.patient.lastName[0]}'
+                          .toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 26,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
                 ),
@@ -172,7 +176,21 @@ class _EditProfileSheetContentState extends State<_EditProfileSheetContent> {
                   formTitle: 'Email',
                   keyboardType: TextInputType.emailAddress,
                   controller: _emailController,
-                  validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return tr("emailRequired");
+                    }
+
+                    final emailRegex = RegExp(
+                      r'^[a-zA-Z0-9.!#$%&*+/=?^_`{|}~-]+@[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)+$',
+                    );
+
+                    if (!emailRegex.hasMatch(value.trim())) {
+                      return "please enter a valid email";
+                    }
+
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 24),
 
@@ -193,8 +211,13 @@ class _EditProfileSheetContentState extends State<_EditProfileSheetContent> {
                               ),
                               side: BorderSide(color: Colors.grey.shade300),
                             ),
-                            child: Text('Cancel'.tr(),
-                                style: TextStyle(color: Colors.black87)),
+                            child: Text(
+                              'Cancel'.tr(),
+                              style: TextStyle(
+                                  color: Color(0xFF1A1A1A),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -217,7 +240,7 @@ class _EditProfileSheetContentState extends State<_EditProfileSheetContent> {
                                     }
                                   },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF1E63F3),
+                              backgroundColor: AppColors.primary,
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -230,8 +253,13 @@ class _EditProfileSheetContentState extends State<_EditProfileSheetContent> {
                                     child: CircularProgressIndicator(
                                         color: Colors.white, strokeWidth: 2),
                                   )
-                                : Text('Save Changes'.tr(),
-                                    style: TextStyle(color: Colors.white)),
+                                : Text(
+                                    'Save Changes'.tr(),
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400),
+                                  ),
                           ),
                         ),
                       ],
