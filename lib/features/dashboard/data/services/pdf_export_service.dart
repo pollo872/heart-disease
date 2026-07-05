@@ -235,9 +235,15 @@ class PdfExportService {
     final Map<String, int> recCount = {};
 
     for (final a in withAI) {
-      for (final f in a.aiAnalysis!.riskFactors)     rfCount[f]  = (rfCount[f]  ?? 0) + 1;
-      for (final w in a.aiAnalysis!.warningSigns)    wsCount[w]  = (wsCount[w]  ?? 0) + 1;
-      for (final r in a.aiAnalysis!.recommendations) recCount[r] = (recCount[r] ?? 0) + 1;
+      for (final f in a.aiAnalysis!.riskFactors) {
+        rfCount[f]  = (rfCount[f]  ?? 0) + 1;
+      }
+      for (final w in a.aiAnalysis!.warningSigns) {
+        wsCount[w]  = (wsCount[w]  ?? 0) + 1;
+      }
+      for (final r in a.aiAnalysis!.recommendations) {
+        recCount[r] = (recCount[r] ?? 0) + 1;
+      }
     }
 
     final topRF  = (rfCount.entries.toList()  ..sort((a, b) => b.value.compareTo(a.value))).take(5).toList();

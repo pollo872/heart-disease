@@ -19,20 +19,20 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MainBloc, MainState>(
-       buildWhen: (previous, current) =>
-          current is ProfileLoadingState ||
-          current is ProfileSuccessState ||
-          current is ProfileErrorState,
+      buildWhen: (previous, current) =>
+          current is GetProfileLoadingState ||
+          current is GetProfileSuccessState ||
+          current is GetProfileErrorState,
       builder: (context, state) {
-        if (state is ProfileLoadingState) {
+        if (state is GetProfileLoadingState) {
           return const Center(child: MyLoadingWidget());
         }
 
-        if (state is ProfileErrorState) {
+        if (state is GetProfileErrorState) {
           return Center(child: Text(state.error));
         }
 
-        if (state is ProfileSuccessState) {
+        if (state is GetProfileSuccessState) {
           return _HomeContent(state: state);
         }
 
@@ -47,7 +47,7 @@ class HomeScreen extends StatelessWidget {
 ///------------------------------------------------------------
 
 class _HomeContent extends StatelessWidget {
-  final ProfileSuccessState state;
+  final GetProfileSuccessState state;
 
   const _HomeContent({required this.state});
 
@@ -148,7 +148,7 @@ class _HeaderSection extends StatelessWidget {
 ///------------------------------------------------------------
 
 class _BodySection extends StatelessWidget {
-  final ProfileSuccessState state;
+  final GetProfileSuccessState state;
   final bool hasAssessment;
   final String predictionResult;
   final String riskLevel;
@@ -298,8 +298,7 @@ class _LatestAssessmentCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("LatestAssessment".tr(),
-                  style:  AppTextStyles.subTitle),
+              Text("LatestAssessment".tr(), style: AppTextStyles.subTitle),
               CircleAvatar(
                 backgroundColor: Color(0xFFE7000B).withOpacity(0.24),
                 child: const Icon(Icons.favorite, color: Colors.red),
@@ -310,7 +309,9 @@ class _LatestAssessmentCard extends StatelessWidget {
           Text(
             DateFormat('MMMM d, y').format(DateTime.parse(createdAt)),
             style: const TextStyle(
-                fontSize: 20, fontWeight: FontWeight.w400, color: AppColors.textGreen),
+                fontSize: 20,
+                fontWeight: FontWeight.w400,
+                color: AppColors.textGreen),
           ),
           const SizedBox(height: 16),
           Row(
@@ -379,8 +380,7 @@ class _QuickActionTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title.tr(),
-                      style: AppTextStyles.heading),
+                  Text(title.tr(), style: AppTextStyles.heading),
                   const SizedBox(height: 4),
                   Text(
                     subtitle.tr(),
@@ -389,7 +389,8 @@ class _QuickActionTile extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.textPrimaryGray),
+            const Icon(Icons.arrow_forward_ios,
+                size: 14, color: AppColors.textPrimaryGray),
           ],
         ),
       ),

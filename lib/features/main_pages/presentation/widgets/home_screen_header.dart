@@ -72,7 +72,6 @@ class WelcomeHeader extends StatelessWidget {
                   size: 20,
                 ),
                 onPressed: () {
-                  // TODO: open notifications
                 },
               ),
             ),

@@ -11,17 +11,17 @@ class ProfileImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<MainBloc, MainState>(
       // buildWhen: (previous, current) =>
-      //     current is ProfileLoadingState ||
-      //     current is ProfileSuccessState ||
-      //     current is ProfileErrorState,
+      //     current is GetProfileLoadingState ||
+      //     current is GetProfileSuccessState ||
+      //     current is GetProfileErrorState,
       builder: (context, state) {
-        // if (state is ProfileLoadingState) {
+        // if (state is GetProfileLoadingState) {
         //   return const Center(child: MyLoadingWidget());
         // }
-        // if (state is ProfileErrorState) {
+        // if (state is GetProfileErrorState) {
         //   return Center(child: Text(state.error));
         // }
-        if (state is ProfileSuccessState) {
+        if (state is GetProfileSuccessState) {
           return Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,

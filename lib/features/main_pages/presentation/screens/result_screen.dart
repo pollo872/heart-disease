@@ -290,13 +290,13 @@ class _VitalsCard extends StatelessWidget {
 
   _VitalStatus _bpStatus() {
     // Normal: systolic < 120 AND diastolic < 80
-    if (assessment.dPLevel == "Normal") return _VitalStatus.normal;
+    if (assessment.bPLevel == "Normal") return _VitalStatus.normal;
 
     // Elevated: systolic 120–129 AND diastolic < 80
-    if (assessment.dPLevel == "Elevated") return _VitalStatus.elevated;
+    if (assessment.bPLevel == "Elevated") return _VitalStatus.elevated;
 
     // High Stage 1: systolic 130–139 OR diastolic 80–89
-    if (assessment.dPLevel == "High") return _VitalStatus.high;
+    if (assessment.bPLevel == "High") return _VitalStatus.high;
 
     // High Stage 2: systolic >= 140 OR diastolic >= 90
     return _VitalStatus.high;
@@ -320,7 +320,8 @@ class _VitalsCard extends StatelessWidget {
     if (assessment.cholesterolLevel == "Elevated") return _VitalStatus.elevated;
 
     // High Stage 1: systolic 130–139 OR diastolic 80–89
-    if (assessment.cholesterolLevel == "High") return _VitalStatus.high; // borderline
+    if (assessment.cholesterolLevel == "High")
+      return _VitalStatus.high; // borderline
     return _VitalStatus.high; // high
   }
 
@@ -329,77 +330,104 @@ class _VitalsCard extends StatelessWidget {
     final bpStatus = _bpStatus();
     final sugarStatus = _sugarStatus();
     final cholStatus = _cholesterolStatus();
+    bool hasNoVitals = assessment.systolicBP == 0 ||
+        assessment.diastolicBP == 0 &&
+            assessment.bloodSugar == 0 &&
+            assessment.hba1c == 0 &&
+            assessment.cholesterol == 0;
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE8ECF0)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          const Row(
-            children: [
-              Icon(Icons.monitor_heart_outlined,
-                  size: 16, color: Color(0xFF1E63F3)),
-              SizedBox(width: 6),
-              Text(
-                'Vital Signs',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                  color: Color(0xFF1A1A2E),
+    return hasNoVitals
+        ? SizedBox.shrink()
+        : Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFE8ECF0)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                const Row(
+                  children: [
+                    Icon(Icons.monitor_heart_outlined,
+                        size: 16, color: Color(0xFF1E63F3)),
+                    SizedBox(width: 6),
+                    Text(
+                      'Vital Signs',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: Color(0xFF1A1A2E),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
 
-          // BP row — full width
-          _VitalRow(
-            icon: Icons.water_drop_outlined,
-            label: 'Blood Pressure',
-            value: '${assessment.systolicBP}/${assessment.diastolicBP} mmHg',
-            status: bpStatus,
-          ),
-          const SizedBox(height: 10),
+                // BP row — full width
+                assessment.systolicBP != 0 || assessment.diastolicBP != 0
+                    ? _VitalRow(
+                        icon: Icons.water_drop_outlined,
+                        label: 'Blood Pressure',
+                        value:
+                            '${assessment.systolicBP}/${assessment.diastolicBP} mmHg',
+                        status: bpStatus,
+                      )
+                    : Container(),
+                const SizedBox(height: 10),
 
-          // Sugar + Cholesterol side by side
-          Row(
-            children: [
-              Expanded(
-                child: _VitalTile(
-                  icon: Icons.bloodtype_outlined,
-                  label: 'Blood Sugar',
-                  value: '${assessment.bloodSugar.toStringAsFixed(0)} mg/dL',
-                  status: sugarStatus,
+                // Sugar + Cholesterol side by side
+                Row(
+                  children: [
+                    assessment.bloodSugar != 0
+                        ? Expanded(
+                            child: _VitalTile(
+                              icon: Icons.bloodtype_outlined,
+                              label: 'Blood Sugar',
+                              value:
+                                  '${assessment.bloodSugar.toStringAsFixed(0)} mg/dL',
+                              status: sugarStatus,
+                            ),
+                          )
+                        : Container(),
+                    const SizedBox(width: 10),
+                    assessment.hba1c != 0
+                        ? Expanded(
+                            child: _VitalTile(
+                              icon: Icons.bloodtype_outlined,
+                              label: 'HbA1c',
+                              value: '${assessment.hba1c.toStringAsFixed(1)}%',
+                              status: sugarStatus,
+                            ),
+                          )
+                        : Container(),
+                    const SizedBox(width: 10),
+                    assessment.cholesterol != 0
+                        ? Expanded(
+                            child: _VitalTile(
+                              icon: Icons.science_outlined,
+                              label: 'Cholesterol',
+                              value:
+                                  '${assessment.cholesterol.toStringAsFixed(0)} mg/dL',
+                              status: cholStatus,
+                            ),
+                          )
+                        : Container(),
+                  ],
                 ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _VitalTile(
-                  icon: Icons.science_outlined,
-                  label: 'Cholesterol',
-                  value: '${assessment.cholesterol.toStringAsFixed(0)} mg/dL',
-                  status: cholStatus,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+              ],
+            ),
+          );
   }
 }
 

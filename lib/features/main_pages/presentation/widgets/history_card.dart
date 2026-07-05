@@ -28,12 +28,11 @@ class HistoryCard extends StatelessWidget {
       onTap: onpressed,
       child: Container(
         padding: const EdgeInsets.all(14),
-        margin: const EdgeInsets.symmetric(vertical: 8),
+        margin: const EdgeInsets.symmetric(vertical: 20),
         decoration: cardDecoration(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// DATE + BADGE
             Row(
               children: [
                 Container(
@@ -139,7 +138,25 @@ class HistoryCard extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "View Full Report".tr(),
+                  style: AppTextStyles.subTitle
+                      .copyWith(color: AppColors.primary),
+                ),
+                const SizedBox(width: 4),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 14,
+                  color: AppColors.primary,
+                ),
+              ],
+            ),
+            
           ],
         ),
       ),

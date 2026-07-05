@@ -12,7 +12,7 @@
 //   final MainRepo mainRepo;
 
 //   // ✅ Cache fields
-//   ProfileSuccessState? _cachedState;
+//   GetProfileSuccessState? _cachedState;
 //   DateTime? _lastFetchTime;
 //   static const _cacheDuration = Duration(minutes: 5);
 
@@ -48,7 +48,7 @@
 //       return;
 //     }
 
-//     emit(ProfileLoadingState());
+//     emit(GetProfileLoadingState());
 //     await _fetchAndCache(emit);
 //   }
 
@@ -98,7 +98,7 @@
 //       final assessmentsUI =
 //           profileData.allAssessments.map((e) => mapAssessment(e)).toList();
 
-//       final newState = ProfileSuccessState(
+//       final newState = GetProfileSuccessState(
 //         patient: profileData.patient,
 //         assessment: profileData.latestAssessment,
 //         assessments: assessmentsUI,
@@ -108,7 +108,7 @@
 //       _lastFetchTime = DateTime.now();
 //       emit(newState);
 //     } catch (e) {
-//       emit(ProfileErrorState(ErrorMessageHandler.getMessage(e)));
+//       emit(GetProfileErrorState(ErrorMessageHandler.getMessage(e)));
 //     }
 //   }
 
@@ -263,12 +263,10 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   int currentIndex = 0;
   final MainRepo mainRepo;
 
-  // ✅ In-memory cache (fast, cleared on app close)
-  ProfileSuccessState? _cachedState;
+  GetProfileSuccessState? _cachedState;
   DateTime? _lastFetchTime;
   static const _cacheDuration = Duration(minutes: 5);
 
-  // ✅ Persistent cache keys (SharedPreferences)
   static const _persistedProfileKey = 'cached_profile_data';
   static const _persistedTimeKey = 'cached_profile_time';
 
@@ -297,24 +295,20 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     GetProfileEvent event,
     Emitter<MainState> emit,
   ) async {
-    // 1) In-memory cache still fresh? use it directly
     if (_isCacheValid()) {
       emit(_cachedState!);
       return;
     }
 
-    // 2) No fresh in-memory cache -> try persisted cache first (instant UI, offline-friendly)
     final persisted = await _loadPersistedProfile();
     if (persisted != null) {
       _cachedState = persisted;
       emit(persisted);
-      // refresh quietly in the background
       add(RefreshIfChangedEvent());
       return;
     }
 
-    // 3) Nothing cached anywhere -> normal loading flow
-    emit(ProfileLoadingState());
+    emit(GetProfileLoadingState());
     await _fetchAndCache(emit);
   }
 
@@ -363,7 +357,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       final assessmentsUI =
           profileData.allAssessments.map((e) => mapAssessment(e)).toList();
 
-      final newState = ProfileSuccessState(
+      final newState = GetProfileSuccessState(
         patient: profileData.patient,
         assessment: profileData.latestAssessment,
         assessments: assessmentsUI,
@@ -373,13 +367,10 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       _lastFetchTime = DateTime.now();
       emit(newState);
 
-      // ✅ persist to disk so it survives app restarts
       await _persistProfile(profileData);
     } catch (e) {
-      // If the network call fails and we have NO cache at all, show the error.
-      // If we already emitted a cached/persisted state earlier, don't overwrite it with an error.
       if (_cachedState == null) {
-        emit(ProfileErrorState(ErrorMessageHandler.getMessage(e)));
+        emit(GetProfileErrorState(ErrorMessageHandler.getMessage(e)));
       } else {
         debugPrint(
             'Fetch failed, keeping cached state: ${ErrorMessageHandler.getMessage(e)}');
@@ -403,12 +394,11 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       await prefs.setString(
           _persistedTimeKey, DateTime.now().toIso8601String());
     } catch (e) {
-      // Persistence failing shouldn't break the app, just log it
       debugPrint('Failed to persist profile cache: $e');
     }
   }
 
-  Future<ProfileSuccessState?> _loadPersistedProfile() async {
+  Future<GetProfileSuccessState?> _loadPersistedProfile() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final raw = prefs.getString(_persistedProfileKey);
@@ -429,7 +419,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       final assessmentsUI =
           allAssessments.map((e) => mapAssessment(e)).toList();
 
-      return ProfileSuccessState(
+      return GetProfileSuccessState(
         patient: patient,
         assessment: latestAssessment,
         assessments: assessmentsUI,
@@ -440,14 +430,12 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     }
   }
 
-  // ✅ Call this on logout, or after account deletion
   Future<void> clearPersistedCache() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_persistedProfileKey);
     await prefs.remove(_persistedTimeKey);
   }
 
-  // ✅ Call this when the user creates a new assessment
   Future<void> invalidateCache() async {
     _cachedState = null;
     _lastFetchTime = null;
@@ -498,9 +486,9 @@ AssessmentUIModel mapAssessment(assessment) {
   return AssessmentUIModel(
     predictionResult: assessment.predictionResult,
     riskLevel: assessment.riskLevel,
-    sugerLevel: assessment.sugerLevel,
-    cholesterolLevel: assessment.cholesterolLevel,
-    dPLevel: assessment.dPLevel,
+    sugerLevel: assessment.sugerLevel?.toLowerCase(),
+    cholesterolLevel: assessment.cholesterolLevel?.toLowerCase(),
+    bPLevel: assessment.bPLevel?.toLowerCase(),
     probability: "${(assessment.probability * 100).toStringAsFixed(2)}",
     createdAt: assessment.createdAt,
     riskTitle: riskTitle,
@@ -513,6 +501,7 @@ AssessmentUIModel mapAssessment(assessment) {
     systolicBP: assessment.systolicBP,
     diastolicBP: assessment.diastolicBP,
     bloodSugar: assessment.bloodSugar,
+    hba1c: assessment.hba1c,
     cholesterol: assessment.cholesterol,
     aiAnalysis: assessment.aiAnalysis != null
         ? AiAnalysisUI(

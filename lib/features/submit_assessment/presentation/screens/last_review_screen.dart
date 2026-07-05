@@ -17,7 +17,10 @@ class ReviewScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: const BackButton(color: Colors.black87),
+        leading: BackButton(
+          color: Colors.black87,
+          onPressed: () => cubit.prevStep(),
+        ),
         title: Text(
           'Review Your Information'.tr(),
           style: TextStyle(
@@ -47,8 +50,12 @@ class ReviewScreen extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Expanded(child: _InfoTile(label: 'Age', value: model.age ?? '—')),
-                      Expanded(child: _InfoTile(label: 'Sex', value: 'sex.${model.sex}'.tr())),
+                      Expanded(
+                          child:
+                              _InfoTile(label: 'Age', value: model.age ?? '—')),
+                      Expanded(
+                          child: _InfoTile(
+                              label: 'Sex', value: 'sex.${model.sex}'.tr())),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -143,6 +150,9 @@ class ReviewScreen extends StatelessWidget {
                           ? '${model.bloodSugar} mg/dL'
                           : '—'),
                   _InfoTile(
+                      label: 'HbA1c',
+                      value: model.hba1c != null ? '${model.hba1c}%' : '—'),
+                  _InfoTile(
                       label: 'Cholesterol In Blood',
                       value: model.cholesterol != null
                           ? '${model.cholesterol} mg/dL'
@@ -163,7 +173,8 @@ class ReviewScreen extends StatelessWidget {
                     children: [
                       Expanded(
                         child: _LabelValue(
-                            label: 'Diabetic', value: 'YesNo.${model.diabetic}'),
+                            label: 'Diabetic',
+                            value: 'YesNo.${model.diabetic}'),
                       ),
                       Expanded(
                         child: _LabelValue(
@@ -206,12 +217,14 @@ class ReviewScreen extends StatelessWidget {
                     children: [
                       Expanded(
                         child: _LabelValue(
-                            label: 'Stroke', value: 'YesNo.${model.brainstroke}'),
+                            label: 'Stroke',
+                            value: 'YesNo.${model.brainstroke}'),
                       ),
                       Expanded(
                         child: _LabelValue(
                             label: 'Heart Attack',
-                            value: 'YesNo.${model.myocardialInfarctionInHeart}'),
+                            value:
+                                'YesNo.${model.myocardialInfarctionInHeart}'),
                       ),
                     ],
                   ),

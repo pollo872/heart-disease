@@ -14,9 +14,9 @@ class MainIndexChangedState extends MainState {
   MainIndexChangedState(this.currentIndex);
 }
 
-class ProfileLoadingState extends MainState {}
+class GetProfileLoadingState extends MainState {}
 
-class ProfileSuccessState extends MainState {
+class GetProfileSuccessState extends MainState {
   final PatientModel patient;
   final AssessmentModel? assessment;
   final List<AssessmentUIModel> assessments;
@@ -27,7 +27,7 @@ class ProfileSuccessState extends MainState {
   // final Color riskColor;
   // final Color riskBadgeColor;
 
-  ProfileSuccessState({
+  GetProfileSuccessState({
     required this.patient,
     required this.assessment,
     required this.assessments,
@@ -39,11 +39,8 @@ class ProfileSuccessState extends MainState {
   });
 }
 
-class ProfileErrorState extends MainState {
+class GetProfileErrorState extends MainState {
   final String error;
 
-  ProfileErrorState(this.error);
+  GetProfileErrorState(this.error);
 }
-
-
-

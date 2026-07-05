@@ -14,6 +14,7 @@ class SubmitAssessmentModel {
   int? systolicBP; // mmHg
   int? diastolicBP; // mmHg
   double? bloodSugar; // mg/dL
+  double? hba1c; // % (e.g., 5.0)
   double? cholesterol;
 
   // Lifestyle — sent as "Yes"/"No" strings (Flask converts to 0/1)
@@ -28,7 +29,7 @@ class SubmitAssessmentModel {
   // Medical
   String?
       diabetic; // "Yes"/"No"/"No, borderline diabetes"/"Yes (during pregnancy)"
-  String? generalHealth; // "Excellent"/"Very good"/"Good"/"Fair"/"Poor"
+  // String? generalHealth; // "Excellent"/"Very good"/"Good"/"Fair"/"Poor"
   String? asthma;
   String? brainstroke;
   String? kidneyDisease;
@@ -38,15 +39,15 @@ class SubmitAssessmentModel {
   String? immunologicalDiseases;
   String? myocardialInfarctionInHeart;
 
-  int? physicalHealthDays; // 0–30
-  int? mentalHealthDays; // 0–30
+  // int? physicalHealthDays; // 0–30
+  // int? mentalHealthDays; // 0–30
 
   Map<String, dynamic> toJson() {
     return {
       // ── Continuous numeric ────────────────────────────────────────────────
       "BMI": bmi,
-      "PhysicalHealth": physicalHealthDays,
-      "MentalHealth": mentalHealthDays,
+      // "PhysicalHealth": physicalHealthDays,
+      // "MentalHealth": mentalHealthDays,
       "SleepTime": sleepTime,
       "CaffeineIntake": caffeineIntake,
 
@@ -54,11 +55,12 @@ class SubmitAssessmentModel {
       "AgeCategory": age, // e.g. "55-59"  — NOT "80+"  use "80 or older"
       "Sex": sex,
       "Race": race,
-      "GenHealth": generalHealth,
+      // "GenHealth": generalHealth,
 
       "SystolicBP": systolicBP,
       "DiastolicBP": diastolicBP,
       "BloodSugar": bloodSugar,
+      "HbA1c": hba1c,
       "Cholesterol": cholesterol,
 
       // ── Binary Yes/No (Flask converts to 0/1) ─────────────────────────────

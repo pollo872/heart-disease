@@ -25,22 +25,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<MainBloc, MainState>(
       buildWhen: (previous, current) =>
-          current is ProfileLoadingState ||
-          current is ProfileSuccessState ||
-          current is ProfileErrorState,
+          current is GetProfileLoadingState ||
+          current is GetProfileSuccessState ||
+          current is GetProfileErrorState,
       builder: (context, state) {
-        // if (state is ProfileLoadingState) {
+        // if (state is GetProfileLoadingState) {
         //   return const Center(child: CircularProgressIndicator());
         // }
-        if (state is ProfileLoadingState) {
+        if (state is GetProfileLoadingState) {
           return const Center(child: MyLoadingWidget());
         }
 
-        if (state is ProfileErrorState) {
+        if (state is GetProfileErrorState) {
           return Center(child: Text(state.error));
         }
 
-        if (state is ProfileSuccessState) {
+        if (state is GetProfileSuccessState) {
           return Scaffold(
             backgroundColor: Colors.white,
             // appBar: AppBar(
@@ -142,6 +142,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                   /// APP SETTINGS
                   _SectionTitle(title: "App Settings"),
+                  SizedBox(
+                    height: 8,
+                  ),
                   _SettingCard(
                     child: Row(
                       children: [
@@ -195,6 +198,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                   /// SECURITY & PRIVACY
                   _SectionTitle(title: "Security & Privacy"),
+                  SizedBox(
+                    height: 8,
+                  ),
                   _SettingTile(
                     icon: Icons.lock,
                     iconColor: Color(0xFF009689),

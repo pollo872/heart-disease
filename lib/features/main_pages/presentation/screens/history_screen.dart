@@ -22,17 +22,17 @@ class HistoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<MainBloc, MainState>(
       buildWhen: (previous, current) =>
-          current is ProfileLoadingState ||
-          current is ProfileSuccessState ||
-          current is ProfileErrorState,
+          current is GetProfileLoadingState ||
+          current is GetProfileSuccessState ||
+          current is GetProfileErrorState,
       builder: (context, state) {
-        if (state is ProfileLoadingState) {
+        if (state is GetProfileLoadingState) {
           return const Center(child: MyLoadingWidget());
         }
-        if (state is ProfileErrorState) {
+        if (state is GetProfileErrorState) {
           return Center(child: Text(state.error));
         }
-        if (state is ProfileSuccessState) {
+        if (state is GetProfileSuccessState) {
           return _HistoryContent(state: state);
         }
         return const Center(child: Text("No Data Yet"));
@@ -46,7 +46,7 @@ class HistoryScreen extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 class _HistoryContent extends StatefulWidget {
   const _HistoryContent({required this.state});
-  final ProfileSuccessState state;
+  final GetProfileSuccessState state;
 
   @override
   State<_HistoryContent> createState() => _HistoryContentState();
@@ -64,7 +64,6 @@ class _HistoryContentState extends State<_HistoryContent> {
       appBar: mainAppBar("History", context),
       body: Column(
         children: [
-             
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: _ToggleBar(
@@ -76,7 +75,10 @@ class _HistoryContentState extends State<_HistoryContent> {
           // ── Content ──────────────────────────────────────────────────────
           Expanded(
             child: _showDashboard
-                ? DashboardScreen(assessments: assessments,userName: "${widget.state.patient.firstName} ${widget.state.patient.lastName}")
+                ? DashboardScreen(
+                    assessments: assessments,
+                    userName:
+                        "${widget.state.patient.firstName} ${widget.state.patient.lastName}")
                 : _HistoryList(
                     state: widget.state,
                     hasAssessment: hasAssessment,
@@ -190,7 +192,7 @@ class _HistoryList extends StatelessWidget {
     required this.hasAssessment,
   });
 
-  final ProfileSuccessState state;
+  final GetProfileSuccessState state;
   final bool hasAssessment;
 
   @override

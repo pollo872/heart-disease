@@ -67,18 +67,20 @@ class AssessmentCubit extends Cubit<AssessmentState> {
     required int systolicBP,
     required int diastolicBP,
     required double bloodSugar,
+    required double hba1c,
     required double cholesterol,
   }) {
     model.systolicBP = systolicBP;
     model.diastolicBP = diastolicBP;
     model.bloodSugar = bloodSugar;
+    model.hba1c = hba1c;
     model.cholesterol = cholesterol;
   }
 
 
   void medicalHistory({
     required String diabetic,
-    required String generalHealth ,
+    // required String generalHealth ,
     required String asthma,
     required String brainStroke,
     required String kidneyDisease,
@@ -87,12 +89,12 @@ class AssessmentCubit extends Cubit<AssessmentState> {
     required String liverDisease,
     required String immunologicalDiseases,
     required String myocardialInfarctionInHeart,
-    required int physicalHealthDays,
-    required int mentalHealthDays ,
+    // required int physicalHealthDays,
+    // required int mentalHealthDays ,
 
   }) {
     model.diabetic = diabetic;
-    model.generalHealth = generalHealth ;
+    // model.generalHealth = generalHealth ;
     model.asthma = asthma;
     model.brainstroke = brainStroke;
     model.kidneyDisease = kidneyDisease;
@@ -101,8 +103,8 @@ class AssessmentCubit extends Cubit<AssessmentState> {
     model.liverDisease = liverDisease;
     model.immunologicalDiseases = immunologicalDiseases;
     model.myocardialInfarctionInHeart = myocardialInfarctionInHeart;
-    model.physicalHealthDays = physicalHealthDays;
-    model.mentalHealthDays  = mentalHealthDays ;
+    // model.physicalHealthDays = physicalHealthDays;
+    // model.mentalHealthDays  = mentalHealthDays ;
   }
 
   /// 🫀 MEDICAL

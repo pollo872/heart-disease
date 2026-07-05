@@ -66,9 +66,9 @@ class AiAnalysisUI {
 class AssessmentUIModel {
   final String predictionResult;
   final String riskLevel;
-  final String sugerLevel;
-  final String cholesterolLevel;
-  final String dPLevel;
+  final String? sugerLevel;
+  final String? cholesterolLevel;
+  final String? bPLevel;
   final String probability;
   final String createdAt;
   final String riskTitle;
@@ -87,15 +87,16 @@ class AssessmentUIModel {
   final int systolicBP;
   final int diastolicBP;
   final double bloodSugar; 
+  final double hba1c;
   final double cholesterol; 
   final AiAnalysisUI? aiAnalysis; // ← الجديد
 
   AssessmentUIModel({
     required this.predictionResult,
     required this.riskLevel,
-    required this.sugerLevel,
-    required this.cholesterolLevel,
-    required this.dPLevel,
+    this.sugerLevel,
+    this.cholesterolLevel,
+    this.bPLevel,
     required this.probability,
     required this.createdAt,
     required this.riskTitle,
@@ -114,6 +115,7 @@ class AssessmentUIModel {
     required this.systolicBP,
     required this.diastolicBP,
     required this.bloodSugar,
+    required this.hba1c,
     required this.cholesterol,
     this.aiAnalysis, // ← الجديد
   });

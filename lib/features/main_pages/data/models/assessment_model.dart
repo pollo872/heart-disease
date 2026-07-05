@@ -100,14 +100,15 @@ class AssessmentModel {
   final String predictionResult;
   final double probability;
   final String riskLevel;
-  final String dPLevel;
-  final String sugerLevel;
-  final String cholesterolLevel;
+  final String? bPLevel;
+  final String? sugerLevel;
+  final String? cholesterolLevel;
   final String createdAt;
   final double bmi;
   final int systolicBP;
   final int diastolicBP;
   final double bloodSugar;
+  final double hba1c;
   final double cholesterol;
   final AiAnalysis? aiAnalysis;
 
@@ -116,14 +117,15 @@ class AssessmentModel {
     required this.predictionResult,
     required this.probability,
     required this.riskLevel,
-    required this.sugerLevel,
-    required this.cholesterolLevel,
-    required this.dPLevel,
+    this.sugerLevel,
+    this.cholesterolLevel,
+    this.bPLevel,
     required this.createdAt,
     required this.bmi,
     this.systolicBP = 0,
     this.diastolicBP = 0,
     this.bloodSugar = 0,
+    this.hba1c = 0,
     this.cholesterol = 0,
     this.aiAnalysis,
   });
@@ -136,12 +138,13 @@ class AssessmentModel {
       riskLevel: json['riskLevel'],
       sugerLevel: json['sugerLevel'],
       cholesterolLevel: json['cholesterolLevel'],
-      dPLevel: json['dPLevel'],
+      bPLevel: json['bPLevel'],
       createdAt: json['createdAt'],
       bmi: (json['BMI'] as num).toDouble(),
       systolicBP: (json['SystolicBP'] as num?)?.toInt() ?? 0,
       diastolicBP: (json['DiastolicBP'] as num?)?.toInt() ?? 0,
       bloodSugar: (json['BloodSugar'] as num?)?.toDouble() ?? 0.0,
+      hba1c: (json['HbA1c'] as num?)?.toDouble() ?? 0.0,
       cholesterol: (json['Cholesterol'] as num?)?.toDouble() ?? 0.0,
       aiAnalysis: json['aiAnalysis'] != null
           ? AiAnalysis.fromMongoJson(json['aiAnalysis'])
@@ -160,12 +163,13 @@ class AssessmentModel {
       'riskLevel': riskLevel,
       'sugerLevel': sugerLevel,
       'cholesterolLevel': cholesterolLevel,
-      'dPLevel': dPLevel,
+      'bPLevel': bPLevel,
       'createdAt': createdAt,
       'BMI': bmi,
       'SystolicBP': systolicBP,
       'DiastolicBP': diastolicBP,
       'BloodSugar': bloodSugar,
+      'HbA1c': hba1c,
       'Cholesterol': cholesterol,
       'aiAnalysis': aiAnalysis?.toJson(),
     };

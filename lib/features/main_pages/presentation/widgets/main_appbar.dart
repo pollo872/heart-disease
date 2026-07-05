@@ -41,7 +41,6 @@ AppBar mainAppBar(String title, BuildContext context) {
           ),
           tooltip: 'Notifications',
           onPressed: () {
-            // TODO: open notifications
           },
         ),
       ),

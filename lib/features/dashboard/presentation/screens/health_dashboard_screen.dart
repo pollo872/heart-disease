@@ -91,6 +91,13 @@ class _DashboardScreenState extends State<DashboardScreen>
     if (bmi < 30) return AppColors.riskMedium;
     return AppColors.riskHigh;
   }
+  Color _bpColor(String bpLevel) {
+    return switch (bpLevel.toLowerCase()) {
+      'normal' => AppColors.riskLow,
+      'elevated' => AppColors.riskMedium,
+      _ => AppColors.riskHigh,
+    };
+  }
 
   _TrendData _calcTrend(
     List<AssessmentUIModel> sorted,
@@ -179,6 +186,7 @@ class _DashboardScreenState extends State<DashboardScreen>
 
     final probTrend = _calcTrend(sorted, (a) => _toPercent(a.probability));
     final bmiTrend = _calcTrend(sorted, (a) => a.bmi);
+    final bpTrend = _calcTrend(sorted, (a) => a.bPLevel?.toLowerCase() == "normal" ? 0 : a.bPLevel?.toLowerCase() == "elevated" ? 1 : 2);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -228,7 +236,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                     const SizedBox(height: 20),
 
                     // ── Trend chips ────────────────────────────────
-                    _buildTrendRow(probTrend, bmiTrend, sorted),
+                    _buildTrendRow(probTrend, bmiTrend,bpTrend, sorted),
                     const SizedBox(height: 24),
 
                     // ── Probability Chart ──────────────────────────
@@ -364,13 +372,19 @@ class _DashboardScreenState extends State<DashboardScreen>
                     const SizedBox(height: 24),
 
                     // ── Cholesterol & Blood Sugar tiles ───────────
-                    _SectionHeader(
-                      title: 'Lab Values',
-                      subtitle: 'Latest cholesterol & blood sugar readings',
-                      iconColor: const Color(0xFF7B1FA2),
-                    ),
+                    if (latest.cholesterol != 0 ||
+                        latest.bloodSugar != 0 ||
+                        latest.hba1c != 0)
+                      _SectionHeader(
+                        title: 'Lab Values',
+                        subtitle: 'Latest cholesterol & blood sugar readings',
+                        iconColor: const Color(0xFF7B1FA2),
+                      ),
                     const SizedBox(height: 10),
-                    _LabValuesRow(latest: latest),
+                    if (latest.cholesterol != 0 ||
+                        latest.bloodSugar != 0 ||
+                        latest.hba1c != 0)
+                      _LabValuesRow(latest: latest),
                     const SizedBox(height: 24),
 
                     // ── Latest Assessment detail ───────────────────
@@ -448,6 +462,16 @@ class _DashboardScreenState extends State<DashboardScreen>
         const SizedBox(width: 10),
         Expanded(
           child: _SummaryCard(
+            icon: Icons.monitor_weight_outlined,
+            label: 'Blood Pressure',
+            value: '${latest.systolicBP}/${latest.diastolicBP} mmHg',
+            color: _bpColor(latest.bPLevel?.toLowerCase() ?? 'normal'),
+            bg: _bpColor(latest.bPLevel?.toLowerCase() ?? 'normal').withOpacity(0.1),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _SummaryCard(
             icon: Icons.assignment_outlined,
             label: 'Assessments',
             value: '${sorted.length}',
@@ -463,6 +487,7 @@ class _DashboardScreenState extends State<DashboardScreen>
   Widget _buildTrendRow(
     _TrendData probTrend,
     _TrendData bmiTrend,
+    _TrendData bpTrend,
     List<AssessmentUIModel> sorted,
   ) {
     if (sorted.length < 2) return const SizedBox.shrink();
@@ -513,6 +538,9 @@ class _DashboardScreenState extends State<DashboardScreen>
         chip(
             bmiTrend,
             'BMI ${bmiTrend.type == _TrendType.improved ? "↓" : bmiTrend.type == _TrendType.worsened ? "↑" : "→"} ${bmiTrend.delta.abs().toStringAsFixed(1)}'),
+        chip(
+            bpTrend,
+            'Blood Pressure ${bpTrend.type == _TrendType.improved ? "↓" : bpTrend.type == _TrendType.worsened ? "↑" : "→"} ${bpTrend.delta.abs().toStringAsFixed(1)}'),
       ],
     );
   }
@@ -577,6 +605,8 @@ class _DashboardScreenState extends State<DashboardScreen>
           _DetailRow(
               label: 'Blood Sugar',
               value: '${latest.bloodSugar.toStringAsFixed(0)} mg/dL'),
+          _DetailRow(
+              label: 'HbA1c', value: '${latest.hba1c.toStringAsFixed(1)}%'),
           _DetailRow(
               label: 'Cholesterol',
               value: '${latest.cholesterol.toStringAsFixed(0)} mg/dL'),
@@ -1188,6 +1218,7 @@ class _LabValuesRow extends StatelessWidget {
   _LabStatus _cholStatus() {
     if (latest.cholesterolLevel == 'Normal') return _LabStatus.normal;
     if (latest.cholesterolLevel == 'Elevated') return _LabStatus.borderline;
+    if (latest.cholesterolLevel == 'High') return _LabStatus.high;
     return _LabStatus.high;
   }
 
@@ -1204,23 +1235,38 @@ class _LabValuesRow extends StatelessWidget {
 
     return Row(
       children: [
-        Expanded(
+        if (latest.cholesterol != 0) ...[
+          Expanded(
             child: _LabTile(
-          icon: Icons.science_outlined,
-          label: 'Cholesterol',
-          value: '${latest.cholesterol.toStringAsFixed(0)} mg/dL',
-          reference: '< 200 normal',
-          status: cholSt,
-        )),
+              icon: Icons.science_outlined,
+              label: 'Cholesterol',
+              value: '${latest.cholesterol.toStringAsFixed(0)} mg/dL',
+              reference: '< 200 normal',
+              status: cholSt,
+            ),
+          ),
+        ],
         const SizedBox(width: 10),
-        Expanded(
-            child: _LabTile(
-          icon: Icons.bloodtype_outlined,
-          label: 'Blood Sugar',
-          value: '${latest.bloodSugar.toStringAsFixed(0)} mg/dL',
-          reference: '< 100 normal',
-          status: sugSt,
-        )),
+        if (latest.bloodSugar != 0) ...[
+          Expanded(
+              child: _LabTile(
+            icon: Icons.bloodtype_outlined,
+            label: 'Blood Sugar',
+            value: '${latest.bloodSugar.toStringAsFixed(0)} mg/dL',
+            reference: '< 100 normal',
+            status: sugSt,
+          )),
+        ],
+        if (latest.hba1c != 0) ...[
+          Expanded(
+              child: _LabTile(
+            icon: Icons.bloodtype_outlined,
+            label: 'HbA1c',
+            value: '${latest.hba1c.toStringAsFixed(1)}%',
+            reference: '< 5.7% normal',
+            status: sugSt,
+          )),
+        ],
       ],
     );
   }

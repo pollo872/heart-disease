@@ -35,6 +35,7 @@
     "AssessmentHistory": "Assessment history",
     "Export": "Export",
     "LatestAssessment": "Latest Assessment",
+    "ViewFullReport": "View Full Report",
     "Home": "Home",
     "History": "History",
     "Doctors": "Doctors",
@@ -110,6 +111,7 @@
         "Mental Health Days (last 30 days)?": "Mental Health Days (last 30 days) in english?",
         "Sleep Time (hours per day)?": "Sleep Time (hours per day) in english?",
         "Blood Sugar (mg/dL)": "Blood Sugar (mg/dL) in english?",
+        "HbA1c (%)": "HbA1c (%) in english?",
         "Cholesterol (mg/dL)": "Cholesterol (mg/dL) in english?",
         "Caffeine Intake (cups per day)?": "Caffeine Intake (cups per day) in english?"
 

@@ -17,6 +17,7 @@ class _Step3State extends State<Step3> {
   int? systolicBP;
   int? diastolicBP;
   double? bloodSugar;
+  double? hba1c;
   double? cholesterol;
   
   // final TextEditingController _systolicCtrl = TextEditingController();
@@ -69,6 +70,15 @@ class _Step3State extends State<Step3> {
               onChanged: (v) => bloodSugar = double.tryParse(v),
             ),
             const SizedBox(height: 16),
+
+            _buildLabel('HbA1c (%)'),
+            const SizedBox(height: 6),
+            buildTextField(
+              hint: '5.0',
+              keyboardType: TextInputType.number,
+              onChanged: (v) => hba1c = double.tryParse(v),
+            ),
+            const SizedBox(height: 16),
             _buildLabel('Cholesterol (mg/dL)'),
             const SizedBox(height: 6),
             buildTextField(
@@ -90,21 +100,23 @@ class _Step3State extends State<Step3> {
               borderColor: Colors.transparent,
               backgroundColor: const Color(0xFF1E63F3),
               onPressed: () {
-                if (systolicBP == null ||
-                    diastolicBP == null ||
-                    bloodSugar == null ||
-                    cholesterol == null 
-                    ) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please fill all fields')),
-                  );
-                  return;
-                }
+                // if (systolicBP == null ||
+                //     diastolicBP == null ||
+                //     bloodSugar == null ||
+                //     hba1c == null ||
+                //     cholesterol == null 
+                //     ) {
+                //   ScaffoldMessenger.of(context).showSnackBar(
+                //     const SnackBar(content: Text('Please fill all fields')),
+                //   );
+                //   return;
+                // }
                 cubit.healthMeasurements(
-                  systolicBP: systolicBP!,
-                  diastolicBP: diastolicBP!,
-                  bloodSugar: bloodSugar!,
-                  cholesterol: cholesterol!,
+                  systolicBP: systolicBP??0,
+                  diastolicBP: diastolicBP??0,
+                  bloodSugar: bloodSugar??0,
+                  hba1c: hba1c??0,
+                  cholesterol: cholesterol??0,
                 );
                 cubit.nextStep();
               },

@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/manager/cubit.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/widgets/bar_indecator.dart';
-import 'package:heart_disease/features/submit_assessment/presentation/widgets/drop_down.dart';
+// import 'package:heart_disease/features/submit_assessment/presentation/widgets/drop_down.dart';
 import 'package:heart_disease/features/submit_assessment/presentation/widgets/select_option.dart';
-import 'package:heart_disease/features/submit_assessment/presentation/widgets/text_field.dart';
+// import 'package:heart_disease/features/submit_assessment/presentation/widgets/text_field.dart';
 import 'package:heart_disease/shared/widgets/base_button.dart';
 
 class Step4 extends StatefulWidget {
@@ -62,39 +62,39 @@ class _Step4State extends State<Step4> {
             style: TextStyle(fontSize: 13, color: Colors.grey),
           ),
           const SizedBox(height: 20),
-          _buildLabel('General Health?'),
-          const SizedBox(height: 6),
-          CustomDropdown<String>(
-            hint: 'Select option',
-            items: const [
-              "Poor",
-              "Fair",
-              "Good",
-              "Very good",
-              "Excellent",
-            ],
-            value: generalHealth,
-            onChanged: (v) => setState(() => generalHealth = v),
-          ),
-          const SizedBox(height: 16),
+          // _buildLabel('General Health?'),
+          // const SizedBox(height: 6),
+          // CustomDropdown<String>(
+          //   hint: 'Select option',
+          //   items: const [
+          //     "Poor",
+          //     "Fair",
+          //     "Good",
+          //     "Very good",
+          //     "Excellent",
+          //   ],
+          //   value: generalHealth,
+          //   onChanged: (v) => setState(() => generalHealth = v),
+          // ),
+          // const SizedBox(height: 16),
 
-          _buildLabel('Physical Health Days (last 30 days)?'),
-          const SizedBox(height: 6),
-          buildTextField(
-            hint: '10',
-            keyboardType: TextInputType.number,
-            onChanged: (v) => physicalHealthDays = int.tryParse(v),
-          ),
-          const SizedBox(height: 16),
-          _buildLabel('Mental Health Days (last 30 days)?'),
-          const SizedBox(height: 6),
-          buildTextField(
-            hint: '10',
-            keyboardType: TextInputType.number,
-            onChanged: (v) => mentalHealthDays = int.tryParse(v),
-          ),
+          // _buildLabel('Physical Health Days (last 30 days)?'),
+          // const SizedBox(height: 6),
+          // buildTextField(
+          //   hint: '10',
+          //   keyboardType: TextInputType.number,
+          //   onChanged: (v) => physicalHealthDays = int.tryParse(v),
+          // ),
+          // const SizedBox(height: 16),
+          // _buildLabel('Mental Health Days (last 30 days)?'),
+          // const SizedBox(height: 6),
+          // buildTextField(
+          //   hint: '10',
+          //   keyboardType: TextInputType.number,
+          //   onChanged: (v) => mentalHealthDays = int.tryParse(v),
+          // ),
           
-          const SizedBox(height: 16),
+          // const SizedBox(height: 16),
           _buildLabel('Are you diabetic?'),
           const SizedBox(height: 6),
           YesNoSelector(
@@ -244,13 +244,13 @@ class _Step4State extends State<Step4> {
               // final familyList = _selectedFamilyHistory.toList();
 
               if (diabetic == null ||
-                    generalHealth == null ||
+                    // generalHealth == null ||
                     asthma == null ||
                     brainStroke == null||
                     kidneyDisease == null||
                     cancerHistory == null||
-                    physicalHealthDays == null||
-                    mentalHealthDays == null||
+                    // physicalHealthDays == null||
+                    // mentalHealthDays == null||
                     chronicHypertension == null||
                     liverDisease == null||
                     immunologicalDiseases == null||
@@ -264,10 +264,10 @@ class _Step4State extends State<Step4> {
                 }
 
               cubit.medicalHistory(
-                physicalHealthDays: physicalHealthDays!,
-                mentalHealthDays: mentalHealthDays!,
+                // physicalHealthDays: physicalHealthDays!,
+                // mentalHealthDays: mentalHealthDays!,
                 diabetic: diabetic!,
-                generalHealth: generalHealth!,
+                // generalHealth: generalHealth!,
                 asthma: asthma!,
                 brainStroke: brainStroke!,
                 kidneyDisease: kidneyDisease!,
