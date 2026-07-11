@@ -1,0 +1,76 @@
+{
+    "info": {
+        "_postman_id": "8bb5444a-e4b7-4c07-9c98-1e434cd6d729",
+        "name": "HeartGuard API",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Health Check",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://127.0.0.1:5000/health",
+                    "protocol": "http",
+                    "host": [
+                        "127.0.0.1"
+                    ],
+                    "port": "5000",
+                    "path": [
+                        "health"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Predict Risk",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"patient_id\": \"p123\",\n  \"AgeCategory\": \"45-49\",\n  \"BMI\": 25.4,\n  \"SleepTime\": 7.0,\n  \"AlcoholDrinking\": 0,\n  \"Sex\": 1,\n  \"Smoking\": 0,\n  \"BrainStroke\": 0,\n  \"DiffWalking\": 0,\n  \"Diabetic\": 0,\n  \"Asthma\": 0,\n  \"KidneyDisease\": 0,\n  \"CancerHistory\": 0,\n  \"ChronicHypertension\": 0,\n  \"LiverDisease\": 0,\n  \"ImmunologicalDiseases\": 0,\n  \"MyocardialInfarctionInHeart\": 0,\n  \"Race\": 1.0\n}"
+                },
+                "url": {
+                    "raw": "http://127.0.0.1:5000/predict",
+                    "protocol": "http",
+                    "host": [
+                        "127.0.0.1"
+                    ],
+                    "port": "5000",
+                    "path": [
+                        "predict"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Patient History",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://127.0.0.1:5000/history/p123",
+                    "protocol": "http",
+                    "host": [
+                        "127.0.0.1"
+                    ],
+                    "port": "5000",
+                    "path": [
+                        "history",
+                        "p123"
+                    ]
+                }
+            },
+            "response": []
+        }
+    ]
+}
