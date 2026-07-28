@@ -284,6 +284,14 @@ class ResultScreen extends StatelessWidget {
 
 // ─── Vitals Card ─────────────────────────────────────────────────────────────
 
+bool shouldShowBpValues(num systolic, num diastolic) {
+  return systolic > 0 && diastolic > 0;
+}
+
+bool shouldShowVitalValue(num? value) {
+  return value != null && value > 0;
+}
+
 class _VitalsCard extends StatelessWidget {
   final AssessmentUIModel assessment;
   const _VitalsCard({required this.assessment});
@@ -320,8 +328,8 @@ class _VitalsCard extends StatelessWidget {
     if (assessment.cholesterolLevel == "Elevated") return _VitalStatus.elevated;
 
     // High Stage 1: systolic 130–139 OR diastolic 80–89
-    if (assessment.cholesterolLevel == "High")
-      return _VitalStatus.high; // borderline
+    if (assessment.cholesterolLevel == "High") return _VitalStatus.high;
+    // borderline
     return _VitalStatus.high; // high
   }
 
@@ -330,11 +338,10 @@ class _VitalsCard extends StatelessWidget {
     final bpStatus = _bpStatus();
     final sugarStatus = _sugarStatus();
     final cholStatus = _cholesterolStatus();
-    bool hasNoVitals = assessment.systolicBP == 0 ||
-        assessment.diastolicBP == 0 &&
-            assessment.bloodSugar == 0 &&
-            assessment.hba1c == 0 &&
-            assessment.cholesterol == 0;
+    bool hasNoVitals = !shouldShowBpValues(assessment.systolicBP, assessment.diastolicBP) &&
+    !shouldShowVitalValue(assessment.bloodSugar) &&
+    !shouldShowVitalValue(assessment.hba1c) &&
+    !shouldShowVitalValue(assessment.cholesterol);
 
     return hasNoVitals
         ? SizedBox.shrink()
@@ -375,7 +382,8 @@ class _VitalsCard extends StatelessWidget {
                 const SizedBox(height: 14),
 
                 // BP row — full width
-                assessment.systolicBP != 0 || assessment.diastolicBP != 0
+                shouldShowBpValues(
+                        assessment.systolicBP, assessment.diastolicBP)
                     ? _VitalRow(
                         icon: Icons.water_drop_outlined,
                         label: 'Blood Pressure',
@@ -389,7 +397,7 @@ class _VitalsCard extends StatelessWidget {
                 // Sugar + Cholesterol side by side
                 Row(
                   children: [
-                    assessment.bloodSugar != 0
+                    shouldShowVitalValue(assessment.bloodSugar)
                         ? Expanded(
                             child: _VitalTile(
                               icon: Icons.bloodtype_outlined,
@@ -401,7 +409,7 @@ class _VitalsCard extends StatelessWidget {
                           )
                         : Container(),
                     const SizedBox(width: 10),
-                    assessment.hba1c != 0
+                    shouldShowVitalValue(assessment.hba1c)
                         ? Expanded(
                             child: _VitalTile(
                               icon: Icons.bloodtype_outlined,
@@ -412,7 +420,7 @@ class _VitalsCard extends StatelessWidget {
                           )
                         : Container(),
                     const SizedBox(width: 10),
-                    assessment.cholesterol != 0
+                    shouldShowVitalValue(assessment.cholesterol)
                         ? Expanded(
                             child: _VitalTile(
                               icon: Icons.science_outlined,

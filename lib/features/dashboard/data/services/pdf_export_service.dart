@@ -124,6 +124,10 @@ class PdfExportService {
                     '${latest.bloodSugar.toStringAsFixed(0)} mg/dL',
                   ),
                   _summaryCell(
+                    'HbA1c',
+                    '${latest.hba1c.toStringAsFixed(1)}%',
+                  ),
+                  _summaryCell(
                     'Cholesterol',
                     '${latest.cholesterol.toStringAsFixed(0)} mg/dL',
                   ),
@@ -184,7 +188,7 @@ class PdfExportService {
           pw.SizedBox(height: 8),
           pw.Table.fromTextArray(
             // ✅ الجدول الجديد: التاريخ | ضغط الدم | السكر | الكوليسترول | نسبة الخطر
-            headers: ['Date', 'Blood Pressure', 'Blood Sugar', 'Cholesterol', 'Risk %'],
+            headers: ['Date', 'Blood Pressure', 'Blood Sugar', 'HbA1c', 'Cholesterol', 'Risk %'],
             data: sortedAssessments.map((a) {
               final dateStr = a.createdAt.length >= 10
                   ? a.createdAt.substring(0, 10)
@@ -193,6 +197,7 @@ class PdfExportService {
                 dateStr,
                 '${a.systolicBP}/${a.diastolicBP} mmHg',
                 '${a.bloodSugar.toStringAsFixed(0)} mg/dL',
+                '${a.hba1c.toStringAsFixed(1)}%',
                 '${a.cholesterol.toStringAsFixed(0)} mg/dL',
                 '${_riskPercent(a.probability).toStringAsFixed(1)}%',
               ];

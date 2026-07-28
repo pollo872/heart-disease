@@ -486,9 +486,9 @@ AssessmentUIModel mapAssessment(assessment) {
   return AssessmentUIModel(
     predictionResult: assessment.predictionResult,
     riskLevel: assessment.riskLevel,
-    sugerLevel: assessment.sugerLevel?.toLowerCase(),
-    cholesterolLevel: assessment.cholesterolLevel?.toLowerCase(),
-    bPLevel: assessment.bPLevel?.toLowerCase(),
+    sugerLevel: assessment.sugerLevel,
+    cholesterolLevel: assessment.cholesterolLevel,
+    bPLevel: assessment.bPLevel,
     probability: "${(assessment.probability * 100).toStringAsFixed(2)}",
     createdAt: assessment.createdAt,
     riskTitle: riskTitle,

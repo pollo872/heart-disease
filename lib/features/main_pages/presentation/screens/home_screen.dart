@@ -171,9 +171,9 @@ class _BodySection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: hasAssessment ? 120 : 40),
+          SizedBox(height: hasAssessment ? 160 : 20),
 
-          const SizedBox(height: 30),
+          // const SizedBox(height: 30),
 
           Text(
             "quickActions".tr(),

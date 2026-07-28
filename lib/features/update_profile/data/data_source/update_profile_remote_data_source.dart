@@ -6,7 +6,7 @@ class UpdateProfileRemoteDataSource {
   Future<Response> updateProfile(Map<String, dynamic> data) async {
     try {
       return await DioHelper.put(
-        url: ApiEndpoints.updateProfile,
+        url: ApiEndpoints.profile,
         data: data,
       );
     } catch (e) {

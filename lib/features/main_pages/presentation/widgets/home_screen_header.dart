@@ -21,7 +21,7 @@ class WelcomeHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: hasAssessment ? 150 : 110,
+      height: hasAssessment ? 150 : 120,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       decoration: BoxDecoration(
         gradient: AppGradiant.gradiant1,

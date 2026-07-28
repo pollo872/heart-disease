@@ -1257,6 +1257,7 @@ class _LabValuesRow extends StatelessWidget {
             status: sugSt,
           )),
         ],
+        const SizedBox(width: 10),
         if (latest.hba1c != 0) ...[
           Expanded(
               child: _LabTile(
@@ -1307,6 +1308,10 @@ class _LabTile extends StatelessWidget {
     required this.status,
   });
 
+  // ✅ حد فاصل بعرض الكارت نفسه (بكسل). لو الكارت أصغر من كذا يبقى موبايل/ضيق،
+  // لو أكبر يبقى تابلت/واسع. عدّل الرقم حسب اللي يناسبك بعد التجربة.
+  static const double _wideCardBreakpoint = 160;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -1316,53 +1321,99 @@ class _LabTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: status.color.withOpacity(0.2)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isWide = constraints.maxWidth >= _wideCardBreakpoint;
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(icon, size: 15, color: status.color),
-              const SizedBox(width: 6),
-              Text(label,
+              Row(
+                children: [
+                  Icon(icon, size: 15, color: status.color),
+                  const SizedBox(width: 6),
+                  Text(label,
+                      style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: status.color)),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(value,
                   style: TextStyle(
                       fontFamily: 'Inter',
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                       color: status.color)),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(value,
-              style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: status.color)),
-          const SizedBox(height: 6),
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: status.color.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(20),
+              const SizedBox(height: 6),
+
+              // ✅ الفرق هنا: كارت واسع = Row جمب بعض | كارت ضيق = Column، الـ reference لوحده على سطر وعلى اليمين
+              if (isWide)
+                Row(
+                  children: [
+                    _StatusBadge(status: status),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        reference,
+                        textAlign: TextAlign.right,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 10,
+                            color: AppColors.textSecondary),
+                      ),
+                    ),
+                  ],
+                )
+              else
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _StatusBadge(status: status),
+                    const SizedBox(height: 4),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        reference,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 10,
+                            color: AppColors.textSecondary),
+                      ),
+                    ),
+                  ],
                 ),
-                child: Text(status.label,
-                    style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                        color: status.color)),
-              ),
-              const Spacer(),
-              Text(reference,
-                  style: const TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 10,
-                      color: AppColors.textSecondary)),
             ],
-          ),
-        ],
+          );
+        },
       ),
+    );
+  }
+}
+
+class _StatusBadge extends StatelessWidget {
+  final _LabStatus status;
+  const _StatusBadge({required this.status});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: status.color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(status.label,
+          style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: status.color)),
     );
   }
 }
